@@ -1,0 +1,22 @@
+# Python
+*.pyc
+__pycache__/
+
+# Django
+*.log
+*.pot
+db.sqlite3
+
+# Conda
+env/
+*.conda
+
+# Node.js
+node_modules/
+build/
+
+# VSCode
+.vscode/
+
+# jetbrains
+.idea/
