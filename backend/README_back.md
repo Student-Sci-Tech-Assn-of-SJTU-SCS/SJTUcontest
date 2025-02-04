@@ -8,3 +8,13 @@
 使用 environment.yml 创建环境:
 
 ```conda env create -f environment.yml```
+
+## 运行方法
+
+```python manage.py makemigrations```
+
+```python manage.py migrate```
+
+```python manage.py runserver```
+
+建议使用postman测试
