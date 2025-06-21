@@ -1,5 +1,5 @@
-import React from 'react';
-import { Typography, Box, Card, CardContent, Grid } from '@mui/material';
+import React from "react";
+import { Typography, Box, Card, CardContent, Grid } from "@mui/material";
 
 const Matches = () => {
   // 这里可以添加获取比赛列表的逻辑
@@ -18,9 +18,7 @@ const Matches = () => {
           <Grid item xs={12} md={6} key={match.id}>
             <Card>
               <CardContent>
-                <Typography variant="h6">
-                  {match.title}
-                </Typography>
+                <Typography variant="h6">{match.title}</Typography>
                 <Typography color="text.secondary">
                   {match.description}
                 </Typography>
