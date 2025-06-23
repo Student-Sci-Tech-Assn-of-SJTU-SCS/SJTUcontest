@@ -12,6 +12,8 @@ class Contest(models.Model):
     name = models.CharField(max_length=100, unique=True)
     # 比赛描述
     description = models.TextField(blank=True, null=True)
+    # logo base64编码
+    logo = models.TextField(blank=True, null=True)
     # 比赛地点 可填入“不固定”
     place = models.CharField(max_length=100)
     # 赛事级别
