@@ -2,6 +2,7 @@ asgiref==3.8.1
 black==25.1.0
 click==8.2.1
 Django==5.2.1
+django-cors-headers==4.6.0
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 mypy_extensions==1.1.0
