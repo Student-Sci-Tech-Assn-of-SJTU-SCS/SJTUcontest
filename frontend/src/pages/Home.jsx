@@ -30,6 +30,14 @@ const Home = () => {
         >
           寻找团队
         </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          sx={{ mx: 2 }}
+          onClick={() => navigate("/user")}
+        >
+          个人主页
+        </Button>
       </Box>
     </Box>
   );
