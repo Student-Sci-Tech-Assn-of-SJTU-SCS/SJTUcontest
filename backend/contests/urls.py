@@ -1,6 +1,10 @@
 # contests/urls.py
 from django.urls import path
-from contests import views 
+
+from .views import get_all_matches, get_match_by_id
+
 urlpatterns = [
-    path("<int:matches_id>/", views.detail_view, name="get_match_by_id"),
+    path('', get_all_matches, name='get_all_matches'),
+    path("<int:matches_id>/", get_match_by_id, name="get_match_by_id"),
 ]
+
