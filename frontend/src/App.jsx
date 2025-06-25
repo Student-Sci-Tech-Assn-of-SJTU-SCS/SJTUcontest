@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainLayout from "./components/layout/MainLayout";
+import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
-import Matches from "./pages/Matches";
-import Teams from "./pages/Teams";
-import User from "./pages/User";
+import Matches from "./pages/match/Matches";
+import Teams from "./pages/team/Teams";
+import User from "./pages/user/User";
 import Error from "./pages/Error";
 
 function App() {
