@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +27,7 @@ SECRET_KEY = "django-insecure-ibweg87++k^+(9^#@4m*nqypeux(ra1+qo1d3x#0n8m#k!#m@6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 
 # Application definition
@@ -37,10 +39,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
+    "rest_framework",
     "users",
+    "contests",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -74,10 +80,15 @@ WSGI_APPLICATION = "SJTUcontest.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+load_dotenv(BASE_DIR / ".env")
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -124,3 +135,85 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.User"
+
+# CORS 配置 - 允许前端访问后端API
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # 在开发环境下允许所有来源
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React 默认端口
+    "http://localhost:5173",  # Vite 默认端口
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+]
+
+# 允许的请求头
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+# 允许的HTTP方法
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+# 允许携带Cookie
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF 配置 - 用于前后端分离
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+]
+
+# CSRF Cookie 配置
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_HTTPONLY = False  # 允许JavaScript访问CSRF token
+CSRF_COOKIE_SECURE = False  # 在开发环境中设为False，生产环境应设为True
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_AGE = 31449600  # 1年
+
+# Session Cookie 配置
+SESSION_COOKIE_AGE = 1209600  # 2周
+SESSION_COOKIE_SECURE = False  # 在开发环境中设为False，生产环境应设为True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+
+# CSRF失败处理器
+CSRF_FAILURE_VIEW = 'SJTUcontest.csrf_views.csrf_failure_view'
+
+# Django REST Framework 配置
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
+
+# JWT 配置
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+}
