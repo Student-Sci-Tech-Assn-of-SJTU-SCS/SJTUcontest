@@ -3,6 +3,7 @@ import MainLayout from "./components/layout/MainLayout";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import Teams from "./pages/Teams";
+import User from "./pages/User";
 import Error from "./pages/Error";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/matches" element={<Matches />} />
           <Route path="/teams" element={<Teams />} />
+          <Route path="/user" element={<User />} />
           <Route path="*" element={<Error />} />
         </Routes>
       </MainLayout>
