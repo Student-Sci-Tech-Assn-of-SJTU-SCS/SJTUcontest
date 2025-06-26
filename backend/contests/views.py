@@ -6,7 +6,7 @@ import json
 
 from .models import Contest
 from .serializers import ContestListRequestSerializer, ContestListRespItemSerializer, ContestResponseSerializer
-from ..utils import ApiResponse
+from utils import ApiResponse
 
 @require_http_methods(["POST"])
 def get_matches(request):
