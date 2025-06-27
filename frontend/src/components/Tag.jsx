@@ -1,7 +1,7 @@
 import Chip from '@mui/material/Chip';
 
 // 标签的类别
-const categories = {
+export const categories = {
   LEVEL: Symbol('level'),
   QUAL: Symbol('quality'),
   KWORD: Symbol('keyword'),
@@ -29,7 +29,7 @@ export const categoryTags = {
 }
 
 // tag到category的映射
-const tagCategories = (tag) => {
+export const tagCategories = (tag) => {
   for (const [category, tags] of Object.entries(categoryTags)) {
     if (tags.includes(tag)) {
       return category;
@@ -78,7 +78,7 @@ export default function Tag({ tag }) {
         transition: 'background 0.2s, color 0.2s, box-shadow 0.2s',
         cursor: 'pointer',
         '&:hover': {
-          backgroundColor: style.backgroundColor,
+          backgroundColor: '#e0e0e0',
           color: '#fff',
           boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
           opacity: 0.9,
