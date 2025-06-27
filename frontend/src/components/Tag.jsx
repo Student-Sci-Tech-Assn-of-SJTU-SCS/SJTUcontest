@@ -2,92 +2,68 @@ import Chip from '@mui/material/Chip';
 
 // 标签的类别
 const categories = {
-  level: Symbol('level'),
-  quality: Symbol('quality'),
-  keyword: Symbol('keyword'),
-  year: Symbol('year'),
-  undefined: Symbol('undefined')
+  LEVEL: Symbol('level'),
+  QUAL: Symbol('quality'),
+  KWORD: Symbol('keyword'),
+  YEAR: Symbol('year'),
+  UNDEF: Symbol('undefined')
+}
+
+function genYearTag() {
+  const currentYear = new Date().getFullYear();
+  const minYear = 2021;
+
+  const years = [];
+  for (let year = minYear; year <= currentYear; year++) {
+    years.push(year.toString());
+  }
+  return years;
 }
 
 // 每个类别的标签
-const categoryTags = {
-  level: ['院级/校级', '省市级', '国家级', '国际级'],
-  quality: ['专项', 'A类', 'B类', 'C类', 'D类'],
-  keyword: ['AI', 'CS', 'IS', 'EE', 'MATH', '创新', '其他']
-}
-
-// 判断年份标签是否合法
-function isValidYear(str) {
-  const currentYear = new Date().getFullYear();
-  const minYear = 2023;
-  const maxYear = currentYear + 5;
-
-  if (!/^\d{4}$/.test(str)) {
-    return false;
-  }
-
-  const year = Number(str);
-  return year >= minYear && year <= maxYear;
+export const categoryTags = {
+  [categories.LEVEL]: ['院级/校级', '省市级', '国家级', '国际级'],
+  [categories.QUAL]: ['专项', 'A类', 'B类', 'C类', 'D类'],
+  [categories.KWORD]: ['AI', 'CS', 'IS', 'EE', 'MATH', '创新', '其他'],
+  [categories.YEAR]: genYearTag(),
 }
 
 // tag到category的映射
 const tagCategories = (tag) => {
-  if (tag in categoryTags.level) {
-    return categories.level;
+  for (const [category, tags] of Object.entries(categoryTags)) {
+    if (tags.includes(tag)) {
+      return category;
+    }
   }
-  if (tag in categoryTags.quality) {
-    return categories.quality;
-  }
-  if (tag in categoryTags.keyword) {
-    return categories.keyword;
-  }
-  if (isValidYear(tag)) {
-    return categories.year;
-  }
-  return categories.undefined;
+  return categories.UNDEF;
 };
 
 const styles = {
-  level: {
+  [categories.LEVEL]: {
     backgroundColor: '#e0f7fa',
     color: '#006064',
   },
-  quality: {
+  [categories.QUAL]: {
     backgroundColor: '#fff3e0',
     color: '#bf360c',
   },
-  keyword: {
+  [categories.KWORD]: {
     backgroundColor: '#e8f5e9',
     color: '#1b5e20',
   },
-  year: {
+  [categories.YEAR]: {
     backgroundColor: '#fce4ec',
     color: '#880e4f',
   },
-  undefined: {
+  [categories.UNDEF]: {
     backgroundColor: '#f5f5f5',
     color: '#616161',
   }
 }
 
-const categoryStyles = (category) => {
-  switch (category) {
-    case categories.level:
-      return styles.level;
-    case categories.quality:
-      return styles.quality;
-    case categories.keyword:
-      return styles.keyword;
-    case categories.year:
-      return styles.year;
-    default:
-      return styles.undefined;
-  }
-};
-
 export default function Tag({ tag }) {
   const category = tagCategories(tag);
-  const style = categoryStyles(category);
+  const style = styles[category];
 
   return (
     <Chip
