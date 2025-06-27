@@ -13,6 +13,20 @@ const Matches = () => {
   // formData.append("page", 1);
   // formData.append("num", 15);
   // const res = api.post("/matches", formData);
+
+  // 随机生成uuid的函数
+  const randomUUID = () =>
+    "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      const v = c === "x" ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+
+  // 随机获取一个logo图片URL
+  const getRandomLogo = (name) => {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=200&background=random&color=ffffff&bold=true`;
+  };
+
   const res = {
     "success": true,
     "message": "string",
@@ -21,107 +35,107 @@ const Matches = () => {
       "num": 2,
       "matches": [
         {
-          "id": 1,
+          "uuid": randomUUID(),
           "name": "2026年SJTU野外生存挑战赛",
-          "logo": "",
+          "logo": getRandomLogo("Survival Challenge"),
           "keywords": [
             "AI", "others"
           ]
         }, {
-          "id": 2,
+          "uuid": randomUUID(),
           "name": "2026年SJTU编程马拉松",
-          "logo": "",
+          "logo": getRandomLogo("Programming Marathon"),
           "keywords": [
             "CS", "math"
           ]
         }, {
-          "id": 3,
+          "uuid": randomUUID(),
           "name": "2026年SJTU机器人竞赛",
-          "logo": "",
+          "logo": getRandomLogo("Robotics Competition"),
           "keywords": [
             "EE"
           ]
         }, {
-          "id": 4,
+          "uuid": randomUUID(),
           "name": "2026年SJTU电子竞技大赛",
-          "logo": "",
+          "logo": getRandomLogo("E-sports Competition"),
           "keywords": [
             "others"
           ]
         }, {
-          "id": 5,
+          "uuid": randomUUID(),
           "name": "2026年SJTU人工智能挑战赛",
-          "logo": "",
+          "logo": getRandomLogo("AI Challenge"),
           "keywords": [
             "AI", "CS"
           ]
         }, {
-          "id": 6,
+          "uuid": randomUUID(),
           "name": "2026年SJTU数学建模竞赛",
-          "logo": "",
+          "logo": getRandomLogo("Math Modeling Competition"),
           "keywords": [
             "math"
           ]
         }, {
-          "id": 7,
+          "uuid": randomUUID(),
           "name": "2026年SJTU物理实验竞赛",
-          "logo": "",
+          "logo": getRandomLogo("Physics Experiment Competition"),
           "keywords": [
             "others"
           ]
         }, {
-          "id": 8,
+          "uuid": randomUUID(),
           "name": "2026年SJTU化学实验竞赛",
-          "logo": "",
+          "logo": getRandomLogo("Chemistry Experiment Competition"),
           "keywords": [
             "others"
           ]
         }, {
-          "id": 9,
+          "uuid": randomUUID(),
           "name": "2026年SJTU生物实验竞赛",
-          "logo": "",
+          "logo": getRandomLogo("Biology Experiment Competition"),
           "keywords": [
             "others"
           ]
         }, {
-          "id": 10,
+          "uuid": randomUUID(),
           "name": "第十八届全国大学生信息安全竞赛—作品赛",
-          "logo": "",
+          "logo": getRandomLogo("18th National College InfoSec Competition - Project"),
           "keywords": [
             "IS", "CS"
           ]
         }, {
-          "id": 11,
+          "uuid": randomUUID(),
           "name": "第十八届全国大学生信息安全竞赛（创新实践能力赛）暨第二届“长城杯”铁人三项赛（防护赛）初赛",
-          "logo": "",
+          "logo": getRandomLogo("18th National College InfoSec Competition - Innovation & 2nd Great Wall Cup"),
           "keywords": [
             "IS", "CS"
           ]
         }, {
-          "id": 12,
+          "uuid": randomUUID(),
           "name": "2026年SJTU操作系统原理知识竞赛",
-          "logo": "",
+          "logo": getRandomLogo("OS Principles Competition"),
           "keywords": [
             "CS"
           ]
         }, {
-          "id": 13,
+          "uuid": randomUUID(),
           "name": "2026年SJTU计算机网络知识竞赛",
-          "logo": "",
+          "logo": getRandomLogo("Computer Networks Competition"),
           "keywords": [
             "CS"
           ]
         }, {
-          "id": 14,
+          "uuid": randomUUID(),
           "name": "2026年SJTU数据库系统知识竞赛",
-          "logo": "",
+          "logo": getRandomLogo("Database Systems Competition"),
           "keywords": [
             "CS"
           ]
         }, {
-          "id": 15,
+          "uuid": randomUUID(),
           "name": "2026年SJTU软件工程知识竞赛",
-          "logo": "",
+          "logo": getRandomLogo("Software Engineering Competition"),
           "keywords": [
             "CS"
           ]
