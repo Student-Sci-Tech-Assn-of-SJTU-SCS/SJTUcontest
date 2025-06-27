@@ -65,11 +65,16 @@ def get_matches(request):
         page_size = validated_data['page_size']
         
         paginator = Paginator(queryset, page_size)
-        total = paginator.count
         
-        # 页码现在从1开始，直接使用
+        # 检查页码是否超出范围
         if page_index > paginator.num_pages:
-            contests = Contest.objects.none()
+            return ApiResponse.not_found(
+                message="Too large page index",
+                data={
+                    "total_pages": paginator.num_pages,
+                    "page_index": page_index,
+                }
+            )
         else:
             page_obj = paginator.page(page_index)
             contests = page_obj.object_list
@@ -81,7 +86,7 @@ def get_matches(request):
         response_data = {
             "total_pages": paginator.num_pages,
             "page_index": page_index,
-            "match_num": total,
+            "match_num": len(matches_serializer.data),
             "matches": matches_serializer.data
         }
         
