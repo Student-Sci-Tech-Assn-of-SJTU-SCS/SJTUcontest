@@ -2,12 +2,13 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .choices import ContestLevel, ContestQuality, ContestKeywords
+import uuid
 
 
 # Create your models here.
 class Contest(models.Model):
-    # 自增主键 唯一
-    id = models.AutoField(primary_key=True)
+    # UUID主键
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # 比赛名称 唯一 多赛道以括号等方式标识
     name = models.CharField(max_length=100, unique=True)
     # 比赛描述
