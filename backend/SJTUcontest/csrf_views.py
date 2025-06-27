@@ -15,31 +15,33 @@ def get_csrf_token(request):
     前端可以通过GET请求获取CSRF令牌
     """
     token = get_token(request)
-    return JsonResponse({
-        'csrfToken': token,
-        'message': 'CSRF token generated successfully'
-    })
+    return JsonResponse(
+        {"csrfToken": token, "message": "CSRF token generated successfully"}
+    )
 
 
-@method_decorator(ensure_csrf_cookie, name='dispatch')
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class CSRFTokenView(View):
     """
     基于类的CSRF令牌视图
     """
+
     def get(self, request):
         token = get_token(request)
-        return JsonResponse({
-            'csrfToken': token,
-            'message': 'CSRF token generated successfully'
-        })
+        return JsonResponse(
+            {"csrfToken": token, "message": "CSRF token generated successfully"}
+        )
 
 
 def csrf_failure_view(request, reason=""):
     """
     CSRF验证失败时的自定义响应
     """
-    return JsonResponse({
-        'error': 'CSRF verification failed',
-        'reason': reason,
-        'message': 'Please refresh the page and try again'
-    }, status=403)
+    return JsonResponse(
+        {
+            "error": "CSRF verification failed",
+            "reason": reason,
+            "message": "Please refresh the page and try again",
+        },
+        status=403,
+    )
