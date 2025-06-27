@@ -1,5 +1,4 @@
-import React from "react";
-import { Typography, Box, Grid } from "@mui/material";
+import { Typography, Box, Grid, Divider } from "@mui/material";
 import MatchCard from "../../components/MatchCard";
 
 import axios from "axios";
@@ -86,17 +85,17 @@ const Matches = () => {
           ]
         }, {
           "id": 10,
-          "name": "2026年SJTU地理信息系统竞赛",
+          "name": "第十八届全国大学生信息安全竞赛—作品赛",
           "logo": "",
           "keywords": [
-            "others"
+            "IS", "CS"
           ]
         }, {
           "id": 11,
-          "name": "2026年SJTU环境科学竞赛",
+          "name": "第十八届全国大学生信息安全竞赛（创新实践能力赛）暨第二届“长城杯”铁人三项赛（防护赛）初赛",
           "logo": "",
           "keywords": [
-            "others"
+            "IS", "CS"
           ]
         }, {
           "id": 12,
@@ -145,18 +144,45 @@ const Matches = () => {
   const matches = res.data.matches;
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ py: 5, px: { xs: 1, sm: 2, md: 4 }, minHeight: '100vh', background: '#f7f9fb' }}>
+      <Typography
+        variant="h4"
+        fontWeight={700}
+        gutterBottom
+        sx={{ letterSpacing: 1, color: "#222", textAlign: "center" }}
+      >
         比赛列表
       </Typography>
-      <Grid container spacing={3} sx={{
-        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))"
-      }}>
-        {matches.map((match) => (
-          <Grid item xs={12} md={6} key={match.id}>
-            <MatchCard match={match} />
+      <Divider sx={{ mb: 4, mx: "auto", width: 120, borderColor: "#1976d2" }} />
+      <Grid
+        container
+        spacing={{ xs: 2, sm: 3, md: 4 }}
+        justifyContent="center"
+        alignItems="stretch"
+      >
+        {matches.length === 0 ? (
+          <Grid item xs={12}>
+            <Typography color="text.secondary" align="center" sx={{ mt: 8 }}>
+              暂无比赛信息
+            </Typography>
           </Grid>
-        ))}
+        ) : (
+          matches.map((match) => (
+            <Grid
+              item
+              key={match.id}
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+              xl={2}
+              display="flex"
+              justifyContent="center"
+            >
+              <MatchCard match={match} />
+            </Grid>
+          ))
+        )}
       </Grid>
     </Box>
   );
