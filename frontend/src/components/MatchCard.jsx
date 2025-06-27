@@ -5,7 +5,7 @@ import Tag from './Tag';
 export default function MatchCard({ match }) {
   return (
     <MuiLink
-      href={`/match/${match.id}`}
+      href={`/match/${match.uuid}`}
       underline="none"
       sx={{ display: 'block', color: 'inherit', width: 220, height: 320, m: 1 }}
     >
