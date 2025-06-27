@@ -17,6 +17,8 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / ".env")
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -36,11 +38,13 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
+    "django.contrib.sessions",  # 保留用于Django Admin
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "rest_framework_simplejwt",  # 添加JWT支持
+    "rest_framework_simplejwt.token_blacklist",  # JWT黑名单支持
     "users",
     "contests",
 ]
@@ -48,9 +52,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",  # 保留用于Django Admin
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",  # 已注释，API使用JWT代替CSRF
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -80,7 +84,6 @@ WSGI_APPLICATION = "SJTUcontest.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-load_dotenv(BASE_DIR / ".env")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -145,16 +148,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
-# 允许的请求头
+# 允许的请求头 - 已移除CSRF相关头部，专注于JWT
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
-    "authorization",
+    "authorization",  # JWT Token
     "content-type",
     "dnt",
     "origin",
     "user-agent",
-    "x-csrftoken",
     "x-requested-with",
 ]
 
@@ -168,38 +170,12 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 
-# 允许携带Cookie
-CORS_ALLOW_CREDENTIALS = True
+# 使用JWT不需要携带Cookie
+CORS_ALLOW_CREDENTIALS = False
 
-# CSRF 配置 - 用于前后端分离
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:5173",
-]
-
-# CSRF Cookie 配置
-CSRF_COOKIE_NAME = "csrftoken"
-CSRF_COOKIE_HTTPONLY = False  # 允许JavaScript访问CSRF token
-CSRF_COOKIE_SECURE = False  # 在开发环境中设为False，生产环境应设为True
-CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_USE_SESSIONS = False
-CSRF_COOKIE_AGE = 31449600  # 1年
-
-# Session Cookie 配置
-SESSION_COOKIE_AGE = 1209600  # 2周
-SESSION_COOKIE_SECURE = False  # 在开发环境中设为False，生产环境应设为True
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Lax"
-
-# CSRF失败处理器
-CSRF_FAILURE_VIEW = "SJTUcontest.csrf_views.csrf_failure_view"
-
-# Django REST Framework 配置
+# Django REST Framework 配置 - 仅使用JWT认证
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
@@ -214,7 +190,34 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),  # 访问令牌1小时有效
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 刷新令牌7天有效
+    "ROTATE_REFRESH_TOKENS": True,  # 刷新时轮换刷新令牌
+    "BLACKLIST_AFTER_ROTATION": True,  # 轮换后加入黑名单
+    "UPDATE_LAST_LOGIN": True,  # 更新最后登录时间
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+    "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+    "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
+    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
+    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
+    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }

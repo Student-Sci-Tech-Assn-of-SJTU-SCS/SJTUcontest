@@ -1,6 +1,7 @@
-from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from django.db.models import Q
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 import json
 
 from .models import Contest
@@ -12,7 +13,8 @@ from .serializers import (
 from utils import ApiResponse
 
 
-@require_http_methods(["POST"])
+@api_view(["POST"])
+@permission_classes([AllowAny])  # 根据需要可以改为IsAuthenticated
 def get_matches(request):
     """
     View to get all matches with filtering and pagination.
@@ -31,20 +33,17 @@ def get_matches(request):
 
         validated_data = serializer.validated_data
 
-        # 获取查询参数
-        query = request.GET.get("query", "").strip()
-
         # 构建查询集
         queryset = Contest.objects.all()
 
-        # 搜索过滤（基于查询参数）
-        if query:
-            queryset = queryset.filter(
-                Q(name__icontains=query) | Q(place__icontains=query)
-            )
-
         # 筛选条件过滤
         options = validated_data.get("options", {})
+
+        if "query" in options and options["query"]:
+            queryset = queryset.filter(
+                Q(name__icontains=options["query"])
+                | Q(place__icontains=options["query"])
+            )
 
         if "level" in options and options["level"]:
             queryset = queryset.filter(level__in=options["level"])
@@ -105,7 +104,8 @@ def get_matches(request):
         )
 
 
-@require_http_methods(["GET"])
+@api_view(["GET"])
+@permission_classes([AllowAny])  # 根据需要可以改为IsAuthenticated
 def get_match_by_id(request, match_id):
     try:
         contest = Contest.objects.get(id=match_id)

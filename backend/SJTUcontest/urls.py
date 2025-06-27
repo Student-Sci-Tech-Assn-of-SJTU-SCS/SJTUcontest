@@ -17,15 +17,10 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from .csrf_views import get_csrf_token, csrf_failure_view
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/auth/", include("users.urls")),
-    path("api/csrf/", get_csrf_token, name="csrf_token"),
+    path("api/users/", include("users.urls")),
     path("api/matches/", include("contests.urls")),
 ]
-
-# 设置CSRF失败处理器
-handler403 = csrf_failure_view
