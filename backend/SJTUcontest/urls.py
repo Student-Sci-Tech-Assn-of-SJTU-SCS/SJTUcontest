@@ -24,7 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include("users.urls")),
     path("api/csrf/", get_csrf_token, name="csrf_token"),
-    path("matches/", include("contests.urls")),
+    path("api/matches/", include("contests.urls")),
 ]
 
 # 设置CSRF失败处理器
