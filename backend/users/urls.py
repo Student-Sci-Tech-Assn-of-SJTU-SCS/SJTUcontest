@@ -1,21 +1,26 @@
 # users/urls.py
 from django.urls import path
-from .views import (
-    UserRegisterView,
-    UserLoginView,
-    logout_view,
-    user_profile_view,
-    CustomTokenRefreshView,
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenBlacklistView,
 )
-from rest_framework_simplejwt.views import TokenVerifyView
+
+from .views import (
+    get_user_profile_by_id,
+    JAccountLoginView,
+    JAccountCallbackView,
+    JAccountLogoutView,
+)
 
 urlpatterns = [
-    # 用户认证相关
-    path("register/", UserRegisterView.as_view(), name="user_register"),
-    path("login/", UserLoginView.as_view(), name="user_login"),
-    path("logout/", logout_view, name="user_logout"),
-    path("profile/", user_profile_view, name="user_profile"),
-    # JWT Token 管理
-    path("token/refresh/", CustomTokenRefreshView.as_view(), name="token_refresh"),
-    path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path("login/", TokenObtainPairView.as_view(), name="login"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("logout/", TokenBlacklistView.as_view(), name="logout"),
+    path("<uuid:user_id>/", get_user_profile_by_id, name="get_user_profile_by_id"),
+    path("jaccount/login/", JAccountLoginView.as_view(), name="jaccount_login"),
+    path(
+        "jaccount/callback/", JAccountCallbackView.as_view(), name="jaccount_callback"
+    ),
+    path("jaccount/logout/", JAccountLogoutView.as_view(), name="jaccount_logout"),
 ]

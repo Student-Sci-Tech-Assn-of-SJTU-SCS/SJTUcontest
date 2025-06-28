@@ -24,7 +24,10 @@ load_dotenv(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ibweg87++k^+(9^#@4m*nqypeux(ra1+qo1d3x#0n8m#k!#m@6"
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-ibweg87++k^+(9^#@4m*nqypeux(ra1+qo1d3x#0n8m#k!#m@6",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -214,10 +217,18 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
-    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.CustomTokenObtainSerializer",
     "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+# jAccount OAuth2.0 配置
+JACCOUNT_CLIENT_ID = os.getenv("JACCOUNT_CLIENT_ID")
+JACCOUNT_CLIENT_SECRET = os.getenv("JACCOUNT_CLIENT_SECRET")
+JACCOUNT_AUTHORIZATION_URL = "https://jaccount.sjtu.edu.cn/oauth2/authorize"
+JACCOUNT_TOKEN_URL = "https://jaccount.sjtu.edu.cn/oauth2/token"
+JACCOUNT_LOGOUT_URL = "https://jaccount.sjtu.edu.cn/oauth2/logout"
+JACCOUNT_REDIRECT_URI = "http://localhost:8000/api/users/jaccount/callback/"
