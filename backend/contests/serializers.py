@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import Contest
 from .choices import ContestLevel, ContestQuality, ContestKeywords
 
@@ -6,6 +7,12 @@ from .choices import ContestLevel, ContestQuality, ContestKeywords
 class ContestOptionsSerializer(serializers.Serializer):
     """比赛筛选选项的嵌套序列化器"""
 
+    query = serializers.CharField(
+        max_length=100,
+        required=False,
+        allow_blank=True,
+        help_text="搜索关键词，支持比赛名称或地点",
+    )
     level = serializers.ListField(
         child=serializers.ChoiceField(choices=ContestLevel.choices),
         required=False,
