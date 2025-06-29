@@ -31,9 +31,31 @@ def get_user_profile_by_id(request, user_id):
     except User.DoesNotExist:
         return ApiResponse.not_found(message="User not found")
 
-    serializer = UserProfileResponseSerializer(user)
+    serializer = UserProfileSerializer(user)
 
     return ApiResponse.success(data=serializer.data, message="User found")
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def update_user_profile(request, user_id):
+    user = request.user
+    if user.id != user_id:
+        return ApiResponse.forbidden(message="您没有权限更新其他用户信息")
+
+    serializer = UserProfileSerializer(user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return ApiResponse.success(
+            data=serializer.data,
+            message="用户信息更新成功",
+            status_code=200,  # 使用200状态码
+        )
+
+    return ApiResponse.error(
+        message="更新失败", data=serializer.errors, status_code=400  # 验证失败使用400
+    )
 
 
 class JAccountLoginView(APIView):
