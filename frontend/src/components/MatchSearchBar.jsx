@@ -1,5 +1,4 @@
 import { TextField, Stack, Chip, Box } from "@mui/material";
-import { useState } from "react";
 import { categoryTags } from "./Tag";
 
 const ALL_TAGS = [

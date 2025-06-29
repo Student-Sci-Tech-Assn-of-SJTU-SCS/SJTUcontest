@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/matches" element={<Matches />} />
-          <Route path="/match/:match_uuid" element={<MatchDetail />} />
+          <Route path="/matches/:match_uuid" element={<MatchDetail />} />
           <Route path="/teams" element={<Teams />} />
           <Route path="/user" element={<User />} />
           <Route path="*" element={<Error />} />
