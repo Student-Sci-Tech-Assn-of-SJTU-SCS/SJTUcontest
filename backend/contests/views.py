@@ -21,11 +21,7 @@ def get_matches(request):
     Only accepts POST requests.
     """
     try:
-        # 解析请求体
-        request_data = json.loads(request.body)
-
-        # 验证请求数据
-        serializer = ContestListRequestSerializer(data=request_data)
+        serializer = ContestListRequestSerializer(data=request.data)
         if not serializer.is_valid():
             return ApiResponse.error(
                 message="Invalid request data", data={"errors": serializer.errors}

@@ -23,6 +23,3 @@ build/
 
 # jetbrains
 .idea/
-
-# env
-.env

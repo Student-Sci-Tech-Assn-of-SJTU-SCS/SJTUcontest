@@ -38,13 +38,9 @@ def get_user_profile_by_id(request, user_id):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def update_user_profile(request, user_id):
-    user = request.user
-    if user.id != user_id:
-        return ApiResponse.forbidden(message="您没有权限更新其他用户信息")
-
-    serializer = UserProfileSerializer(user, data=request.data, partial=True)
-
+def update_user_profile(request):
+    serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
+    
     if serializer.is_valid():
         serializer.save()
         return ApiResponse.success(
