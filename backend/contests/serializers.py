@@ -13,6 +13,11 @@ class ContestOptionsSerializer(serializers.Serializer):
         allow_blank=True,
         help_text="搜索关键词，支持比赛名称或地点",
     )
+    years = serializers.ListField(
+        child=serializers.IntegerField(min_value=2000, max_value=2200),
+        required=False,
+        allow_empty=True,
+    )
     level = serializers.ListField(
         child=serializers.ChoiceField(choices=ContestLevel.choices),
         required=False,

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
+from datetime import datetime
 import uuid
 
 from .choices import ContestLevel, ContestQuality, ContestKeywords
@@ -12,6 +13,15 @@ class Contest(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # 比赛名称 唯一 多赛道以括号等方式标识
     name = models.CharField(max_length=100, unique=True)
+    # 举办年份
+    year = models.IntegerField(
+        validators=[
+            MinValueValidator(2000),
+            MaxValueValidator(2200),
+        ],
+        default=datetime.now().year,  # 默认为当前年份
+        help_text="比赛举办年份",
+    )
     # 比赛描述
     description = models.TextField(blank=True, null=True)
     # logo base64编码
@@ -40,6 +50,10 @@ class Contest(models.Model):
         blank=True,
         help_text="学习资料列表，格式：[{'name': '资料名称', 'url': '链接'}]",
     )
+    # 报名开始时间
+    registration_start = models.DateTimeField(default=datetime.now)
+    # 报名结束时间
+    registration_end = models.DateTimeField(default=datetime.now)
 
     # 队伍表中有外键关联到比赛表，可以反向查询
 

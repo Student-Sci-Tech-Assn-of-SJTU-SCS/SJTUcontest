@@ -14,7 +14,7 @@ from utils import ApiResponse
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])  # 根据需要可以改为IsAuthenticated
+@permission_classes([AllowAny])
 def get_matches(request):
     """
     View to get all matches with filtering and pagination.
@@ -44,6 +44,9 @@ def get_matches(request):
                 Q(name__icontains=options["query"])
                 | Q(place__icontains=options["query"])
             )
+
+        if "years" in options and options["years"]:
+            queryset = queryset.filter(year__in=options["years"])
 
         if "level" in options and options["level"]:
             queryset = queryset.filter(level__in=options["level"])
@@ -105,7 +108,7 @@ def get_matches(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])  # 根据需要可以改为IsAuthenticated
+@permission_classes([AllowAny])
 def get_match_by_id(request, match_id):
     try:
         contest = Contest.objects.get(id=match_id)
