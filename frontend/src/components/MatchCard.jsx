@@ -5,9 +5,14 @@ import Tag from './Tag';
 export default function MatchCard({ match }) {
   return (
     <MuiLink
-      href={`/match/${match.id}`}
+      href={`/matches/${match.uuid}`}
       underline="none"
-      sx={{ display: 'block', color: 'inherit', width: 220, height: 320, m: 1 }}
+      sx={{
+        display: 'block',
+        color: 'inherit',
+        width: 220,
+        height: 250,
+        m: 1 }}
     >
       <Card
         sx={{
