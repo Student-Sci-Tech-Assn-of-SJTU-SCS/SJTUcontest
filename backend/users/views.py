@@ -8,7 +8,7 @@ from django.conf import settings
 import urllib.parse
 import secrets
 
-from .serializers import UserProfileResponseSerializer
+from .serializers import UserProfileSerializer
 from .jwt import (
     generate_new_jwt_tokens,
 )
