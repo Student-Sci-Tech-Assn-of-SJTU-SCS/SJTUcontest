@@ -51,65 +51,6 @@ class ContestListRequestSerializer(serializers.Serializer):
     options = ContestOptionsSerializer(required=False)
 
 
-class ContestCreateRequestSerializer(serializers.ModelSerializer):
-    """创建比赛的请求体数据模型"""
-
-    class Meta:
-        model = Contest
-        fields = [
-            "name",
-            "year",
-            "description",
-            "logo",
-            "place",
-            "level",
-            "quality",
-            "months",
-            "keywords",
-            "website",
-            "materials",
-            "registration_start",
-            "registration_end",
-        ]
-        extra_kwargs = {
-            "name": {"required": True},
-            "year": {"required": True},
-            "place": {"required": True},
-            "level": {"required": True},
-            "quality": {"required": True},
-        }
-
-    level = serializers.ChoiceField(choices=ContestLevel.choices)
-    quality = serializers.ChoiceField(choices=ContestQuality.choices)
-    keywords = serializers.ListField(
-        child=serializers.ChoiceField(choices=ContestKeywords.choices),
-        required=False,
-        allow_empty=True,
-    )
-
-    def validate_months(self, value):
-        """验证月份数据"""
-        if value:
-            for month in value:
-                if not (1 <= month <= 12):
-                    raise serializers.ValidationError("月份必须在1-12之间")
-        return value
-
-    def validate_materials(self, value):
-        """验证学习资料格式"""
-        if value:
-            for material in value:
-                if not isinstance(material, dict):
-                    raise serializers.ValidationError("资料必须是对象格式")
-                if "name" not in material or "url" not in material:
-                    raise serializers.ValidationError("资料必须包含name和url字段")
-                if len(material) != 2:
-                    raise serializers.ValidationError("资料对象只能包含name和url字段")
-                if not isinstance(material["name"], str) or not isinstance(material["url"], str):
-                    raise serializers.ValidationError("资料的name和url必须是字符串")
-        return value
-
-
 class ContestUpdateRequestSerializer(serializers.ModelSerializer):
     """更新比赛的请求体数据模型"""
 
@@ -157,3 +98,9 @@ class ContestResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contest
         fields = "__all__"
+
+
+class ContestCreateRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contest
+        exclude = ["id"]  # 排除id字段，自动生成

@@ -10,7 +10,6 @@ from .serializers import (
     ContestListRespItemSerializer,
     ContestResponseSerializer,
     ContestCreateRequestSerializer,
-    ContestUpdateRequestSerializer,
 )
 from utils import ApiResponse
 
@@ -123,11 +122,30 @@ def get_match_by_id(request, match_id):
 @permission_classes([IsAdminUser])
 def create_match(request):
     """
-    View to create a new contest or update an existing one.
-    Only accepts POST requests.
+    Create a new contest.
+    Does NOT accept 'id' in request data — the UUID is auto-generated.
     Only accessible by admin users.
     """
+    # 判断是否不小心传了 id 字段
+    if "id" in request.data:
+        return ApiResponse.error(
+            message="You cannot provide 'id' when creating a new contest. It is generated automatically.",
+            status_code=400,
+        )
 
-    return ApiResponse.success(
-        message="admin"
+    serializer = ContestCreateRequestSerializer(data=request.data)
+    if serializer.is_valid():
+        contest_data = serializer.validated_data
+        contest = Contest.objects.create(**contest_data)
+
+        return ApiResponse.success(
+            message="Contest created successfully",
+            data={"id": str(contest.id)},  # 返回自动生成的 UUID
+            status_code=201,
+        )
+
+    return ApiResponse.error(
+        message="Invalid data",
+        data=serializer.errors,
+        status_code=400,
     )

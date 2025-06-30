@@ -40,7 +40,7 @@ def get_user_profile_by_id(request, user_id):
 @permission_classes([IsAuthenticated])
 def update_user_profile(request):
     serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
-    
+
     if serializer.is_valid():
         serializer.save()
         return ApiResponse.success(
@@ -74,7 +74,6 @@ def register(request):
     return ApiResponse.error(
         message="注册失败", data=serializer.errors, status_code=400
     )
-
 
 
 class JAccountLoginView(APIView):
