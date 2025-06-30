@@ -1,4 +1,12 @@
-import { Typography, Box, Grid, Divider, TextField, Stack, Chip } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Grid,
+  Divider,
+  TextField,
+  Stack,
+  Chip,
+} from "@mui/material";
 import MatchCard from "../../components/MatchCard";
 import { useState, useEffect } from "react";
 import { categories, categoryTags, tagCategories } from "../../components/Tag";
@@ -12,9 +20,9 @@ const ALL_TAGS = [
 ];
 
 const randomUUID = () =>
-  "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
-    const r = Math.random() * 16 | 0;
-    const v = c === "x" ? r : (r & 0x3 | 0x8);
+  "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 
@@ -25,126 +33,112 @@ const getRandomLogo = (name) => {
 // 构造全部比赛数据
 const ALL_MATCHES = [
   {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU野外生存挑战赛",
-    "logo": getRandomLogo("Survival Challenge"),
-    "keywords": [
-      "AI", "others"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU编程马拉松",
-    "logo": getRandomLogo("Programming Marathon"),
-    "keywords": [
-      "CS", "math"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU机器人竞赛",
-    "logo": getRandomLogo("Robotics Competition"),
-    "keywords": [
-      "EE"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU电子竞技大赛",
-    "logo": getRandomLogo("E-sports Competition"),
-    "keywords": [
-      "others"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU人工智能挑战赛",
-    "logo": getRandomLogo("AI Challenge"),
-    "keywords": [
-      "AI", "CS"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU数学建模竞赛",
-    "logo": getRandomLogo("Math Modeling Competition"),
-    "keywords": [
-      "math"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU物理实验竞赛",
-    "logo": getRandomLogo("Physics Experiment Competition"),
-    "keywords": [
-      "others"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU化学实验竞赛",
-    "logo": getRandomLogo("Chemistry Experiment Competition"),
-    "keywords": [
-      "others"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU生物实验竞赛",
-    "logo": getRandomLogo("Biology Experiment Competition"),
-    "keywords": [
-      "others"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "第十八届全国大学生信息安全竞赛—作品赛",
-    "logo": getRandomLogo("18th National College InfoSec Competition - Project"),
-    "keywords": [
-      "IS", "CS"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "第十八届全国大学生信息安全竞赛（创新实践能力赛）暨第二届“长城杯”铁人三项赛（防护赛）初赛",
-    "logo": getRandomLogo("18th National College InfoSec Competition - Innovation & 2nd Great Wall Cup"),
-    "keywords": [
-      "IS", "CS"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU操作系统原理知识竞赛",
-    "logo": getRandomLogo("OS Principles Competition"),
-    "keywords": [
-      "CS"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU计算机网络知识竞赛",
-    "logo": getRandomLogo("Computer Networks Competition"),
-    "keywords": [
-      "CS"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU数据库系统知识竞赛",
-    "logo": getRandomLogo("Database Systems Competition"),
-    "keywords": [
-      "CS"
-    ]
-  }, {
-    "uuid": randomUUID(),
-    "name": "2026年SJTU软件工程知识竞赛",
-    "logo": getRandomLogo("Software Engineering Competition"),
-    "keywords": [
-      "CS"
-    ]
-  }
+    uuid: randomUUID(),
+    name: "2026年SJTU野外生存挑战赛",
+    logo: getRandomLogo("Survival Challenge"),
+    keywords: ["AI", "others"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU编程马拉松",
+    logo: getRandomLogo("Programming Marathon"),
+    keywords: ["CS", "math"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU机器人竞赛",
+    logo: getRandomLogo("Robotics Competition"),
+    keywords: ["EE"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU电子竞技大赛",
+    logo: getRandomLogo("E-sports Competition"),
+    keywords: ["others"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU人工智能挑战赛",
+    logo: getRandomLogo("AI Challenge"),
+    keywords: ["AI", "CS"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU数学建模竞赛",
+    logo: getRandomLogo("Math Modeling Competition"),
+    keywords: ["math"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU物理实验竞赛",
+    logo: getRandomLogo("Physics Experiment Competition"),
+    keywords: ["others"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU化学实验竞赛",
+    logo: getRandomLogo("Chemistry Experiment Competition"),
+    keywords: ["others"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU生物实验竞赛",
+    logo: getRandomLogo("Biology Experiment Competition"),
+    keywords: ["others"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "第十八届全国大学生信息安全竞赛—作品赛",
+    logo: getRandomLogo("18th National College InfoSec Competition - Project"),
+    keywords: ["IS", "CS"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "第十八届全国大学生信息安全竞赛（创新实践能力赛）暨第二届“长城杯”铁人三项赛（防护赛）初赛",
+    logo: getRandomLogo(
+      "18th National College InfoSec Competition - Innovation & 2nd Great Wall Cup",
+    ),
+    keywords: ["IS", "CS"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU操作系统原理知识竞赛",
+    logo: getRandomLogo("OS Principles Competition"),
+    keywords: ["CS"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU计算机网络知识竞赛",
+    logo: getRandomLogo("Computer Networks Competition"),
+    keywords: ["CS"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU数据库系统知识竞赛",
+    logo: getRandomLogo("Database Systems Competition"),
+    keywords: ["CS"],
+  },
+  {
+    uuid: randomUUID(),
+    name: "2026年SJTU软件工程知识竞赛",
+    logo: getRandomLogo("Software Engineering Competition"),
+    keywords: ["CS"],
+  },
 ];
 
 const Matches = () => {
   // 搜索和筛选状态
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState({
     [categories.LEVEL]: [],
     [categories.QUAL]: [],
     [categories.KWORD]: [],
-    [categories.YEAR]: []
+    [categories.YEAR]: [],
   });
   const [matches, setMatches] = useState(ALL_MATCHES);
   const [page_index, setPageIndex] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // 后端请求
   // useEffect(() => {
@@ -181,12 +175,14 @@ const Matches = () => {
   // 模拟后端请求
   useEffect(() => {
     const timer = setTimeout(() => {
-      let filtered = ALL_MATCHES.filter(match => {
+      let filtered = ALL_MATCHES.filter((match) => {
         const nameMatch = match.name.includes(search);
-        const tagMatch = Object.entries(selectedTags).every(([category, tags]) => {
-          if (!tags.length) return true;
-          return tags.every(tag => (match.keywords || []).includes(tag));
-        });
+        const tagMatch = Object.entries(selectedTags).every(
+          ([category, tags]) => {
+            if (!tags.length) return true;
+            return tags.every((tag) => (match.keywords || []).includes(tag));
+          },
+        );
         return nameMatch && tagMatch;
       });
       setMatches(filtered);
@@ -195,13 +191,22 @@ const Matches = () => {
   }, [search, selectedTags]);
 
   const handleTagClick = (tag) => {
-    setSelectedTags(tags =>
-      tags[tagCategories(tag)].includes(tag) ? tags.filter(t => t !== tag) : [...tags, tag]
+    setSelectedTags((tags) =>
+      tags[tagCategories(tag)].includes(tag)
+        ? tags.filter((t) => t !== tag)
+        : [...tags, tag],
     );
   };
 
   return (
-    <Box sx={{ py: 5, px: { xs: 1, sm: 2, md: 4 }, minHeight: '100vh', background: '#f7f9fb' }}>
+    <Box
+      sx={{
+        py: 5,
+        px: { xs: 1, sm: 2, md: 4 },
+        minHeight: "100vh",
+        background: "#f7f9fb",
+      }}
+    >
       <Typography
         variant="h4"
         fontWeight={700}
@@ -213,17 +218,31 @@ const Matches = () => {
       <Divider sx={{ mb: 4, mx: "auto", width: 120, borderColor: "#1976d2" }} />
 
       {/* 搜索和筛选区，待改进 */}
-      <Box sx={{ mb: 3, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, alignItems: 'center', justifyContent: 'center' }}>
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 2,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <TextField
           label="查找比赛名称"
           variant="outlined"
           size="small"
           value={search}
-          onChange={e => setSearch(e.target.value)}
-          sx={{ minWidth: 220, background: '#fff' }}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{ minWidth: 220, background: "#fff" }}
         />
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ maxWidth: 700 }}>
-          {ALL_TAGS.map(tag => {
+        <Stack
+          direction="row"
+          spacing={1}
+          flexWrap="wrap"
+          sx={{ maxWidth: 700 }}
+        >
+          {ALL_TAGS.map((tag) => {
             const category = tagCategories(tag);
             const selected = selectedTags[category]?.includes(tag);
             return (
@@ -239,15 +258,19 @@ const Matches = () => {
                   fontWeight: selected ? 700 : 400,
                   letterSpacing: 0.5,
                   borderRadius: 2,
-                  boxShadow: selected ? '0 2px 8px rgba(25, 118, 210, 0.15)' : 'none',
-                  backgroundColor: selected ? 'primary.main' : 'background.paper',
-                  color: selected ? '#fff' : 'text.primary',
-                  borderColor: selected ? 'primary.main' : 'grey.300',
-                  transition: 'all 0.2s',
-                  '&:hover': {
-                    backgroundColor: selected ? 'primary.dark' : 'grey.100',
-                    color: selected ? '#fff' : 'primary.main',
-                    borderColor: 'primary.main',
+                  boxShadow: selected
+                    ? "0 2px 8px rgba(25, 118, 210, 0.15)"
+                    : "none",
+                  backgroundColor: selected
+                    ? "primary.main"
+                    : "background.paper",
+                  color: selected ? "#fff" : "text.primary",
+                  borderColor: selected ? "primary.main" : "grey.300",
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    backgroundColor: selected ? "primary.dark" : "grey.100",
+                    color: selected ? "#fff" : "primary.main",
+                    borderColor: "primary.main",
                   },
                 }}
               />

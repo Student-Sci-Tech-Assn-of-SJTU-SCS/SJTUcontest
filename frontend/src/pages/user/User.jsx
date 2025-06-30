@@ -1,17 +1,26 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Box, Card, CardContent, Typography, TextField, Grid } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Grid,
+} from "@mui/material";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000"
+  baseURL: "http://127.0.0.1:8000",
 });
 
 export default function User() {
   const [nickname, setNickname] = useState("张三");
-  const [experience, setExperience] = useState("2023年校赛一等奖，2024年省赛二等奖");
+  const [experience, setExperience] = useState(
+    "2023年校赛一等奖，2024年省赛二等奖",
+  );
   const [specialty, setSpecialty] = useState("算法设计、前端开发");
 
-//   const teams = api.get("/user/teams");
+  //   const teams = api.get("/user/teams");
   const teams = [
     {
       id: 1,
@@ -27,8 +36,13 @@ export default function User() {
 
   return (
     <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, p: 2 }}>
-      <Typography variant="h4" gutterBottom>个人主页</Typography>
-      <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <Typography variant="h4" gutterBottom>
+        个人主页
+      </Typography>
+      <Box
+        component="form"
+        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+      >
         <TextField
           label="昵称"
           value={nickname}
@@ -52,7 +66,9 @@ export default function User() {
           variant="outlined"
         />
       </Box>
-      <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>我参加的队伍</Typography>
+      <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
+        我参加的队伍
+      </Typography>
       <Grid container spacing={2}>
         {teams.map((team) => (
           <Grid item xs={12} sm={6} md={4} key={team.id}>

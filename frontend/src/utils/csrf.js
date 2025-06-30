@@ -7,18 +7,18 @@
  * @returns {string|null} CSRF令牌值
  */
 function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
     }
-    return cookieValue;
+  }
+  return cookieValue;
 }
 
 /**
@@ -26,7 +26,7 @@ function getCookie(name) {
  * @returns {string} CSRF令牌
  */
 function getCSRFToken() {
-    return getCookie('csrftoken');
+  return getCookie("csrftoken");
 }
 
 /**
@@ -34,22 +34,22 @@ function getCSRFToken() {
  * @returns {Promise<string>} CSRF令牌
  */
 async function fetchCSRFToken() {
-    try {
-        const response = await fetch('http://localhost:8000/api/csrf/', {
-            method: 'GET',
-            credentials: 'include', // 重要：包含Cookie
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            return data.csrfToken;
-        } else {
-            throw new Error('Failed to fetch CSRF token');
-        }
-    } catch (error) {
-        console.error('Error fetching CSRF token:', error);
-        throw error;
+  try {
+    const response = await fetch("http://localhost:8000/api/csrf/", {
+      method: "GET",
+      credentials: "include", // 重要：包含Cookie
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.csrfToken;
+    } else {
+      throw new Error("Failed to fetch CSRF token");
     }
+  } catch (error) {
+    console.error("Error fetching CSRF token:", error);
+    throw error;
+  }
 }
 
 /**
@@ -59,106 +59,109 @@ async function fetchCSRFToken() {
  * @returns {Promise<Response>} fetch响应
  */
 async function csrfFetch(url, options = {}) {
-    // 确保有CSRF令牌
-    let csrfToken = getCSRFToken();
-    
-    // 如果没有找到令牌，尝试从API获取
-    if (!csrfToken) {
-        try {
-            csrfToken = await fetchCSRFToken();
-        } catch (error) {
-            console.error('Failed to get CSRF token:', error);
-            throw error;
-        }
+  // 确保有CSRF令牌
+  let csrfToken = getCSRFToken();
+
+  // 如果没有找到令牌，尝试从API获取
+  if (!csrfToken) {
+    try {
+      csrfToken = await fetchCSRFToken();
+    } catch (error) {
+      console.error("Failed to get CSRF token:", error);
+      throw error;
     }
-    
-    // 设置默认选项
-    const defaultOptions = {
-        credentials: 'include', // 包含Cookie
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken, // 在请求头中包含CSRF令牌
-            ...options.headers,
-        },
-        ...options,
-    };
-    
-    return fetch(url, defaultOptions);
+  }
+
+  // 设置默认选项
+  const defaultOptions = {
+    credentials: "include", // 包含Cookie
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrfToken, // 在请求头中包含CSRF令牌
+      ...options.headers,
+    },
+    ...options,
+  };
+
+  return fetch(url, defaultOptions);
 }
 
 /**
  * 示例：用户登录
  */
 async function loginUser(username, password) {
-    try {
-        const response = await csrfFetch('http://localhost:8000/api/auth/login/', {
-            method: 'POST',
-            body: JSON.stringify({
-                username: username,
-                password: password,
-            }),
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Login successful:', data);
-            return data;
-        } else {
-            const errorData = await response.json();
-            console.error('Login failed:', errorData);
-            throw new Error('Login failed');
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        throw error;
+  try {
+    const response = await csrfFetch("http://localhost:8000/api/auth/login/", {
+      method: "POST",
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Login successful:", data);
+      return data;
+    } else {
+      const errorData = await response.json();
+      console.error("Login failed:", errorData);
+      throw new Error("Login failed");
     }
+  } catch (error) {
+    console.error("Login error:", error);
+    throw error;
+  }
 }
 
 /**
  * 示例：用户注册
  */
 async function registerUser(userData) {
-    try {
-        const response = await csrfFetch('http://localhost:8000/api/auth/register/', {
-            method: 'POST',
-            body: JSON.stringify(userData),
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Registration successful:', data);
-            return data;
-        } else {
-            const errorData = await response.json();
-            console.error('Registration failed:', errorData);
-            throw new Error('Registration failed');
-        }
-    } catch (error) {
-        console.error('Registration error:', error);
-        throw error;
+  try {
+    const response = await csrfFetch(
+      "http://localhost:8000/api/auth/register/",
+      {
+        method: "POST",
+        body: JSON.stringify(userData),
+      },
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Registration successful:", data);
+      return data;
+    } else {
+      const errorData = await response.json();
+      console.error("Registration failed:", errorData);
+      throw new Error("Registration failed");
     }
+  } catch (error) {
+    console.error("Registration error:", error);
+    throw error;
+  }
 }
 
 /**
  * 示例：获取用户数据
  */
 async function getUserData() {
-    try {
-        const response = await csrfFetch('http://localhost:8000/api/auth/user/', {
-            method: 'GET',
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('User data:', data);
-            return data;
-        } else {
-            throw new Error('Failed to fetch user data');
-        }
-    } catch (error) {
-        console.error('Error fetching user data:', error);
-        throw error;
+  try {
+    const response = await csrfFetch("http://localhost:8000/api/auth/user/", {
+      method: "GET",
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("User data:", data);
+      return data;
+    } else {
+      throw new Error("Failed to fetch user data");
     }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    throw error;
+  }
 }
 
 // 使用axios的示例配置
@@ -224,11 +227,11 @@ export default api;
 
 // 导出工具函数
 export {
-    getCookie,
-    getCSRFToken,
-    fetchCSRFToken,
-    csrfFetch,
-    loginUser,
-    registerUser,
-    getUserData,
+  getCookie,
+  getCSRFToken,
+  fetchCSRFToken,
+  csrfFetch,
+  loginUser,
+  registerUser,
+  getUserData,
 };
