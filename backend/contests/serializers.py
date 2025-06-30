@@ -58,6 +58,7 @@ class ContestCreateRequestSerializer(serializers.ModelSerializer):
         model = Contest
         fields = [
             "name",
+            "year",
             "description",
             "logo",
             "place",
@@ -67,9 +68,12 @@ class ContestCreateRequestSerializer(serializers.ModelSerializer):
             "keywords",
             "website",
             "materials",
+            "registration_start",
+            "registration_end",
         ]
         extra_kwargs = {
             "name": {"required": True},
+            "year": {"required": True},
             "place": {"required": True},
             "level": {"required": True},
             "quality": {"required": True},
@@ -99,6 +103,10 @@ class ContestCreateRequestSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError("资料必须是对象格式")
                 if "name" not in material or "url" not in material:
                     raise serializers.ValidationError("资料必须包含name和url字段")
+                if len(material) != 2:
+                    raise serializers.ValidationError("资料对象只能包含name和url字段")
+                if not isinstance(material["name"], str) or not isinstance(material["url"], str):
+                    raise serializers.ValidationError("资料的name和url必须是字符串")
         return value
 
 
