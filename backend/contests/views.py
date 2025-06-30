@@ -138,9 +138,10 @@ def create_match(request):
         contest_data = serializer.validated_data
         contest = Contest.objects.create(**contest_data)
 
+        response_serializer = ContestResponseSerializer(contest)
         return ApiResponse.success(
             message="Contest created successfully",
-            data={"id": str(contest.id)},  # 返回自动生成的 UUID
+            data=response_serializer.data,
             status_code=201,
         )
 
