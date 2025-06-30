@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator
 from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 import json
 
 from .models import Contest
@@ -9,6 +9,8 @@ from .serializers import (
     ContestListRequestSerializer,
     ContestListRespItemSerializer,
     ContestResponseSerializer,
+    ContestCreateRequestSerializer,
+    ContestUpdateRequestSerializer,
 )
 from utils import ApiResponse
 
@@ -115,3 +117,17 @@ def get_match_by_id(request, match_id):
     serializer = ContestResponseSerializer(contest)
 
     return ApiResponse.success(data=serializer.data, message="Contest found")
+
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_match(request):
+    """
+    View to create a new contest or update an existing one.
+    Only accepts POST requests.
+    Only accessible by admin users.
+    """
+
+    return ApiResponse.success(
+        message="admin"
+    )

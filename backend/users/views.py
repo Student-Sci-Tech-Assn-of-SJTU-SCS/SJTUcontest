@@ -8,7 +8,7 @@ from django.conf import settings
 import urllib.parse
 import secrets
 
-from .serializers import UserProfileSerializer
+from .serializers import UserProfileSerializer, UserRegisterSerializer
 from .jwt import (
     generate_new_jwt_tokens,
 )
@@ -52,6 +52,29 @@ def update_user_profile(request):
     return ApiResponse.error(
         message="更新失败", data=serializer.errors, status_code=400  # 验证失败使用400
     )
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def register(request):
+    """
+    用户注册接口，仅供测试时使用！
+    """
+    serializer = UserRegisterSerializer(data=request.data)
+
+    if serializer.is_valid():
+        User.objects.create_user(
+            username=serializer.validated_data["username"],
+            email=serializer.validated_data["email"],
+            password=serializer.validated_data["password"],
+        )
+
+        return ApiResponse.success(message="注册成功", status_code=201)
+
+    return ApiResponse.error(
+        message="注册失败", data=serializer.errors, status_code=400
+    )
+
 
 
 class JAccountLoginView(APIView):

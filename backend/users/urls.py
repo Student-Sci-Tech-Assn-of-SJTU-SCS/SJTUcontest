@@ -9,12 +9,14 @@ from rest_framework_simplejwt.views import (
 from .views import (
     get_user_profile_by_id,
     update_user_profile,
+    register,
     JAccountLoginView,
     JAccountCallbackView,
     JAccountLogoutView,
 )
 
 urlpatterns = [
+    path("register/", register, name="register"),  # just for test
     path("login/", TokenObtainPairView.as_view(), name="login"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("logout/", TokenBlacklistView.as_view(), name="logout"),
