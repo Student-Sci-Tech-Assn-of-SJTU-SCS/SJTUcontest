@@ -6,6 +6,7 @@ import MatchDetail from "./pages/match/MatchDetail";
 import Teams from "./pages/team/Teams";
 import User from "./pages/user/User";
 import Error from "./pages/Error";
+import TeamDetail from "./pages/team/TeamDetail.jsx";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/matches" element={<Matches />} />
           <Route path="/matches/:match_uuid" element={<MatchDetail />} />
           <Route path="/teams" element={<Teams />} />
+          <Route path="/teams/:match_id/:team_id" element={<TeamDetail />} />
           <Route path="/user" element={<User />} />
           <Route path="*" element={<Error />} />
         </Routes>

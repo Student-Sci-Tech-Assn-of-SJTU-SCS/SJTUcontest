@@ -7,6 +7,7 @@ import {
   Grid,
   Button,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const Teams = () => {
   // 这里可以添加获取团队列表的逻辑
@@ -41,6 +42,16 @@ const Teams = () => {
                 <Button variant="outlined" color="primary" sx={{ mt: 2 }}>
                   申请加入
                 </Button>
+
+                {/*添加“查看详情”跳转按钮 */}
+                <Link
+                  to={`/teams/1/${team.id}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Button variant="outlined" color="primary" sx={{ mt: 2 }}>
+                    查看详情
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </Grid>
