@@ -4,6 +4,10 @@ import MatchCard from "../../components/MatchCard";
 import { useState, useEffect } from "react";
 import { categories, tagCategories } from "../../components/Tag";
 import { categoryTags } from "../../components/Tag";
+import { useMediaQuery } from "@mui/material";
+
+// theme需要重写，这里先用mui默认的
+import { createTheme } from '@mui/material/styles';
 
 import axios from "axios";
 import api from "../../utils/api";
@@ -128,6 +132,14 @@ const Matches = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const theme = createTheme();
+  const sm = useMediaQuery(theme.breakpoints.down("md"));
+  const md = useMediaQuery(theme.breakpoints.between("md", "lg"));
+  const lg = useMediaQuery(theme.breakpoints.between("lg", "xl"));
+  const xl = useMediaQuery(theme.breakpoints.up("xl"));
+
+  const pageSize = sm ? 3 : md ? 6 : lg ? 9 : 12;
+
   // 后端请求
   // useEffect(() => {
   //   const fetchMatches = async () => {
@@ -138,7 +150,7 @@ const Matches = () => {
   //     try {
   //       const res = await api.post("/matches/", {
   //           page_index: pageIndex,
-  //           page_size: 15,
+  //           page_size: pageSize,
   //           options: {
   //             query: search.trim(),
   //             level: selectedTags[categories.LEVEL],
@@ -187,10 +199,13 @@ const Matches = () => {
     return () => clearTimeout(timer);
   }, [search, selectedTags]);
 
-  const handleSearchChange = (newSearch) => setSearch(newSearch);
+  const handleSearchChange = (newSearch) => {
+    setSearch(newSearch);
+    setPageIndex(1);
+  };
 
   const handleTagClick = (tag) => {
-    console.log(`Calling handleTagClick(${tag}) ...`);
+    // console.log(`Calling handleTagClick(${tag}) ...`);
     const category = tagCategories(tag);
     setSelectedTags((prev) => {
       const cur = prev[category];
@@ -200,8 +215,14 @@ const Matches = () => {
       console.log(`Before: ${cur}; After: ${upd}`);
       return { ...prev, [category]: upd };
     });
-    console.log(`selectedTags=${selectedTags[category] && []}`);
+    // console.log(`selectedTags=${selectedTags[category] && []}`);
+    setPageIndex(1);
   };
+
+  const paginatedMatches = matches.slice(
+    (pageIndex - 1) * pageSize,
+    pageIndex * pageSize
+  );
 
   return (
     <Box
@@ -235,10 +256,10 @@ const Matches = () => {
             </Typography>
           </Grid>
         ) : (
-          matches.map((match) => (
+          paginatedMatches.map((match) => (
             <Grid
               key={match.uuid}
-              size={{ sm: 12, md: 6, lg: 4, xl: 3 }}
+              size={{ xs: 12, sm: 12, md: 6, lg: 4, xl: 3 }}
               display="flex"
               justifyContent="center"
             >
@@ -247,6 +268,18 @@ const Matches = () => {
           ))
         )}
       </Grid>
+
+      {matches.length > pageSize && (
+        <Box display="flex" justifyContent="center" mt={4}>
+          <Pagination
+            count={Math.ceil(matches.length / pageSize)}
+            page={pageIndex}
+            onChange={(_, value) => setPageIndex(value)}
+            color="primary"
+            shape="rounded"
+          />
+        </Box>
+      )}
     </Box>
   );
 };

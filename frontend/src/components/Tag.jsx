@@ -141,7 +141,7 @@ export default function Tag({
         fontWeight: 400,
         borderRadius: 2,
         boxShadow: "none",
-        transition: "all 0.5s ease",
+        transition: "all 0.3s ease",
         cursor: clickable ? "pointer" : "default",
         ...colorStyle,
       }}
