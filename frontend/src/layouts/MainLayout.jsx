@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Box,
@@ -7,11 +7,33 @@ import {
   Typography,
   Button,
   CssBaseline,
+  IconButton,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import LogoutIcon from '@mui/icons-material/Logout';
 
-const MainLayout = ({ children }) => {
+const MainLayout = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem('user');
+      setUser(null);
+    } catch (error) {
+      console.error('登出失败:', error);
+      // 即使请求失败，也清除本地状态
+      localStorage.removeItem('user');
+      setUser(null);
+    }
+  };
   return (
     <Box
       sx={{
@@ -46,25 +68,48 @@ const MainLayout = ({ children }) => {
             组队
           </Button>
           <Box sx={{ flexGrow: 1 }} />
-          <Button
-            variant="outlined"
-            color="inherit"
-            onClick={() => navigate("/login")}
-            sx={{
-              borderColor: "rgba(255, 255, 255, 0.5)",
-              "&:hover": {
-                borderColor: "white",
-              },
-            }}
-          >
-            登录
-          </Button>
+          {user ? (
+            <>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => navigate(`/users/${user.id}`)}
+                sx={{
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                  "&:hover": {
+                    borderColor: "white",
+                  },
+                }}
+              >
+                你好，{user.nick_name}！
+              </Button>
+              <IconButton aria-label="Logout" onClick={handleLogout}>
+                <LogoutIcon />
+              </IconButton>
+            </>
+          ) : (
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={() => navigate("/login")}
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.5)",
+                "&:hover": {
+                  borderColor: "white",
+                },
+              }}
+            >
+              登录
+            </Button> 
+          )}
         </Toolbar>
       </AppBar>
 
       {/* 主要内容区域 */}
       <Box component="main" sx={{ flex: 1, py: 4 }}>
-        <Container maxWidth="lg">{children}</Container>
+        <Container maxWidth="lg">
+          <Outlet />
+        </Container>
       </Box>
 
       {/* 页脚 */}
