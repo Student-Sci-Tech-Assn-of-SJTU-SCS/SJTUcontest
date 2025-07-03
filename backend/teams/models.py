@@ -3,6 +3,7 @@ import uuid
 
 from utils import generate_random_string
 
+
 # Create your models here.
 class Team(models.Model):
     # UUID主键
@@ -10,9 +11,7 @@ class Team(models.Model):
     # 队伍名称
     name = models.CharField(max_length=50, help_text="队伍名称")
     # 队伍简介（请队长同时写上自己的联系方式）
-    introduction = models.TextField(
-        blank=True, null=True, help_text="队伍简介"
-    )
+    introduction = models.TextField(blank=True, null=True, help_text="队伍简介")
     # 队伍要参加的比赛
     contest = models.ForeignKey(
         "contests.Contest",
@@ -21,13 +20,9 @@ class Team(models.Model):
         help_text="队伍要参加的比赛",
     )
     # 队伍已有人数
-    existing_members = models.PositiveIntegerField(
-        default=0, help_text="队伍已有人数"
-    )
+    existing_members = models.PositiveIntegerField(default=0, help_text="队伍已有人数")
     # 队伍期望人数
-    expected_members = models.PositiveIntegerField(
-        default=1, help_text="队伍期望人数"
-    )
+    expected_members = models.PositiveIntegerField(default=1, help_text="队伍期望人数")
     # 招募截止日期
     recruitment_deadline = models.DateTimeField(
         null=True, blank=True, help_text="招募截止日期"
@@ -59,9 +54,7 @@ class UserTeam(models.Model):
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="user_teams"
     )
-    team = models.ForeignKey(
-        Team, on_delete=models.CASCADE, related_name="team_users"
-    )
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team_users")
     is_leader = models.BooleanField(default=False, help_text="是否为队长")
 
     class Meta:

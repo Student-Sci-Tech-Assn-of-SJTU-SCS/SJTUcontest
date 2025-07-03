@@ -15,6 +15,7 @@ from utils import generate_random_string
 
 User = get_user_model()
 
+
 def get_jaccount_authorize_url(state=None):
     """
     生成jAccount授权URL
