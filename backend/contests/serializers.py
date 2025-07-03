@@ -89,7 +89,14 @@ class ContestListRespItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contest
-        fields = ["id", "name", "logo", "keywords"]
+        fields = [
+            "id",
+            "name",
+            "logo",
+            "keywords",
+            "registration_start",
+            "registration_end",
+        ]
 
 
 class ContestResponseSerializer(serializers.ModelSerializer):
