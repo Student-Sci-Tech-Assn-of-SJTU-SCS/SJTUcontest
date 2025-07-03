@@ -1,3 +1,5 @@
+import secrets
+import string
 from django.http import JsonResponse
 from typing import Any
 
@@ -35,3 +37,8 @@ class ApiResponse:
     def unauthorized(message: str = "未授权", data: Any = None) -> JsonResponse:
         """401响应"""
         return ApiResponse.error(message, data, 401)
+
+
+def generate_random_string(length: int=32) -> str:
+    alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
+    return "".join(secrets.choice(alphabet) for _ in range(length))

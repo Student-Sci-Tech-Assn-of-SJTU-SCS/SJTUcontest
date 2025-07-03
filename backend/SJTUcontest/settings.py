@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",  # JWT黑名单支持
     "users",
     "contests",
+    "teams",
 ]
 
 MIDDLEWARE = [

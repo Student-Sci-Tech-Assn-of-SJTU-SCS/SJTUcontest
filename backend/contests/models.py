@@ -61,6 +61,5 @@ class Contest(models.Model):
         return self.name
 
     class Meta:
-        ordering = ["id"]
         verbose_name = "Contest"
         verbose_name_plural = "Contests"
