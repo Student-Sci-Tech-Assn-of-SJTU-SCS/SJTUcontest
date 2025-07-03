@@ -224,6 +224,10 @@ const Matches = () => {
     pageIndex * pageSize
   );
 
+  useEffect(() => {
+    setPageIndex(1);
+  }, [pageSize]);
+
   return (
     <Box
       sx={{
