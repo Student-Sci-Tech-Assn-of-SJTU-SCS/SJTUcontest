@@ -1,6 +1,7 @@
 import { Card, CardContent, Box, Link as MuiLink } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Tag from "./Tag";
+import { nameToTag } from "./Tag";
 
 export default function MatchCard({ match }) {
   return (
@@ -81,8 +82,8 @@ export default function MatchCard({ match }) {
             {match.name}
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}>
-            {(match.keywords || []).map((keyword, idx) => (
-              <Tag key={idx} tag={keyword} />
+            {[...match.keywords].map((keyword, idx) => (
+              <Tag key={idx} tag={nameToTag(keyword)} />
             ))}
           </Box>
         </CardContent>

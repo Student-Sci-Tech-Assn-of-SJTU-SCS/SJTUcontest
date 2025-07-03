@@ -22,7 +22,7 @@ class ContestKeywords(models.TextChoices):
     AI = "AI", "AI"  # 人工智能
     CS = "CS", "CS"  # 计算机科学
     IS = "IS", "IS"  # 信息安全
-    EE = "EE", "EE"  # 电子
+    EE = "EE", "EE"  # 电气工程
     MATH = "math", "math"  # 数学
     INNOVATION = "innovation", "innovation"  # 创新创业
     OTHERS = "others", "others"  # 其他
