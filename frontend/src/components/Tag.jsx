@@ -54,71 +54,76 @@ const colorStyles = {
   [categories.LEVEL]: {
     backgroundColor: "#e0f7fa",
     color: "#006064",
-    '&:hover': {
-      backgroundColor: '#b2ebf2',
-      boxShadow: '0 0 0 1px #006064 inset'
+    "&:hover": {
+      backgroundColor: "#b2ebf2",
+      boxShadow: "0 0 0 1px #006064 inset",
     },
-    '&.Mui-selected': {
-      backgroundColor: '#4dd0e1',
-      fontWeight: 'bold',
-      border: '1px solid #006064'
-    }
+    "&.Mui-selected": {
+      backgroundColor: "#4dd0e1",
+      fontWeight: "bold",
+      border: "1px solid #006064",
+    },
   },
   [categories.QUAL]: {
     backgroundColor: "#fff3e0",
     color: "#bf360c",
-    '&:hover': {
-      backgroundColor: '#ffe0b2',
-      boxShadow: '0 0 0 1px #bf360c inset'
+    "&:hover": {
+      backgroundColor: "#ffe0b2",
+      boxShadow: "0 0 0 1px #bf360c inset",
     },
-    '&.Mui-selected': {
-      backgroundColor: '#ffb74d',
-      fontWeight: 'bold',
-      border: '1px solid #bf360c'
-    }
+    "&.Mui-selected": {
+      backgroundColor: "#ffb74d",
+      fontWeight: "bold",
+      border: "1px solid #bf360c",
+    },
   },
   [categories.KWORD]: {
     backgroundColor: "#e8f5e9",
     color: "#1b5e20",
-    '&:hover': {
-      backgroundColor: '#c8e6c9',
-      boxShadow: '0 0 0 1px #1b5e20 inset'
+    "&:hover": {
+      backgroundColor: "#c8e6c9",
+      boxShadow: "0 0 0 1px #1b5e20 inset",
     },
-    '&.Mui-selected': {
-      backgroundColor: '#81c784',
-      fontWeight: 'bold',
-      border: '1px solid #1b5e20'
-    }
+    "&.Mui-selected": {
+      backgroundColor: "#81c784",
+      fontWeight: "bold",
+      border: "1px solid #1b5e20",
+    },
   },
   [categories.YEAR]: {
     backgroundColor: "#fce4ec",
     color: "#880e4f",
-    '&:hover': {
-      backgroundColor: '#f8bbd0',
-      boxShadow: '0 0 0 1px #880e4f inset'
+    "&:hover": {
+      backgroundColor: "#f8bbd0",
+      boxShadow: "0 0 0 1px #880e4f inset",
     },
-    '&.Mui-selected': {
-      backgroundColor: '#f06292',
-      fontWeight: 'bold',
-      border: '1px solid #880e4f'
-    }
+    "&.Mui-selected": {
+      backgroundColor: "#f06292",
+      fontWeight: "bold",
+      border: "1px solid #880e4f",
+    },
   },
   [categories.UNDEF]: {
     backgroundColor: "#f5f5f5",
     color: "#616161",
-    '&:hover': {
-      backgroundColor: '#e0e0e0',
-      boxShadow: '0 0 0 1px #616161 inset'
+    "&:hover": {
+      backgroundColor: "#e0e0e0",
+      boxShadow: "0 0 0 1px #616161 inset",
     },
-    '&.Mui-selected': {
-      backgroundColor: '#bdbdbd',
+    "&.Mui-selected": {
+      backgroundColor: "#bdbdbd",
       fontWeight: 700,
-      border: '1px solid #616161'
-    }
+      border: "1px solid #616161",
+    },
   },
 };
 
-export default function Tag({ tag, clickable = false, selected = false, onClick = () => {} }) {
+export default function Tag({
+  tag,
+  clickable = false,
+  selected = false,
+  onClick = () => {},
+}) {
   const category = tagCategories(tag);
   const colorStyle = colorStyles[category];
   const isSelected = clickable && selected;
@@ -128,8 +133,8 @@ export default function Tag({ tag, clickable = false, selected = false, onClick 
       label={tag}
       clickable={clickable}
       onClick={clickable ? () => onClick(tag) : undefined}
-      className={isSelected ? 'Mui-selected' : ''}
-      variant={isSelected ? 'filled' : 'outlined'}
+      className={isSelected ? "Mui-selected" : ""}
+      variant={isSelected ? "filled" : "outlined"}
       sx={{
         margin: "2px",
         fontSize: "0.85rem",

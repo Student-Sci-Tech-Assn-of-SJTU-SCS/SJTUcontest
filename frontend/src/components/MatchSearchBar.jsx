@@ -1,81 +1,70 @@
-import { TextField, Stack, Chip, Box } from "@mui/material";
-import { categoryTags } from "./Tag";
-
-const ALL_TAGS = [
-  ...categoryTags.level,
-  ...categoryTags.quality,
-  ...categoryTags.keyword,
-  ...categoryTags.year,
-];
+import { Typography, TextField, Stack, Box } from "@mui/material";
+import { categories, categoryOfficialNames, categoryTags } from "./Tag";
+import TagGroup from "./TagGroup";
 
 export default function MatchSearchBar({
-  value,
-  onValueChange,
+  search,
+  onSearchChange,
   selectedTags,
-  onTagsChange,
+  onTagClick,
 }) {
-  // value: 搜索框内容
-  // selectedTags: 选中的tag数组
-  // onValueChange: (val)=>void
-  // onTagsChange: (tags)=>void
-
-  const handleTagClick = (tag) => {
-    if (selectedTags.includes(tag)) {
-      onTagsChange(selectedTags.filter((t) => t !== tag));
-    } else {
-      onTagsChange([...selectedTags, tag]);
-    }
-  };
-
   return (
     <Box
       sx={{
         mb: 3,
         display: "flex",
-        flexDirection: { xs: "column", sm: "row" },
+        flexDirection: "column",
         gap: 2,
         alignItems: "center",
         justifyContent: "center",
       }}
     >
       <TextField
-        label="查找比赛名称"
+        label="查询比赛"
         variant="outlined"
         size="small"
-        value={value}
-        onChange={(e) => onValueChange(e.target.value)}
-        sx={{ minWidth: 220, background: "#fff" }}
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        sx={{ width: "clamp(250px, 400px, 30%)", background: "#fff" }}
       />
-      <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ maxWidth: 700 }}>
-        {ALL_TAGS.map((tag) => {
-          const selected = selectedTags.includes(tag);
+      <Stack
+        direction="row"
+        flexWrap="wrap"
+        sx={{ width: "100%", justifyContent: "center" }}
+      >
+        {Object.values(categories).map((cat) => {
+          if (cat == categories.UNDEF) {
+            return null;
+          }
           return (
-            <Chip
-              key={tag}
-              label={tag}
-              clickable
-              color={selected ? "primary" : "default"}
-              variant={selected ? "filled" : "outlined"}
-              onClick={() => handleTagClick(tag)}
+            <Box
+              key={cat.description}
               sx={{
-                mb: 1,
-                fontWeight: selected ? 700 : 400,
-                letterSpacing: 0.5,
+                m: "10px !important",
+                // width: "fit-content",
+                width: "200px",
+                padding: "10px 5px",
+                display: "flex",
+                flexDirection: "column",
                 borderRadius: 2,
-                boxShadow: selected
-                  ? "0 2px 8px rgba(25, 118, 210, 0.15)"
-                  : "none",
-                backgroundColor: selected ? "primary.main" : "background.paper",
-                color: selected ? "#fff" : "text.primary",
-                borderColor: selected ? "primary.main" : "grey.300",
-                transition: "all 0.2s",
-                "&:hover": {
-                  backgroundColor: selected ? "primary.dark" : "grey.100",
-                  color: selected ? "#fff" : "primary.main",
-                  borderColor: "primary.main",
-                },
+                bgcolor: "#f0f0f0",
               }}
-            />
+            >
+              {/* {console.log('Rendering:', cat.description, categoryTags[cat])} */}
+              <Typography
+                variant="h6"
+                fontWeight={500}
+                sx={{ letterSpacing: 1, color: "#222", textAlign: "center" }}
+              >
+                {categoryOfficialNames[cat]}
+              </Typography>
+              <TagGroup
+                tags={categoryTags[cat]}
+                clickable={true}
+                selectedTags={selectedTags[cat]}
+                onTagClick={onTagClick}
+              />
+            </Box>
           );
         })}
       </Stack>

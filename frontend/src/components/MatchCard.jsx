@@ -10,7 +10,7 @@ export default function MatchCard({ match }) {
       sx={{
         display: "block",
         color: "inherit",
-        width: 220,
+        width: "100%",
         height: 250,
         m: 1,
       }}
