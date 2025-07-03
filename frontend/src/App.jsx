@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/Login";
 import MainLayout from "./layouts/MainLayout";
@@ -9,7 +9,7 @@ import Teams from "./pages/team/Teams";
 import User from "./pages/user/User";
 import Error from "./pages/Error";
 import TeamDetail from "./pages/team/TeamDetail.jsx";
-import PrivateRoute from './layouts/PrivateRoute.jsx';
+import PrivateRoute from "./layouts/PrivateRoute.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -36,25 +36,34 @@ const Router = createBrowserRouter([
       },
       {
         path: "teams",
-        element: <PrivateRoute><Teams /></PrivateRoute>,
+        element: (
+          <PrivateRoute>
+            <Teams />
+          </PrivateRoute>
+        ),
       },
       {
         path: "teams/:match_id/:team_id",
-        element: <PrivateRoute><TeamDetail /></PrivateRoute>,
+        element: (
+          <PrivateRoute>
+            <TeamDetail />
+          </PrivateRoute>
+        ),
       },
       {
         path: "users",
-        element: <PrivateRoute><User /></PrivateRoute>,
+        element: (
+          <PrivateRoute>
+            <User />
+          </PrivateRoute>
+        ),
       },
-    ]
+    ],
   },
-])
-
+]);
 
 function App() {
-  return (
-    <RouterProvider router={Router} />
-  );
+  return <RouterProvider router={Router} />;
 }
 
 export default App;

@@ -62,7 +62,9 @@
   border: 2px solid #e1e5e9;
   border-radius: 8px;
   font-size: 16px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
   outline: none;
 }
 
@@ -95,7 +97,9 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.3s ease, transform 0.2s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.2s ease;
   margin-top: 8px;
 }
 
@@ -133,11 +137,11 @@
   .login-container {
     padding: 16px;
   }
-  
+
   .login-card {
     padding: 24px;
   }
-  
+
   .login-header h2 {
     font-size: 24px;
   }

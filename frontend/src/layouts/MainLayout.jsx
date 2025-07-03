@@ -10,14 +10,14 @@ import {
   IconButton,
 } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
-import LogoutIcon from '@mui/icons-material/Logout';
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const MainLayout = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -25,12 +25,12 @@ const MainLayout = () => {
 
   const handleLogout = async () => {
     try {
-      localStorage.removeItem('user');
+      localStorage.removeItem("user");
       setUser(null);
     } catch (error) {
-      console.error('登出失败:', error);
+      console.error("登出失败:", error);
       // 即使请求失败，也清除本地状态
-      localStorage.removeItem('user');
+      localStorage.removeItem("user");
       setUser(null);
     }
   };
@@ -100,7 +100,7 @@ const MainLayout = () => {
               }}
             >
               登录
-            </Button> 
+            </Button>
           )}
         </Toolbar>
       </AppBar>

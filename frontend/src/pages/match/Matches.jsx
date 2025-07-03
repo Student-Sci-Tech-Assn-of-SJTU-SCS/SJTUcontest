@@ -7,7 +7,7 @@ import { categoryTags } from "../../components/Tag";
 import { useMediaQuery } from "@mui/material";
 
 // theme需要重写，这里先用mui默认的
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 
 import axios from "axios";
 import api from "../../utils/api";
@@ -221,7 +221,7 @@ const Matches = () => {
 
   const paginatedMatches = matches.slice(
     (pageIndex - 1) * pageSize,
-    pageIndex * pageSize
+    pageIndex * pageSize,
   );
 
   useEffect(() => {

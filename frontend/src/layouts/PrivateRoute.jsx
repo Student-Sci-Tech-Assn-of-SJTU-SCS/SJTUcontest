@@ -1,18 +1,18 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
 
 const PrivateRoute = ({ children }) => {
   const location = useLocation();
-  
+
   // 检查用户是否已登录
   const isAuthenticated = () => {
     try {
-      const user = localStorage.getItem('user');
+      const user = localStorage.getItem("user");
       if (!user) return false;
-      
+
       return true;
     } catch (error) {
-      console.error('Error checking authentication:', error);
+      console.error("Error checking authentication:", error);
       return false;
     }
   };
