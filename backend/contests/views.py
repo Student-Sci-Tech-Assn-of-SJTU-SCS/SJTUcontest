@@ -11,7 +11,7 @@ from .serializers import (
     ContestResponseSerializer,
     ContestCreateRequestSerializer,
 )
-from utils import ApiResponse
+from SJTUcontest.utils import ApiResponse
 
 
 @api_view(["POST"])

@@ -1,7 +1,7 @@
 from django.db import models
 import uuid
 
-from utils import generate_random_string
+from SJTUcontest.utils import generate_random_string
 
 
 # Create your models here.

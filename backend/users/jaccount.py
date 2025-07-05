@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 import urllib.parse
 
-from utils import generate_random_string
+from SJTUcontest.utils import generate_random_string
 
 User = get_user_model()
 
