@@ -42,7 +42,7 @@ export default function MatchSearchBar({
               sx={{
                 m: "10px !important",
                 // width: "fit-content",
-                width: "220px",
+                width: "180px",
                 padding: "10px",
                 display: "flex",
                 flexDirection: "column",
