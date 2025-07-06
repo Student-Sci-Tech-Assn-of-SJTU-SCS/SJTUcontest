@@ -1,13 +1,12 @@
 from django.core.paginator import Paginator
 from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAdminUser, AllowAny
 import json
 
 from .models import Contest
 from .serializers import (
     ContestListRequestSerializer,
-    ContestListRespItemSerializer,
     ContestResponseSerializer,
     ContestCreateRequestSerializer,
 )
@@ -79,7 +78,7 @@ def get_matches(request):
             contests = page_obj.object_list
 
         # 使用序列化器序列化数据
-        matches_serializer = ContestListRespItemSerializer(contests, many=True)
+        matches_serializer = ContestResponseSerializer(contests, many=True)
 
         # 构建响应数据并使用响应序列化器
         response_data = {
