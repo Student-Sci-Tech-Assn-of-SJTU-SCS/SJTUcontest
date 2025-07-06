@@ -34,7 +34,7 @@ const Home = () => {
           variant="outlined"
           color="primary"
           sx={{ mx: 2 }}
-          onClick={() => navigate("/user")}
+          onClick={() => navigate("/users")}
         >
           个人主页
         </Button>
