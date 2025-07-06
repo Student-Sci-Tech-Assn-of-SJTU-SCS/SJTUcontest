@@ -151,19 +151,21 @@ const Matches = () => {
       setError("");
 
       try {
-        const res = await api.post("/matches/", {
+        const res = await api.post(
+          "/matches/",
+          {
             page_index: pageIndex,
             page_size: pageSize,
             options: {
               query: search.trim(),
-              level: selectedTags[categories.LEVEL].map(tag => tag.name),
-              quality: selectedTags[categories.QUAL].map(tag => tag.name),
-              keywords: selectedTags[categories.KWORD].map(tag => tag.name),
-              years: selectedTags[categories.YEAR].map(tag => tag.name),
-              months: selectedTags[categories.MONTH].map(tag => tag.name),
+              level: selectedTags[categories.LEVEL].map((tag) => tag.name),
+              quality: selectedTags[categories.QUAL].map((tag) => tag.name),
+              keywords: selectedTags[categories.KWORD].map((tag) => tag.name),
+              years: selectedTags[categories.YEAR].map((tag) => tag.name),
+              months: selectedTags[categories.MONTH].map((tag) => tag.name),
             },
           },
-          { signal: controller.signal }
+          { signal: controller.signal },
         );
 
         if (res.data.success) {
@@ -217,7 +219,9 @@ const Matches = () => {
       const upd = cur.includes(tag)
         ? cur.filter((t) => t !== tag)
         : [...cur, tag];
-      console.log(`Before: ${cur.map(tag => tag.description)}; After: ${upd.map(tag => tag.description)}`);
+      console.log(
+        `Before: ${cur.map((tag) => tag.description)}; After: ${upd.map((tag) => tag.description)}`,
+      );
       return { ...prev, [category]: upd };
     });
     // console.log(`selectedTags=${selectedTags[category] && []}`);
@@ -255,7 +259,12 @@ const Matches = () => {
       <Grid container spacing={1} justifyContent="center" alignItems="stretch">
         {matches.length === 0 ? (
           <Grid key={"no_match"} size={12}>
-            <Typography key={"no_match"} color="text.secondary" align="center" sx={{ mt: 8 }}>
+            <Typography
+              key={"no_match"}
+              color="text.secondary"
+              align="center"
+              sx={{ mt: 8 }}
+            >
               暂无符合条件的比赛
             </Typography>
           </Grid>
