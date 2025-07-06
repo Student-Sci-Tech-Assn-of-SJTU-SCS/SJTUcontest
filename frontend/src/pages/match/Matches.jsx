@@ -224,11 +224,6 @@ const Matches = () => {
     setPageIndex(1);
   };
 
-  // const paginatedMatches = matches.slice(
-  //   (pageIndex - 1) * pageSize,
-  //   pageIndex * pageSize
-  // );
-
   useEffect(() => {
     setPageIndex(1);
   }, [pageSize]);

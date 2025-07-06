@@ -10,7 +10,7 @@ const Home = () => {
       <Typography variant="h2" gutterBottom>
         欢迎来到 SJTU Contest
       </Typography>
-      <Typography variant="h5" color="text.secondary" paragraph>
+      <Typography variant="h5" color="text.secondary" >
         在这里，你可以参与比赛，组建团队，展示你的实力
       </Typography>
       <Box sx={{ mt: 4 }}>
