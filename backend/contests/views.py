@@ -53,13 +53,11 @@ def get_matches(request):
 
         if "months" in options and options["months"]:
             # 过滤包含指定月份的比赛
-            for month in options["months"]:
-                queryset = queryset.filter(months__contains=[month])
+            queryset = queryset.filter(months__overlap=options["months"])
 
         if "keywords" in options and options["keywords"]:
             # 过滤包含指定关键词的比赛
-            for keyword in options["keywords"]:
-                queryset = queryset.filter(keywords__contains=[keyword])
+            queryset = queryset.filter(keywords__overlap=options["keywords"])
 
         # 分页处理
         page_index = validated_data["page_index"]
