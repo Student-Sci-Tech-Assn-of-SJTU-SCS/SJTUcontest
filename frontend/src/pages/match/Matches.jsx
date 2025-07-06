@@ -2,8 +2,7 @@ import { Typography, Box, Grid, Divider, Pagination } from "@mui/material";
 import MatchSearchBar from "../../components/MatchSearchBar";
 import MatchCard from "../../components/MatchCard";
 import { useState, useEffect } from "react";
-import { categories, tagCategories } from "../../components/Tag";
-import { categoryTags } from "../../components/Tag";
+import { categories } from "../../components/Tag";
 import { useMediaQuery } from "@mui/material";
 
 // theme需要重写，这里先用mui默认的
@@ -12,111 +11,111 @@ import { createTheme } from "@mui/material/styles";
 import axios from "axios";
 import api from "../../utils/api";
 
-const randomUUID = () =>
-  "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+// const randomUUID = () =>
+//   "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+//     const r = (Math.random() * 16) | 0;
+//     const v = c === "x" ? r : (r & 0x3) | 0x8;
+//     return v.toString(16);
+//   });
 
-const getRandomLogo = (name) => {
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=200&background=random&color=ffffff&bold=true`;
-};
+// const getRandomLogo = (name) => {
+//   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=200&background=random&color=ffffff&bold=true`;
+// };
 
-const getRandomTags = (arr, n = 1) => {
-  const shuffled = arr.slice().sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, n);
-};
+// const getRandomTags = (arr, n = 1) => {
+//   const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+//   return shuffled.slice(0, n).map(tag => tag.description);
+// };
 
-const ALL_MATCHES = Array.from([
-  {
-    name: "2026年SJTU野外生存挑战赛",
-    logo: getRandomLogo("Survival Challenge"),
-    keywords: ["AI", "其他"],
-  },
-  {
-    name: "2026年SJTU编程马拉松",
-    logo: getRandomLogo("Programming Marathon"),
-    keywords: ["CS", "math"],
-  },
-  {
-    name: "2026年SJTU机器人竞赛",
-    logo: getRandomLogo("Robotics Competition"),
-    keywords: ["EE"],
-  },
-  {
-    name: "2026年SJTU电子竞技大赛",
-    logo: getRandomLogo("E-sports Competition"),
-    keywords: ["其他"],
-  },
-  {
-    name: "2026年SJTU人工智能挑战赛",
-    logo: getRandomLogo("AI Challenge"),
-    keywords: ["AI", "CS"],
-  },
-  {
-    name: "2026年SJTU数学建模竞赛",
-    logo: getRandomLogo("Math Modeling Competition"),
-    keywords: ["math"],
-  },
-  {
-    name: "2026年SJTU物理实验竞赛",
-    logo: getRandomLogo("Physics Experiment Competition"),
-    keywords: ["其他"],
-  },
-  {
-    name: "2026年SJTU化学实验竞赛",
-    logo: getRandomLogo("Chemistry Experiment Competition"),
-    keywords: ["其他"],
-  },
-  {
-    name: "2026年SJTU生物实验竞赛",
-    logo: getRandomLogo("Biology Experiment Competition"),
-    keywords: ["其他"],
-  },
-  {
-    name: "第十八届全国大学生信息安全竞赛—作品赛",
-    logo: getRandomLogo("18th National College InfoSec Competition - Project"),
-    keywords: ["IS", "CS"],
-  },
-  {
-    name: "第十八届全国大学生信息安全竞赛（创新实践能力赛）暨第二届“长城杯”铁人三项赛（防护赛）初赛",
-    logo: getRandomLogo(
-      "18th National College InfoSec Competition - Innovation & 2nd Great Wall Cup",
-    ),
-    keywords: ["IS", "CS"],
-  },
-  {
-    name: "2026年SJTU操作系统原理知识竞赛",
-    logo: getRandomLogo("OS Principles Competition"),
-    keywords: ["CS"],
-  },
-  {
-    name: "2026年SJTU计算机网络知识竞赛",
-    logo: getRandomLogo("Computer Networks Competition"),
-    keywords: ["CS"],
-  },
-  {
-    name: "2026年SJTU数据库系统知识竞赛",
-    logo: getRandomLogo("Database Systems Competition"),
-    keywords: ["CS"],
-  },
-  {
-    name: "2026年SJTU软件工程知识竞赛",
-    logo: getRandomLogo("Software Engineering Competition"),
-    keywords: ["CS"],
-  },
-]).map((match) => {
-  // 随机为每个比赛添加LEVEL/QUAL/YEAR标签
-  const levelTags = getRandomTags(categoryTags[categories.LEVEL] || [], 1);
-  const qualTags = getRandomTags(categoryTags[categories.QUAL] || [], 1);
-  const yearTags = getRandomTags(categoryTags[categories.YEAR] || [], 1);
-  return {
-    ...match,
-    uuid: randomUUID(),
-    keywords: [...levelTags, ...qualTags, ...match.keywords, ...yearTags],
-  };
-});
+// const ALL_MATCHES = Array.from([
+//   {
+//     name: "2026年SJTU野外生存挑战赛",
+//     logo: getRandomLogo("Survival Challenge"),
+//     keywords: ["AI", "其他"],
+//   },
+//   {
+//     name: "2026年SJTU编程马拉松",
+//     logo: getRandomLogo("Programming Marathon"),
+//     keywords: ["CS", "math"],
+//   },
+//   {
+//     name: "2026年SJTU机器人竞赛",
+//     logo: getRandomLogo("Robotics Competition"),
+//     keywords: ["EE"],
+//   },
+//   {
+//     name: "2026年SJTU电子竞技大赛",
+//     logo: getRandomLogo("E-sports Competition"),
+//     keywords: ["其他"],
+//   },
+//   {
+//     name: "2026年SJTU人工智能挑战赛",
+//     logo: getRandomLogo("AI Challenge"),
+//     keywords: ["AI", "CS"],
+//   },
+//   {
+//     name: "2026年SJTU数学建模竞赛",
+//     logo: getRandomLogo("Math Modeling Competition"),
+//     keywords: ["math"],
+//   },
+//   {
+//     name: "2026年SJTU物理实验竞赛",
+//     logo: getRandomLogo("Physics Experiment Competition"),
+//     keywords: ["其他"],
+//   },
+//   {
+//     name: "2026年SJTU化学实验竞赛",
+//     logo: getRandomLogo("Chemistry Experiment Competition"),
+//     keywords: ["其他"],
+//   },
+//   {
+//     name: "2026年SJTU生物实验竞赛",
+//     logo: getRandomLogo("Biology Experiment Competition"),
+//     keywords: ["其他"],
+//   },
+//   {
+//     name: "第十八届全国大学生信息安全竞赛—作品赛",
+//     logo: getRandomLogo("18th National College InfoSec Competition - Project"),
+//     keywords: ["IS", "CS"],
+//   },
+//   {
+//     name: "第十八届全国大学生信息安全竞赛（创新实践能力赛）暨第二届“长城杯”铁人三项赛（防护赛）初赛",
+//     logo: getRandomLogo(
+//       "18th National College InfoSec Competition - Innovation & 2nd Great Wall Cup",
+//     ),
+//     keywords: ["IS", "CS"],
+//   },
+//   {
+//     name: "2026年SJTU操作系统原理知识竞赛",
+//     logo: getRandomLogo("OS Principles Competition"),
+//     keywords: ["CS"],
+//   },
+//   {
+//     name: "2026年SJTU计算机网络知识竞赛",
+//     logo: getRandomLogo("Computer Networks Competition"),
+//     keywords: ["CS"],
+//   },
+//   {
+//     name: "2026年SJTU数据库系统知识竞赛",
+//     logo: getRandomLogo("Database Systems Competition"),
+//     keywords: ["CS"],
+//   },
+//   {
+//     name: "2026年SJTU软件工程知识竞赛",
+//     logo: getRandomLogo("Software Engineering Competition"),
+//     keywords: ["CS"],
+//   },
+// ]).map((match) => {
+//   // 随机为每个比赛添加LEVEL/QUAL/YEAR标签
+//   const levelTags = getRandomTags(Object.values(categoryTags[categories.LEVEL]) || [], 1);
+//   const qualTags = getRandomTags(Object.values(categoryTags[categories.QUAL]) || [], 1);
+//   const yearTags = getRandomTags(Object.values(categoryTags[categories.YEAR]) || [], 1);
+//   return {
+//     ...match,
+//     uuid: randomUUID(),
+//     keywords: [...levelTags, ...qualTags, ...match.keywords, ...yearTags],
+//   };
+// });
 
 const Matches = () => {
   // 搜索和筛选状态
@@ -127,7 +126,6 @@ const Matches = () => {
     [categories.KWORD]: [],
     [categories.YEAR]: [],
   });
-  const [matches, setMatches] = useState(ALL_MATCHES);
   const [pageIndex, setPageIndex] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -140,64 +138,66 @@ const Matches = () => {
 
   const pageSize = sm ? 3 : md ? 6 : lg ? 9 : 12;
 
+  const [matches, setMatches] = useState([]);
+
   // 后端请求
-  // useEffect(() => {
-  //   const fetchMatches = async () => {
-  //     const controller = new AbortController();
-  //     setLoading(true);
-  //     setError("");
+  useEffect(() => {
+    const fetchMatches = async () => {
+      const controller = new AbortController();
+      setLoading(true);
+      setError("");
 
-  //     try {
-  //       const res = await api.post("/matches/", {
-  //           page_index: pageIndex,
-  //           page_size: pageSize,
-  //           options: {
-  //             query: search.trim(),
-  //             level: selectedTags[categories.LEVEL],
-  //             quality: selectedTags[categories.QUAL],
-  //             keywords: selectedTags[categories.KWORD],
-  //             years: selectedTags[categories.YEAR],
-  //           },
-  //         },
-  //         { signal: controller.signal }
-  //       );
+      try {
+        const res = await api.post("/matches/", {
+            page_index: pageIndex,
+            page_size: pageSize,
+            options: {
+              query: search.trim(),
+              level: selectedTags[categories.LEVEL].map(tag => tag.name),
+              quality: selectedTags[categories.QUAL].map(tag => tag.name),
+              keywords: selectedTags[categories.KWORD].map(tag => tag.name),
+              years: selectedTags[categories.YEAR].map(tag => tag.name),
+            },
+          },
+          { signal: controller.signal }
+        );
 
-  //       if (res.data.success) {
-  //         setMatches(res.data.data.matches || []);
-  //       } else {
-  //         setError(res.data.message || "未知错误");
-  //       }
-  //     } catch (err) {
-  //       if (axios.isCancel(err)) return;
-  //       setError("网络错误");
-  //     } finally {
-  //       setLoading(false);
-  //     }
+        if (res.data.success) {
+          setMatches(res.data.data.matches || []);
+        } else {
+          setError(res.data.message || "未知错误");
+        }
+      } catch (err) {
+        if (axios.isCancel(err)) return;
+        setError("网络错误");
+      } finally {
+        setLoading(false);
+      }
 
-  //     return () => controller.abort();
-  //   };
+      return () => controller.abort();
+    };
 
-  //   fetchMatches();
-  // }, [pageIndex, search, selectedTags]);
+    fetchMatches();
+  }, [pageIndex, pageSize, search, selectedTags]);
 
   // 模拟后端请求
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      let filtered = ALL_MATCHES.filter((match) => {
-        const nameMatch = match.name.includes(search);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     let filtered = ALL_MATCHES.filter((match) => {
+  //       const nameMatch = match.name.includes(search);
 
-        const tagMatch = Reflect.ownKeys(selectedTags).every((category) => {
-          const selected = selectedTags[category];
-          if (selected.length === 0) return true;
-          return match.keywords.some((tag) => selected.includes(tag));
-        });
+  //       const tagMatch = Reflect.ownKeys(selectedTags).every((category) => {
+  //         const selected = selectedTags[category];
+  //         if (selected.length === 0) return true;
+  //         return match.keywords.some((tag) => selected.includes(tag));
+  //       });
 
-        return nameMatch && tagMatch;
-      });
-      setMatches(filtered);
-    }, 200);
-    return () => clearTimeout(timer);
-  }, [search, selectedTags]);
+  //       return nameMatch && tagMatch;
+  //     });
+  //     setMatches(filtered);
+  //   }, 200);
+  //   return () => clearTimeout(timer);
+  // }, [search, selectedTags]);
 
   const handleSearchChange = (newSearch) => {
     setSearch(newSearch);
@@ -206,23 +206,23 @@ const Matches = () => {
 
   const handleTagClick = (tag) => {
     // console.log(`Calling handleTagClick(${tag}) ...`);
-    const category = tagCategories(tag);
+    const category = tag.category;
     setSelectedTags((prev) => {
       const cur = prev[category];
       const upd = cur.includes(tag)
         ? cur.filter((t) => t !== tag)
         : [...cur, tag];
-      console.log(`Before: ${cur}; After: ${upd}`);
+      console.log(`Before: ${cur.map(tag => tag.description)}; After: ${upd.map(tag => tag.description)}`);
       return { ...prev, [category]: upd };
     });
     // console.log(`selectedTags=${selectedTags[category] && []}`);
     setPageIndex(1);
   };
 
-  const paginatedMatches = matches.slice(
-    (pageIndex - 1) * pageSize,
-    pageIndex * pageSize,
-  );
+  // const paginatedMatches = matches.slice(
+  //   (pageIndex - 1) * pageSize,
+  //   pageIndex * pageSize
+  // );
 
   useEffect(() => {
     setPageIndex(1);
@@ -254,15 +254,15 @@ const Matches = () => {
 
       <Grid container spacing={1} justifyContent="center" alignItems="stretch">
         {matches.length === 0 ? (
-          <Grid size={12}>
-            <Typography color="text.secondary" align="center" sx={{ mt: 8 }}>
+          <Grid key={"no_match"} size={12}>
+            <Typography key={"no_match"} color="text.secondary" align="center" sx={{ mt: 8 }}>
               暂无符合条件的比赛
             </Typography>
           </Grid>
         ) : (
-          paginatedMatches.map((match) => (
+          matches.map((match) => (
             <Grid
-              key={match.uuid}
+              key={match.id}
               size={{ xs: 12, sm: 12, md: 6, lg: 4, xl: 3 }}
               display="flex"
               justifyContent="center"

@@ -18,9 +18,9 @@ export default function TagGroup({
         mt: 1,
       }}
     >
-      {tags.map((tag) => (
+      {Object.values(tags).map((tag) => (
         <Tag
-          key={tag}
+          key={tag.description}
           tag={tag}
           clickable={clickable}
           selected={selectedTags.includes(tag)}

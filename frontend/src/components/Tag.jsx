@@ -1,54 +1,85 @@
 import Chip from "@mui/material/Chip";
+import TagClass from "../models/tag";
 
 // 标签的类别
 export const categories = {
-  LEVEL: Symbol("level"),
-  QUAL: Symbol("quality"),
-  KWORD: Symbol("keyword"),
-  YEAR: Symbol("year"),
-  UNDEF: Symbol("undefined"),
+  LEVEL: Symbol("级别"),
+  QUAL: Symbol("素拓等级"),
+  KWORD: Symbol("关键词"),
+  YEAR: Symbol("年份"),
+  MONTH: Symbol("月份"),
+  UNDEF: Symbol("未定义"),
 };
 
-function genYearTag() {
+const levelTags = {
+  LOCAL: new TagClass("local", "校院级", categories.LEVEL),
+  REGIONAL: new TagClass("regional", "省市级", categories.LEVEL),
+  NATIONAL: new TagClass("national", "国家级", categories.LEVEL),
+  INTERNATIONAL: new TagClass("international", "国际级", categories.LEVEL),
+}, qualityTags = {
+  TOP: new TagClass("top", "专项赛事", categories.QUAL),
+  A_LEVEL: new TagClass("A_level", "A类赛事", categories.QUAL),
+  B_LEVEL: new TagClass("B_level", "B类赛事", categories.QUAL),
+  C_LEVEL: new TagClass("C_level", "C类赛事", categories.QUAL),
+  D_LEVEL: new TagClass("D_level", "D类赛事", categories.QUAL),
+}, keywordTags = {
+  AI: new TagClass("AI", "人工智能", categories.KWORD),
+  CS: new TagClass("CS", "计算机科学", categories.KWORD),
+  IS: new TagClass("IS", "信息安全", categories.KWORD),
+  EE: new TagClass("EE", "电气工程", categories.KWORD),
+  MATH: new TagClass("math", "数学", categories.KWORD),
+  INNOVATION: new TagClass("innovation", "创新创业", categories.KWORD),
+  OTHERS: new TagClass("others", "其他", categories.KWORD),
+}, yearTags = genYearTags(),
+ monthTags = genMonthTags();
+
+const allTags = {
+  ...levelTags,
+  ...qualityTags,
+  ...keywordTags,
+  ...yearTags,
+  ...monthTags
+};
+
+function genYearTags() {
   const currentYear = new Date().getFullYear();
   const minYear = 2021;
 
-  const years = [];
+  const yearTags = {};
   for (let year = minYear; year <= currentYear; year++) {
-    years.push(year.toString());
+    yearTags[year] = new TagClass(year, String(year), categories.YEAR);
   }
-  return years;
+  return yearTags;
 }
 
-// 类别的正式名称
-export const categoryOfficialNames = {
-  [categories.LEVEL]: "级别",
-  [categories.QUAL]: "素拓等级",
-  [categories.KWORD]: "关键词",
-  [categories.YEAR]: "年份",
-};
+function genMonthTags() {
+  const monthTags = {};
+  for (let month = 1; month <= 12; month ++) {
+    monthTags[month] = new TagClass(month, String(month), categories.MONTH);
+  }
+  return monthTags;
+}
 
 // 每个类别的标签
 export const categoryTags = {
-  [categories.LEVEL]: ["院级/校级", "省市级", "国家级", "国际级"],
-  [categories.QUAL]: ["专项", "A类", "B类", "C类", "D类"],
-  [categories.KWORD]: ["AI", "CS", "IS", "EE", "MATH", "创新", "其他"],
-  [categories.YEAR]: genYearTag(),
+  [categories.LEVEL]: levelTags,
+  [categories.QUAL]: qualityTags,
+  [categories.KWORD]: keywordTags,
+  [categories.YEAR]: yearTags,
+  [categories.MONTH]: monthTags,
 };
 
-// tag到category的映射
-export const tagCategories = (tag) => {
-  let cat = categories.UNDEF;
-  // console.log(Reflect.ownKeys(categoryTags));
-  for (const category of Reflect.ownKeys(categoryTags)) {
-    if (categoryTags[category].includes(tag)) {
-      cat = category;
-      break;
+export function nameToTag(str) {
+  // console.log(`Calling stringToTag(${str}) ...`);
+  for (const cat of Reflect.ownKeys(categoryTags)) {
+    for (const tag of Object.values(categoryTags[cat])) {
+      if (str === tag.name) {
+        return tag;
+      }
     }
   }
-  // console.log(`tagCategories(${tag}) returning ${cat.description}`);
-  return cat;
-};
+  return new TagClass("", "", categories.UNDEF);
+}
 
 const colorStyles = {
   [categories.LEVEL]: {
@@ -124,13 +155,14 @@ export default function Tag({
   selected = false,
   onClick = () => {},
 }) {
-  const category = tagCategories(tag);
-  const colorStyle = colorStyles[category];
+  const colorStyle = colorStyles[tag.category];
   const isSelected = clickable && selected;
+
+  // console.log(tag.description);
 
   return (
     <Chip
-      label={tag}
+      label={tag.description}
       clickable={clickable}
       onClick={clickable ? () => onClick(tag) : undefined}
       className={isSelected ? "Mui-selected" : ""}

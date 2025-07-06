@@ -1,5 +1,5 @@
 import { Typography, TextField, Stack, Box } from "@mui/material";
-import { categories, categoryOfficialNames, categoryTags } from "./Tag";
+import { categories, categoryTags } from "./Tag";
 import TagGroup from "./TagGroup";
 
 export default function MatchSearchBar({
@@ -56,7 +56,7 @@ export default function MatchSearchBar({
                 fontWeight={500}
                 sx={{ letterSpacing: 1, color: "#222", textAlign: "center" }}
               >
-                {categoryOfficialNames[cat]}
+                {cat.description}
               </Typography>
               <TagGroup
                 tags={categoryTags[cat]}
