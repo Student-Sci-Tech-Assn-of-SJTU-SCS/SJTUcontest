@@ -18,7 +18,7 @@ from .jaccount import (
     decode_id_token,
     get_or_create_user_from_jaccount,
 )
-from utils import ApiResponse
+from SJTUcontest.utils import ApiResponse
 
 User = get_user_model()
 

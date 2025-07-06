@@ -51,9 +51,9 @@ class Contest(models.Model):
         help_text="学习资料列表，格式：[{'name': '资料名称', 'url': '链接'}]",
     )
     # 报名开始时间
-    registration_start = models.DateTimeField(default=datetime.now)
+    registration_start = models.DateTimeField(default=datetime(1234, 5, 6, 7, 8, 9))
     # 报名结束时间
-    registration_end = models.DateTimeField(default=datetime.now)
+    registration_end = models.DateTimeField(default=datetime(1234, 5, 6, 7, 8, 9))
 
     # 队伍表中有外键关联到比赛表，可以反向查询
 
@@ -61,6 +61,5 @@ class Contest(models.Model):
         return self.name
 
     class Meta:
-        ordering = ["id"]
         verbose_name = "Contest"
         verbose_name_plural = "Contests"

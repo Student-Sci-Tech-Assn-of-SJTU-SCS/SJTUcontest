@@ -6,7 +6,7 @@ import { categories } from "../../components/Tag";
 import { useMediaQuery } from "@mui/material";
 
 // theme需要重写，这里先用mui默认的
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 
 import axios from "axios";
 import api from "../../utils/api";

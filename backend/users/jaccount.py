@@ -11,13 +11,9 @@ from django.contrib.auth import get_user_model
 from django.db import models
 import urllib.parse
 
+from SJTUcontest.utils import generate_random_string
+
 User = get_user_model()
-
-
-def generate_random_password(length=16):
-    """生成随机密码"""
-    alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
-    return "".join(secrets.choice(alphabet) for _ in range(length))
 
 
 def get_jaccount_authorize_url(state=None):
@@ -90,7 +86,7 @@ def get_or_create_user_from_jaccount(user_info):
             user = User.objects.create_user(
                 username=jaccount_username,  # 使用jAccount账号作为用户名
                 email=email,
-                password=generate_random_password(),  # 生成随机密码
+                password=generate_random_string(16),  # 生成随机密码
             )
 
     except Exception as e:
