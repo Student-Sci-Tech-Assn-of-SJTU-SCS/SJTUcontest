@@ -12,33 +12,36 @@ export const categories = {
 };
 
 const levelTags = {
-  LOCAL: new TagClass("local", "校院级", categories.LEVEL),
-  REGIONAL: new TagClass("regional", "省市级", categories.LEVEL),
-  NATIONAL: new TagClass("national", "国家级", categories.LEVEL),
-  INTERNATIONAL: new TagClass("international", "国际级", categories.LEVEL),
-}, qualityTags = {
-  TOP: new TagClass("top", "专项赛事", categories.QUAL),
-  A_LEVEL: new TagClass("A_level", "A类赛事", categories.QUAL),
-  B_LEVEL: new TagClass("B_level", "B类赛事", categories.QUAL),
-  C_LEVEL: new TagClass("C_level", "C类赛事", categories.QUAL),
-  D_LEVEL: new TagClass("D_level", "D类赛事", categories.QUAL),
-}, keywordTags = {
-  AI: new TagClass("AI", "人工智能", categories.KWORD),
-  CS: new TagClass("CS", "计算机科学", categories.KWORD),
-  IS: new TagClass("IS", "信息安全", categories.KWORD),
-  EE: new TagClass("EE", "电气工程", categories.KWORD),
-  MATH: new TagClass("math", "数学", categories.KWORD),
-  INNOVATION: new TagClass("innovation", "创新创业", categories.KWORD),
-  OTHERS: new TagClass("others", "其他", categories.KWORD),
-}, yearTags = genYearTags(),
- monthTags = genMonthTags();
+    LOCAL: new TagClass("local", "校院级", categories.LEVEL),
+    REGIONAL: new TagClass("regional", "省市级", categories.LEVEL),
+    NATIONAL: new TagClass("national", "国家级", categories.LEVEL),
+    INTERNATIONAL: new TagClass("international", "国际级", categories.LEVEL),
+  },
+  qualityTags = {
+    TOP: new TagClass("top", "专项赛事", categories.QUAL),
+    A_LEVEL: new TagClass("A_level", "A类赛事", categories.QUAL),
+    B_LEVEL: new TagClass("B_level", "B类赛事", categories.QUAL),
+    C_LEVEL: new TagClass("C_level", "C类赛事", categories.QUAL),
+    D_LEVEL: new TagClass("D_level", "D类赛事", categories.QUAL),
+  },
+  keywordTags = {
+    AI: new TagClass("AI", "人工智能", categories.KWORD),
+    CS: new TagClass("CS", "计算机科学", categories.KWORD),
+    IS: new TagClass("IS", "信息安全", categories.KWORD),
+    EE: new TagClass("EE", "电气工程", categories.KWORD),
+    MATH: new TagClass("math", "数学", categories.KWORD),
+    INNOVATION: new TagClass("innovation", "创新创业", categories.KWORD),
+    OTHERS: new TagClass("others", "其他", categories.KWORD),
+  },
+  yearTags = genYearTags(),
+  monthTags = genMonthTags();
 
 const allTags = {
   ...levelTags,
   ...qualityTags,
   ...keywordTags,
   ...yearTags,
-  ...monthTags
+  ...monthTags,
 };
 
 function genYearTags() {
@@ -54,7 +57,7 @@ function genYearTags() {
 
 function genMonthTags() {
   const monthTags = {};
-  for (let month = 1; month <= 12; month ++) {
+  for (let month = 1; month <= 12; month++) {
     monthTags[month] = new TagClass(month, String(month), categories.MONTH);
   }
   return monthTags;

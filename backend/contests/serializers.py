@@ -84,21 +84,6 @@ class ContestUpdateRequestSerializer(serializers.ModelSerializer):
     )
 
 
-class ContestListRespItemSerializer(serializers.ModelSerializer):
-    """比赛列表项序列化器"""
-
-    class Meta:
-        model = Contest
-        fields = [
-            "id",
-            "name",
-            "logo",
-            "keywords",
-            "registration_start",
-            "registration_end",
-        ]
-
-
 class ContestResponseSerializer(serializers.ModelSerializer):
     """比赛响应数据模型"""
 

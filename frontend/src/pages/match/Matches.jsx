@@ -125,8 +125,10 @@ const Matches = () => {
     [categories.QUAL]: [],
     [categories.KWORD]: [],
     [categories.YEAR]: [],
+    [categories.MONTH]: [],
   });
   const [pageIndex, setPageIndex] = useState(1);
+  const [pageCount, setPageCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -137,6 +139,7 @@ const Matches = () => {
   const xl = useMediaQuery(theme.breakpoints.up("xl"));
 
   const pageSize = sm ? 3 : md ? 6 : lg ? 9 : 12;
+  // const pageSize = 1; // 调试用
 
   const [matches, setMatches] = useState([]);
 
@@ -148,22 +151,26 @@ const Matches = () => {
       setError("");
 
       try {
-        const res = await api.post("/matches/", {
+        const res = await api.post(
+          "/matches/",
+          {
             page_index: pageIndex,
             page_size: pageSize,
             options: {
               query: search.trim(),
-              level: selectedTags[categories.LEVEL].map(tag => tag.name),
-              quality: selectedTags[categories.QUAL].map(tag => tag.name),
-              keywords: selectedTags[categories.KWORD].map(tag => tag.name),
-              years: selectedTags[categories.YEAR].map(tag => tag.name),
+              level: selectedTags[categories.LEVEL].map((tag) => tag.name),
+              quality: selectedTags[categories.QUAL].map((tag) => tag.name),
+              keywords: selectedTags[categories.KWORD].map((tag) => tag.name),
+              years: selectedTags[categories.YEAR].map((tag) => tag.name),
+              months: selectedTags[categories.MONTH].map((tag) => tag.name),
             },
           },
-          { signal: controller.signal }
+          { signal: controller.signal },
         );
 
         if (res.data.success) {
           setMatches(res.data.data.matches || []);
+          setPageCount(res.data.data.total_pages);
         } else {
           setError(res.data.message || "未知错误");
         }
@@ -212,17 +219,14 @@ const Matches = () => {
       const upd = cur.includes(tag)
         ? cur.filter((t) => t !== tag)
         : [...cur, tag];
-      console.log(`Before: ${cur.map(tag => tag.description)}; After: ${upd.map(tag => tag.description)}`);
+      console.log(
+        `Before: ${cur.map((tag) => tag.description)}; After: ${upd.map((tag) => tag.description)}`,
+      );
       return { ...prev, [category]: upd };
     });
     // console.log(`selectedTags=${selectedTags[category] && []}`);
     setPageIndex(1);
   };
-
-  // const paginatedMatches = matches.slice(
-  //   (pageIndex - 1) * pageSize,
-  //   pageIndex * pageSize
-  // );
 
   useEffect(() => {
     setPageIndex(1);
@@ -255,7 +259,12 @@ const Matches = () => {
       <Grid container spacing={1} justifyContent="center" alignItems="stretch">
         {matches.length === 0 ? (
           <Grid key={"no_match"} size={12}>
-            <Typography key={"no_match"} color="text.secondary" align="center" sx={{ mt: 8 }}>
+            <Typography
+              key={"no_match"}
+              color="text.secondary"
+              align="center"
+              sx={{ mt: 8 }}
+            >
               暂无符合条件的比赛
             </Typography>
           </Grid>
@@ -273,10 +282,10 @@ const Matches = () => {
         )}
       </Grid>
 
-      {matches.length > pageSize && (
+      {pageCount > 1 && (
         <Box display="flex" justifyContent="center" mt={4}>
           <Pagination
-            count={Math.ceil(matches.length / pageSize)}
+            count={pageCount}
             page={pageIndex}
             onChange={(_, value) => setPageIndex(value)}
             color="primary"

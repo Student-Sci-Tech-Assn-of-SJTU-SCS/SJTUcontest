@@ -15,7 +15,12 @@ const Teams = () => {
   // 模拟数据
   const teams = [
     { id: 1, name: "示例团队 1", members: 3, description: "寻找算法大师" },
-    { id: 2, name: "示例团队 2", members: 2, description: "欢迎加入我们的队伍" },
+    {
+      id: 2,
+      name: "示例团队 2",
+      members: 2,
+      description: "欢迎加入我们的队伍",
+    },
   ];
 
   return (

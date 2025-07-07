@@ -82,7 +82,13 @@ export default function MatchCard({ match }) {
             {match.name}
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}>
-            {[...match.keywords].map((keyword, idx) => (
+            {[
+              match.level,
+              match.quality,
+              ...match.keywords,
+              match.year,
+              ...match.months,
+            ].map((keyword, idx) => (
               <Tag key={idx} tag={nameToTag(keyword)} />
             ))}
           </Box>
