@@ -28,20 +28,30 @@ User = get_user_model()
 def get_user_profile_by_id(request, user_id):
     try:
         user = User.objects.get(id=user_id)
+
+        serializer = UserProfileSerializer(user)
+        return ApiResponse.success(data=serializer.data, message="User found")
+
     except User.DoesNotExist:
         return ApiResponse.not_found(message="User not found")
 
-    serializer = UserProfileSerializer(user)
-
-    return ApiResponse.success(data=serializer.data, message="User found")
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
 
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def update_user_profile(request):
-    serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
+    try:
+        serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
 
-    if serializer.is_valid():
+        if not serializer.is_valid():
+            return ApiResponse.error(
+                message="Invalid data", data=serializer.errors, status_code=400  # 验证失败使用400
+            )
+    
         serializer.save()
         return ApiResponse.success(
             data=serializer.data,
@@ -49,9 +59,10 @@ def update_user_profile(request):
             status_code=200,  # 使用200状态码
         )
 
-    return ApiResponse.error(
-        message="更新失败", data=serializer.errors, status_code=400  # 验证失败使用400
-    )
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
 
 
 @api_view(["POST"])
@@ -60,20 +71,25 @@ def register(request):
     """
     用户注册接口，仅供测试时使用！
     """
-    serializer = UserRegisterSerializer(data=request.data)
+    try:
+        serializer = UserRegisterSerializer(data=request.data)
 
-    if serializer.is_valid():
+        if not serializer.is_valid():
+            return ApiResponse.error(
+                message="Invalid data", data=serializer.errors, status_code=400
+            )
+        
         User.objects.create_user(
             username=serializer.validated_data["username"],
             email=serializer.validated_data["email"],
             password=serializer.validated_data["password"],
         )
-
         return ApiResponse.success(message="注册成功", status_code=201)
-
-    return ApiResponse.error(
-        message="注册失败", data=serializer.errors, status_code=400
-    )
+    
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
 
 
 class JAccountLoginView(APIView):
