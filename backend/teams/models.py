@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 import uuid
 
@@ -32,7 +33,7 @@ class Team(models.Model):
     )
     # 邀请码创建时间
     invitation_code_created_at = models.DateTimeField(
-        auto_now=True, help_text="邀请码创建时间"
+        default=timezone.now, help_text="邀请码创建时间"
     )
     # 邀请码是否有效
     is_invitation_code_valid = models.BooleanField(
