@@ -1,6 +1,7 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/Login";
+import JAccount from "./pages/JAccount";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import Matches from "./pages/match/Matches";
@@ -15,6 +16,11 @@ const Router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+    errorElement: <Error />,
+  },
+  {
+    path: "/auth/jaccount/callback",
+    element: <JAccount />,
     errorElement: <Error />,
   },
   {

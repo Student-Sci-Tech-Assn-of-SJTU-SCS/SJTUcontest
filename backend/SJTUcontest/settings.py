@@ -228,7 +228,10 @@ SIMPLE_JWT = {
 # jAccount OAuth2.0 配置
 JACCOUNT_CLIENT_ID = os.getenv("JACCOUNT_CLIENT_ID")
 JACCOUNT_CLIENT_SECRET = os.getenv("JACCOUNT_CLIENT_SECRET")
+JACCOUNT_SCOPE = os.getenv("JACCOUNT_SCOPE")
+JACCOUNT_ISSUER = "https://jaccount.sjtu.edu.cn/oauth2/"
 JACCOUNT_AUTHORIZATION_URL = "https://jaccount.sjtu.edu.cn/oauth2/authorize"
 JACCOUNT_TOKEN_URL = "https://jaccount.sjtu.edu.cn/oauth2/token"
 JACCOUNT_LOGOUT_URL = "https://jaccount.sjtu.edu.cn/oauth2/logout"
-JACCOUNT_REDIRECT_URI = "http://localhost:8000/api/users/jaccount/callback/"
+JACCOUNT_REDIRECT_URI = "http://localhost:5173/auth/jaccount/callback"
+JACCOUNT_PROFILE_URL = "https://api.sjtu.edu.cn/v1/me/profile"

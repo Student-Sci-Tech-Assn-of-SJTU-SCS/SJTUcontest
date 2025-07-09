@@ -23,7 +23,7 @@ api.interceptors.request.use(
 // 响应拦截器 - 处理401错误和token刷新
 api.interceptors.response.use(
   (response) => {
-    return response;
+    return response.data;
   },
   async (error) => {
     const originalRequest = error.config;

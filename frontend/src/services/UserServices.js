@@ -8,6 +8,29 @@ import {
 
 // 用户相关API
 export const userAPI = {
+  getjAccountAuthURL: async () => {
+    try {
+      const response = await api.get("users/jaccount/auth/url/");
+      return response.data;
+    } catch (error) {
+      console.error("获取jAccount认证URL失败:", error);
+      throw error;
+    }
+  },
+
+  loginByjAccount: async (code) => {
+    try {
+      const response = await api.post("users/jaccount/login/", { code });
+      const { access, refresh, user } = response;
+      // 保存tokens和用户信息
+      saveTokens(access, refresh);
+      saveUser(user);
+    } catch (error) {
+      console.error("jAccount登录失败:", error);
+      throw error;
+    }
+  },
+
   // 登录
   login: async (credentials) => {
     try {

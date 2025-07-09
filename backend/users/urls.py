@@ -7,12 +7,11 @@ from rest_framework_simplejwt.views import (
 )
 
 from .views import (
+    register,
     get_user_profile_by_id,
     update_user_profile,
-    register,
-    JAccountLoginView,
-    JAccountCallbackView,
-    JAccountLogoutView,
+    get_jaccount_auth_url,
+    login_by_jaccount,
 )
 
 urlpatterns = [
@@ -22,9 +21,6 @@ urlpatterns = [
     path("logout/", TokenBlacklistView.as_view(), name="logout"),
     path("<uuid:user_id>/", get_user_profile_by_id, name="get_user_profile_by_id"),
     path("profile/update/", update_user_profile, name="update_user_profile"),
-    path("jaccount/login/", JAccountLoginView.as_view(), name="jaccount_login"),
-    path(
-        "jaccount/callback/", JAccountCallbackView.as_view(), name="jaccount_callback"
-    ),
-    path("jaccount/logout/", JAccountLogoutView.as_view(), name="jaccount_logout"),
+    path("jaccount/auth/url/", get_jaccount_auth_url, name="get_jaccount_auth_url"),
+    path("jaccount/login/", login_by_jaccount, name="login_by_jaccount"),
 ]

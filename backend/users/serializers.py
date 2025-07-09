@@ -41,3 +41,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "experience",
             "advantage",
         ]
+
+
+class jAccountLoginRequestSerializer(serializers.Serializer):
+    code = serializers.CharField(required=True)

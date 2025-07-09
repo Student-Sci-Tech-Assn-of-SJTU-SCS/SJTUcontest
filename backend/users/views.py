@@ -3,19 +3,21 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.conf import settings
 import urllib.parse
-import secrets
 
-from .serializers import UserProfileSerializer, UserRegisterSerializer
-from .jwt import (
-    generate_new_jwt_tokens,
+from .serializers import (
+    UserProfileSerializer,
+    UserRegisterSerializer,
+    jAccountLoginRequestSerializer,
 )
 from .jaccount import (
     get_jaccount_authorize_url,
     exchange_code_for_tokens,
     decode_id_token,
+    get_jaccount_profile,
     get_or_create_user_from_jaccount,
 )
 from SJTUcontest.utils import ApiResponse
@@ -96,93 +98,83 @@ def register(request):
         )
 
 
-class JAccountLoginView(APIView):
-    """
-    jAccount登录入口 - 重定向到jAccount授权页面
-    """
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def get_jaccount_auth_url(request):
+    try:
+        # 生成授权URL
+        auth_url = get_jaccount_authorize_url()
 
-    permission_classes = [AllowAny]
+        data = {"auth_url": auth_url}
+        return ApiResponse.success(data=data, message="请跳转到jAccount进行认证")
 
-    def get(self, request):
-        try:
-            # 生成随机state参数防止CSRF攻击
-            state = secrets.token_urlsafe(32)
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"jAccount登录URL获取失败: {str(e)}", status_code=500
+        )
 
-            # 将state存储在session中（用于回调时验证）
-            request.session["jaccount_state"] = state
 
-            # 生成授权URL
-            auth_url = get_jaccount_authorize_url(state=state)
-
-            data = {"auth_url": auth_url}
-            return ApiResponse.success(data=data, message="请跳转到jAccount进行认证")
-
-        except Exception as e:
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def login_by_jaccount(request):
+    try:
+        serializer = jAccountLoginRequestSerializer(data=request.data)
+        if not serializer.is_valid():
             return ApiResponse.error(
-                message=f"jAccount登录初始化失败: {str(e)}", status_code=500
+                message="Invalid data", data=serializer.errors, status_code=400
             )
 
+        # 从前端取回授权码
+        code = serializer.validated_data["code"]
 
-class JAccountCallbackView(APIView):
-    """
-    jAccount登录回调处理
-    """
+        # 用授权码向认证服务器申请令牌
+        response = exchange_code_for_tokens(code)
 
-    permission_classes = [AllowAny]
-
-    def get(self, request):
-        try:
-            # 获取授权码
-            code = request.GET.get("code")
-            state = request.GET.get("state")
-            error = request.GET.get("error")
-
-            if error:
-                return ApiResponse.error(message=f"jAccount授权错误: {error}")
-
-            if not code:
-                return ApiResponse.error(message="未收到授权码")
-
-            # 验证state参数（防止CSRF攻击）
-            stored_state = request.session.get("jaccount_state")
-            if not stored_state or stored_state != state:
-                return ApiResponse.error(message="无效的state参数")
-
-            # 清除session中的state
-            request.session.pop("jaccount_state", None)
-
-            # 使用授权码换取令牌
-            token_response = exchange_code_for_tokens(code)
-
+        if settings.JACCOUNT_SCOPE == "openid":
             # 解析身份令牌获取用户信息
-            id_token = token_response.get("id_token")
-            if not id_token:
-                return ApiResponse.error(message="未从jAccount收到ID token")
-
+            id_token = response["id_token"]
             user_info = decode_id_token(id_token)
+            jaccount_id = user_info["sub"]  # jAccount账号
 
-            # 获取或创建用户
-            user = get_or_create_user_from_jaccount(user_info)
+        else:
+            access_token = response["access_token"]
+            user_info = get_jaccount_profile(access_token)
 
-            # 生成JWT令牌
-            tokens = generate_new_jwt_tokens(user)
+            if settings.JACCOUNT_SCOPE == "basic":
+                jaccount_id = user_info["account"]
+            elif settings.JACCOUNT_SCOPE == "essential":
+                jaccount_id = user_info["entities"][0]["account"]
+            else:
+                raise Exception(
+                    f"Unsupported jAccount scope: {settings.JACCOUNT_SCOPE}"
+                )
 
-            data = {
-                "tokens": tokens,
+        # 获取或创建用户
+        user = get_or_create_user_from_jaccount(jaccount_id)
+
+        # 生成JWT令牌
+        refresh = RefreshToken.for_user(user)
+        return Response(
+            data={
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
                 "user": {
-                    "id": str(user.id),
+                    "id": user.id,
+                    "username": user.username,
                     "email": user.email,
                     "nick_name": user.nick_name,
+                    "is_staff": user.is_staff,
+                    "is_active": user.is_active,
                 },
-            }
-            return ApiResponse.success(data=data, message="jAccount登录成功")
+            },
+            status=200,
+        )
 
-        except Exception as e:
-            return ApiResponse.error(
-                message=f"jAccount回调处理失败: {str(e)}", status_code=500
-            )
+    except Exception as e:
+        return ApiResponse.error(message=f"jAccount登录失败: {str(e)}", status_code=500)
 
 
+# 这东西暂时没用
 class JAccountLogoutView(APIView):
     """
     jAccount登出 - 同时处理本地JWT和jAccount登出

@@ -4,8 +4,6 @@ jAccount OAuth2.0 认证相关工具函数
 
 import requests
 import jwt
-import secrets
-import string
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -22,7 +20,7 @@ def get_jaccount_authorize_url(state=None):
     """
     params = {
         "response_type": "code",
-        "scope": "openid",
+        "scope": settings.JACCOUNT_SCOPE,
         "client_id": settings.JACCOUNT_CLIENT_ID,
         "redirect_uri": settings.JACCOUNT_REDIRECT_URI,
     }
@@ -61,23 +59,38 @@ def decode_id_token(id_token):
     """
     try:
         # 在生产环境中，应该使用client_secret验证签名
-        # 这里暂时跳过验证，仅解码
-        decoded = jwt.decode(id_token, options={"verify_signature": False})
+        decoded = jwt.decode(
+            id_token,
+            settings.JACCOUNT_CLIENT_SECRET,
+            audience=settings.JACCOUNT_CLIENT_ID,
+            issuer=settings.JACCOUNT_ISSUER,
+        )
         return decoded
+
+    except jwt.ExpiredSignatureError:
+        raise Exception("ID token has expired")
+
+    except jwt.InvalidAudienceError:
+        raise Exception("Invalid audience in ID token")
+
+    except jwt.InvalidIssuerError:
+        raise Exception("Invalid issuer in ID token")
+
+    except jwt.InvalidSignatureError:
+        raise Exception("Invalid signature in ID token")
+
     except jwt.InvalidTokenError as e:
         raise Exception(f"Invalid ID token: {str(e)}")
 
 
-def get_or_create_user_from_jaccount(user_info):
+def get_or_create_user_from_jaccount(jaccount_username):
     """
-    根据jAccount用户信息获取或创建用户
+    根据jAccount id获取或创建用户
     """
-    jaccount_username = user_info.get("sub")  # jAccount账号
-
-    # 构造email
-    email = f"{jaccount_username}@sjtu.edu.cn"
 
     try:
+        email = f"{jaccount_username}@sjtu.edu.cn"
+
         # 尝试通过用户名查找用户
         user = User.objects.filter(models.Q(username=jaccount_username)).first()
 
@@ -89,7 +102,24 @@ def get_or_create_user_from_jaccount(user_info):
                 password=generate_random_string(16),  # 生成随机密码
             )
 
-    except Exception as e:
-        raise Exception(f"Error creating/updating user: {str(e)}")
+        return user
 
-    return user
+    except Exception as e:
+        raise Exception(f"Error looking for/creating user: {str(e)}")
+
+
+def get_jaccount_profile(access_token):
+    """
+    获取jAccount用户的个人信息
+    """
+    params = {
+        "access_token": access_token,
+    }
+    try:
+        url = f"{settings.JACCOUNT_PROFILE_URL}?{urllib.parse.urlencode(params)}"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+
+        return response.json()
+    except requests.RequestException as e:
+        raise Exception(f"Failed to get jAccount profile: {str(e)}")

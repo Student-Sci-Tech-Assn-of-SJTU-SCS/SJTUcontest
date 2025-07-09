@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@mui/material";
 import "../css/Login.css";
+import { userAPI } from "../services/UserServices";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +11,11 @@ const Login = () => {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
+
+  // 获取用户原本想要访问的页面
+  const from = location.state?.from?.pathname || "/";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -100,6 +106,20 @@ const Login = () => {
         <div className="login-footer">
           <p className="login-hint">测试账号: username / password</p>
         </div>
+
+        <Button
+          variant="contained"
+          onClick={async () => {
+            const data = await userAPI.getjAccountAuthURL();
+            // console.log("jAccount login URL response:", body);
+            const auth_url = data.auth_url;
+            // console.log("jAccount auth URL:", auth_url);
+            sessionStorage.setItem("pre_auth_path", from);
+            window.location.href = auth_url;
+          }}
+        >
+          使用 jAccount 登录
+        </Button>
       </div>
     </div>
   );
