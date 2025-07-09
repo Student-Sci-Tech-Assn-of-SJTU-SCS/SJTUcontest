@@ -24,9 +24,7 @@ class Team(models.Model):
     # 队伍期望人数
     expected_members = models.PositiveIntegerField(help_text="队伍期望人数")
     # 招募截止日期
-    recruitment_deadline = models.DateTimeField(
-        help_text="招募截止日期"
-    )
+    recruitment_deadline = models.DateTimeField(help_text="招募截止日期")
     # 队伍邀请码
     invitation_code = models.CharField(
         default=generate_random_string,
@@ -56,9 +54,7 @@ class UserTeam(models.Model):
     )
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team_users")
     is_leader = models.BooleanField(default=False, help_text="是否为队长")
-    join_date = models.DateTimeField(
-        auto_now_add=True, help_text="加入队伍的日期"
-    )
+    join_date = models.DateTimeField(auto_now_add=True, help_text="加入队伍的日期")
 
     class Meta:
         verbose_name = "UserTeam"

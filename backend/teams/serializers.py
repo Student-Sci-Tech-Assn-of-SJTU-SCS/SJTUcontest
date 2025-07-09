@@ -1,8 +1,6 @@
 from rest_framework import serializers
 
-from contests.models import Contest
 from .models import Team, UserTeam
-from users.models import User
 
 
 # 序列化成员信息

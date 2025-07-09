@@ -22,9 +22,7 @@ def get_matches(request):
     try:
         serializer = ContestListRequestSerializer(data=request.data)
         if not serializer.is_valid():
-            return ApiResponse.error(
-                message="Invalid data", data=serializer.errors
-            )
+            return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
         validated_data = serializer.validated_data
 
@@ -108,7 +106,7 @@ def get_match_by_id(request, match_id):
 
     except Contest.DoesNotExist:
         return ApiResponse.not_found(message="Contest not found")
-    
+
     except Exception as e:
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
@@ -131,7 +129,7 @@ def create_match(request):
                 data=serializer.errors,
                 status_code=400,
             )
-        
+
         contest_data = serializer.validated_data
         contest = Contest.objects.create(**contest_data)
 
