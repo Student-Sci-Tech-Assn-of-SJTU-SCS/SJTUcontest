@@ -44,3 +44,8 @@ class TeamResponseSerializer(serializers.ModelSerializer):
             "contest",
             "members",  # 成员列表
         ]
+
+class TeamInvitationCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = ['invitation_code', 'invitation_code_created_at']

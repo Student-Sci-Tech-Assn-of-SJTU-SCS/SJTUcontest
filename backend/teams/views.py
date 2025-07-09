@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils.timezone import now
 
 from .models import Team, UserTeam
-from .serializers import TeamCreateRequestSerializer, TeamResponseSerializer
+from .serializers import TeamCreateRequestSerializer, TeamResponseSerializer, TeamInvitationCodeSerializer
 from SJTUcontest.utils import ApiResponse
 
 
@@ -86,3 +86,56 @@ def get_team_by_id(request, team_id):
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
         )
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def join_team(request, team_id):
+    """
+    根据邀请码加入队伍
+    """
+    match_id = request.data.get("match_id")
+    if not match_id:
+        return ApiResponse.error(message="比赛 ID 不能为空", status_code=400)
+    invit_code = request.data.get("invitation_code")
+    try:
+        team = Team.objects.get(invitation_code=invit_code)
+    except Team.DoesNotExist:
+        return ApiResponse.not_found(message="队伍不存在")
+    if UserTeam.objects.filter(user=request.user, team=team).exists():
+        return ApiResponse.error(message="已在队伍中", status_code=400)
+    if team.id != team_id:
+        return ApiResponse.error(message="邀请码错误", status_code=400)
+    if team.is_invitation_code_valid == False:
+        return ApiResponse.error(message="邀请码已失效", status_code=400)
+    if str(team.contest.id) != match_id:
+        return ApiResponse.error(message="比赛不匹配", status_code=400)
+    if team.existing_members >= team.expected_members:
+        return ApiResponse.error(message="队伍人数已满", status_code=400)
+    UserTeam.objects.create(user=request.user, team=team, is_leader=False)
+    team.existing_members += 1
+    team.save()
+    return ApiResponse.success(
+        data=TeamResponseSerializer(team).data,
+        message="加入队伍成功",
+        status_code=200
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_invitation_code(request, team_id):
+    """
+    获取队伍的邀请码
+    """
+    try:
+        team = Team.objects.get(id=team_id)
+    except Team.DoesNotExist:
+        return ApiResponse.not_found(message="队伍不存在")
+    if team.is_invitation_code_valid == False:
+        return ApiResponse.error(message="邀请码已失效", status_code=400)
+    data = TeamInvitationCodeSerializer(team).data
+    return ApiResponse.success(
+        message="邀请码获取成功",
+        data=data,
+        status_code=200
+    )
