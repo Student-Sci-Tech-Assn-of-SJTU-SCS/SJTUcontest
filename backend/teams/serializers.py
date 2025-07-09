@@ -22,7 +22,6 @@ class TeamCreateRequestSerializer(serializers.ModelSerializer):
             "expected_members",
             "recruitment_deadline",
         ]
-
     def get_members(self, obj):
         user_teams = obj.team_users.select_related("user").all()
         return TeamMemberSerializer(user_teams, many=True).data
@@ -51,3 +50,8 @@ class TeamResponseSerializer(serializers.ModelSerializer):
 
     def get_existing_members(self, obj):
         return obj.team_users.count()
+
+class TeamInvitationCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = ['invitation_code', 'invitation_code_created_at']
