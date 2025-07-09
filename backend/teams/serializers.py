@@ -1,6 +1,6 @@
 from rest_framework import serializers
+
 from .models import Team, UserTeam
-from users.models import User
 
 
 # 序列化成员信息
@@ -19,17 +19,18 @@ class TeamCreateRequestSerializer(serializers.ModelSerializer):
         fields = [
             "name",
             "introduction",
+            "contest",
             "expected_members",
             "recruitment_deadline",
         ]
-    def get_members(self, obj):
-        user_teams = obj.team_users.select_related("user").all()
-        return TeamMemberSerializer(user_teams, many=True).data
 
 
 class TeamResponseSerializer(serializers.ModelSerializer):
-    user_teams = serializers.SerializerMethodField()
-    existing_members = serializers.SerializerMethodField()
+    members = TeamMemberSerializer(
+        source="team_users",
+        many=True,
+        read_only=True,
+    )
 
     class Meta:
         model = Team
@@ -40,16 +41,9 @@ class TeamResponseSerializer(serializers.ModelSerializer):
             "expected_members",
             "existing_members",
             "recruitment_deadline",
-            "contest",  # 如果你要返回参加的比赛
-            "user_teams",  # 成员列表
+            "contest",
+            "members",  # 成员列表
         ]
-
-    def get_user_teams(self, obj):
-        user_teams = obj.team_users.select_related("user").all()
-        return TeamMemberSerializer(user_teams, many=True).data
-
-    def get_existing_members(self, obj):
-        return obj.team_users.count()
 
 class TeamInvitationCodeSerializer(serializers.ModelSerializer):
     class Meta:

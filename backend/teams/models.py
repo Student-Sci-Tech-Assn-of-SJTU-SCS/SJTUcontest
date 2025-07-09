@@ -20,13 +20,11 @@ class Team(models.Model):
         help_text="队伍要参加的比赛",
     )
     # 队伍已有人数
-    existing_members = models.PositiveIntegerField(default=0, help_text="队伍已有人数")
+    existing_members = models.PositiveIntegerField(default=1, help_text="队伍已有人数")
     # 队伍期望人数
-    expected_members = models.PositiveIntegerField(default=1, help_text="队伍期望人数")
+    expected_members = models.PositiveIntegerField(help_text="队伍期望人数")
     # 招募截止日期
-    recruitment_deadline = models.DateTimeField(
-        null=True, blank=True, help_text="招募截止日期"
-    )
+    recruitment_deadline = models.DateTimeField(help_text="招募截止日期")
     # 队伍邀请码
     invitation_code = models.CharField(
         default=generate_random_string,
@@ -34,7 +32,7 @@ class Team(models.Model):
     )
     # 邀请码创建时间
     invitation_code_created_at = models.DateTimeField(
-        auto_now_add=True, help_text="邀请码创建时间"
+        auto_now=True, help_text="邀请码创建时间"
     )
     # 邀请码是否有效
     is_invitation_code_valid = models.BooleanField(
@@ -56,6 +54,7 @@ class UserTeam(models.Model):
     )
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team_users")
     is_leader = models.BooleanField(default=False, help_text="是否为队长")
+    join_date = models.DateTimeField(auto_now_add=True, help_text="加入队伍的日期")
 
     class Meta:
         verbose_name = "UserTeam"

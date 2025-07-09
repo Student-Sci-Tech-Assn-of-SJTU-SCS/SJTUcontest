@@ -2,7 +2,6 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, AllowAny
-import json
 
 from .models import Contest
 from .serializers import (
@@ -23,9 +22,7 @@ def get_matches(request):
     try:
         serializer = ContestListRequestSerializer(data=request.data)
         if not serializer.is_valid():
-            return ApiResponse.error(
-                message="Invalid request data", data={"errors": serializer.errors}
-            )
+            return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
         validated_data = serializer.validated_data
 
@@ -92,9 +89,6 @@ def get_matches(request):
             data=response_data, message="Contests retrieved successfully"
         )
 
-    except json.JSONDecodeError:
-        return ApiResponse.error(message="Invalid JSON format")
-
     except Exception as e:
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
@@ -106,13 +100,17 @@ def get_matches(request):
 def get_match_by_id(request, match_id):
     try:
         contest = Contest.objects.get(id=match_id)
+
+        serializer = ContestResponseSerializer(contest)
+        return ApiResponse.success(data=serializer.data, message="Contest found")
+
     except Contest.DoesNotExist:
         return ApiResponse.not_found(message="Contest not found")
 
-    # 使用序列化器序列化比赛数据
-    serializer = ContestResponseSerializer(contest)
-
-    return ApiResponse.success(data=serializer.data, message="Contest found")
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
 
 
 @api_view(["POST"])
@@ -123,15 +121,15 @@ def create_match(request):
     Does NOT accept 'id' in request data — the UUID is auto-generated.
     Only accessible by admin users.
     """
-    # 判断是否不小心传了 id 字段
-    if "id" in request.data:
-        return ApiResponse.error(
-            message="You cannot provide 'id' when creating a new contest. It is generated automatically.",
-            status_code=400,
-        )
+    try:
+        serializer = ContestCreateRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return ApiResponse.error(
+                message="Invalid data",
+                data=serializer.errors,
+                status_code=400,
+            )
 
-    serializer = ContestCreateRequestSerializer(data=request.data)
-    if serializer.is_valid():
         contest_data = serializer.validated_data
         contest = Contest.objects.create(**contest_data)
 
@@ -142,8 +140,7 @@ def create_match(request):
             status_code=201,
         )
 
-    return ApiResponse.error(
-        message="Invalid data",
-        data=serializer.errors,
-        status_code=400,
-    )
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
