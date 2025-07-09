@@ -102,7 +102,6 @@ def join_team(request, team_id):
     except Team.DoesNotExist:
         return ApiResponse.not_found(message="队伍不存在")
     if UserTeam.objects.filter(user=request.user, team=team).exists():
-        print('exist')
         return ApiResponse.error(message="已在队伍中", status_code=400)
     if team.id != team_id:
         return ApiResponse.error(message="邀请码错误", status_code=400)
