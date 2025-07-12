@@ -1,9 +1,18 @@
 import React from "react";
 import { Typography, Button, Box } from "@mui/material";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   return (
     <Box sx={{ textAlign: "center", py: 8 }}>
@@ -34,7 +43,7 @@ const Home = () => {
           variant="outlined"
           color="primary"
           sx={{ mx: 2 }}
-          onClick={() => navigate("/users")}
+          onClick={() => navigate(`/users/${user.id}`)}
         >
           个人主页
         </Button>
