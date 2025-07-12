@@ -47,12 +47,16 @@ const MainLayout = () => {
       <CssBaseline />
 
       {/* 顶部导航栏 */}
-      <AppBar position="static">
-        <Toolbar>
+      <AppBar sx={{ display: "flex", flexDirection: "row" }} position="static">
+        {/* <img src="https://pic.rmb.bdstatic.com/bjh/news/7082e39bdd27dbabeed39d95f807893c.png" alt="SJTU Contest" width={60} /> */
+        // 放网站logo
+        }
+        <Box sx={{ width: 60, bgcolor: "#1670c6", borderRight: "1px #0d47a1 solid", borderBottom: "1px #0d47a1 solid" }} />
+        <Toolbar sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}>
           <Typography
             variant="h6"
             component="div"
-            sx={{ mr: 4, cursor: "pointer" }}
+            sx={{ mr: 4, cursor: "pointer", alignSelf: "center" }}
             onClick={() => navigate("/")}
           >
             SJTU Contest
@@ -106,10 +110,10 @@ const MainLayout = () => {
       </AppBar>
 
       {/* 主要内容区域 */}
-      <Box component="main" sx={{ flex: 1, py: 4 }}>
-        <Container maxWidth="lg">
+      <Box component="main" sx={{ flex: 1/*, py: 4*/ }}>
+        {/* <Container maxWidth="lg"> */}
           <Outlet />
-        </Container>
+        {/* </Container>   */}
       </Box>
 
       {/* 页脚 */}
