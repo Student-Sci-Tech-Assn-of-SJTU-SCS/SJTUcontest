@@ -33,7 +33,7 @@ const Teams = () => {
       </Box>
       <Grid container spacing={3}>
         {teams.map((team) => (
-          <Grid item xs={12} md={6} key={team.id}>
+          <Grid size={{ xs: 12, md: 6 }} key={team.id}>
             <Card
               onClick={() => navigate(`/teams/1/${team.id}`)}
               style={{ cursor: "pointer" }}
