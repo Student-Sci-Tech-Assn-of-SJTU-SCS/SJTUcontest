@@ -127,7 +127,6 @@ def create_match(request):
             return ApiResponse.error(
                 message="Invalid data",
                 data=serializer.errors,
-                status_code=400,
             )
 
         contest_data = serializer.validated_data

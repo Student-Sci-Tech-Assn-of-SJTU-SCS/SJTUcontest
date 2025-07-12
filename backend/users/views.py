@@ -55,14 +55,12 @@ def update_user_profile(request):
             return ApiResponse.error(
                 message="Invalid data",
                 data=serializer.errors,
-                status_code=400,  # 验证失败使用400
             )
 
         serializer.save()
         return ApiResponse.success(
             data=serializer.data,
             message="用户信息更新成功",
-            status_code=200,  # 使用200状态码
         )
 
     except Exception as e:
@@ -81,9 +79,7 @@ def register(request):
         serializer = UserRegisterSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return ApiResponse.error(
-                message="Invalid data", data=serializer.errors, status_code=400
-            )
+            return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
         User.objects.create_user(
             username=serializer.validated_data["username"],
@@ -120,9 +116,7 @@ def login_by_jaccount(request):
     try:
         serializer = jAccountLoginRequestSerializer(data=request.data)
         if not serializer.is_valid():
-            return ApiResponse.error(
-                message="Invalid data", data=serializer.errors, status_code=400
-            )
+            return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
         # 从前端取回授权码
         code = serializer.validated_data["code"]
