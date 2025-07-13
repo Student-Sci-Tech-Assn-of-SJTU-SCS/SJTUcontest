@@ -186,10 +186,10 @@ def update_team_by_id(request, team_id):
         if not serializer.is_valid():
             return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
-        serializer.save()
+        updated_team = serializer.save()
 
         return ApiResponse.success(
-            data=TeamResponseSerializer(team).data,
+            data=TeamResponseSerializer(updated_team).data,
             message="队伍信息更新成功",
         )
 

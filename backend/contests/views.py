@@ -95,24 +95,6 @@ def get_matches(request):
         )
 
 
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def get_match_by_id(request, match_id):
-    try:
-        contest = Contest.objects.get(id=match_id)
-
-        serializer = ContestResponseSerializer(contest)
-        return ApiResponse.success(data=serializer.data, message="Contest found")
-
-    except Contest.DoesNotExist:
-        return ApiResponse.not_found(message="Contest not found")
-
-    except Exception as e:
-        return ApiResponse.error(
-            message=f"Internal server error: {str(e)}", status_code=500
-        )
-
-
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
 def create_match(request):
@@ -138,6 +120,72 @@ def create_match(request):
             data=response_serializer.data,
             status_code=201,
         )
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def get_match_by_id(request, match_id):
+    try:
+        contest = Contest.objects.get(id=match_id)
+
+        serializer = ContestResponseSerializer(contest)
+        return ApiResponse.success(data=serializer.data, message="Contest found")
+
+    except Contest.DoesNotExist:
+        return ApiResponse.not_found(message="Contest not found")
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
+
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def update_match_by_id(request, match_id):
+    try:
+        contest = Contest.objects.get(id=match_id)
+
+        serializer = ContestCreateRequestSerializer(
+            instance=contest, data=request.data, partial=True
+        )
+        if not serializer.is_valid():
+            return ApiResponse.error(
+                message="Invalid data",
+                data=serializer.errors,
+            )
+
+        updated_contest = serializer.save()
+
+        return ApiResponse.success(
+            message="Contest updated successfully",
+            data=ContestResponseSerializer(updated_contest).data,
+        )
+
+    except Contest.DoesNotExist:
+        return ApiResponse.not_found(message="Contest not found")
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
+    
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_match_by_id(request, match_id):
+    try:
+        contest = Contest.objects.get(id=match_id)
+        contest.delete()
+        return ApiResponse.success(message="Contest deleted successfully", status_code=204)
+
+    except Contest.DoesNotExist:
+        return ApiResponse.not_found(message="Contest not found")
 
     except Exception as e:
         return ApiResponse.error(

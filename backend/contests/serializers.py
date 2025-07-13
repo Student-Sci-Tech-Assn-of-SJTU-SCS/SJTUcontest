@@ -51,39 +51,6 @@ class ContestListRequestSerializer(serializers.Serializer):
     options = ContestOptionsSerializer(required=False)
 
 
-class ContestUpdateRequestSerializer(serializers.ModelSerializer):
-    """更新比赛的请求体数据模型"""
-
-    class Meta:
-        model = Contest
-        fields = [
-            "name",
-            "description",
-            "logo",
-            "place",
-            "level",
-            "quality",
-            "months",
-            "keywords",
-            "website",
-            "materials",
-        ]
-        extra_kwargs = {
-            "name": {"required": False},
-            "place": {"required": False},
-            "level": {"required": False},
-            "quality": {"required": False},
-        }
-
-    level = serializers.ChoiceField(choices=ContestLevel.choices, required=False)
-    quality = serializers.ChoiceField(choices=ContestQuality.choices, required=False)
-    keywords = serializers.ListField(
-        child=serializers.ChoiceField(choices=ContestKeywords.choices),
-        required=False,
-        allow_empty=True,
-    )
-
-
 class ContestResponseSerializer(serializers.ModelSerializer):
     """比赛响应数据模型"""
 
