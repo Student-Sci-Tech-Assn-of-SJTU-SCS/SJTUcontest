@@ -6,6 +6,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.utils import timezone
 import urllib.parse
 
 from .serializers import (
@@ -145,6 +146,10 @@ def login_by_jaccount(request):
 
         # 获取或创建用户
         user = get_or_create_user_from_jaccount(jaccount_id)
+
+        # 更新用户的最后登录时间
+        user.last_login = timezone.now()
+        user.save(update_fields=["last_login"])
 
         # 生成JWT令牌
         refresh = RefreshToken.for_user(user)
