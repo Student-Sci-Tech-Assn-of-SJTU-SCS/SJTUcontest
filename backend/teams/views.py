@@ -25,9 +25,7 @@ def create_team(request):
         serializer = TeamCreateRequestSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return ApiResponse.error(
-                message="Invalid data", data=serializer.errors, status_code=400
-            )
+            return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
         contest = serializer.validated_data["contest"]
 
@@ -47,9 +45,7 @@ def create_team(request):
         ).count()
 
         if active_leader_teams_count >= 5:
-            return ApiResponse.forbidden(
-                message="你最多只能在5个未截止比赛中创建队伍", status_code=400
-            )
+            return ApiResponse.forbidden(message="你最多只能在5个未截止比赛中创建队伍")
 
         # 创建队伍
         team = Team.objects.create(**serializer.validated_data)
@@ -81,7 +77,6 @@ def get_team_by_id(request, team_id):
         return ApiResponse.success(
             data=TeamResponseSerializer(team).data,
             message="队伍信息获取成功",
-            status_code=200,
         )
 
     except Team.DoesNotExist:
@@ -149,21 +144,23 @@ def quit_team_by_id(request, team_id):
     """
     try:
         team = Team.objects.get(id=team_id)
-    except Team.DoesNotExist:
-        return ApiResponse.not_found(message="队伍不存在")
-    try:
+
         member = UserTeam.objects.filter(user=request.user, team=team).first()
         if not member:
-            return ApiResponse.error(message="你不在该队伍中", status_code=400)
+            return ApiResponse.error(message="你不在该队伍中")
 
         if member.is_leader:
-            return ApiResponse.error(message="队长不能退出队伍", status_code=400)
+            return ApiResponse.error(message="队长不能退出队伍")
 
         member.delete()
         team.existing_members -= 1
         team.save()
 
-        return ApiResponse.success(message="退出队伍成功", status_code=200)
+        return ApiResponse.success(message="退出队伍成功")
+
+    except Team.DoesNotExist:
+        return ApiResponse.not_found(message="队伍不存在")
+
     except Exception as e:
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
@@ -178,31 +175,27 @@ def update_team_by_id(request, team_id):
     """
     try:
         team = Team.objects.get(id=team_id)
-    except Team.DoesNotExist:
-        return ApiResponse.not_found(message="队伍不存在")
 
-    try:
         if not UserTeam.objects.filter(
             user=request.user, team=team, is_leader=True
         ).exists():
-            return ApiResponse.forbidden(
-                message="只有队长可以更新队伍信息", status_code=403
-            )
+            return ApiResponse.forbidden(message="只有队长可以更新队伍信息")
 
         serializer = TeamUpdateRequestSerializer(team, data=request.data, partial=True)
 
         if not serializer.is_valid():
-            return ApiResponse.error(
-                message="Invalid data", data=serializer.errors, status_code=400
-            )
+            return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
         serializer.save()
 
         return ApiResponse.success(
             data=TeamResponseSerializer(team).data,
             message="队伍信息更新成功",
-            status_code=200,
         )
+
+    except Team.DoesNotExist:
+        return ApiResponse.not_found(message="队伍不存在")
+
     except Exception as e:
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
@@ -217,19 +210,19 @@ def delete_team_by_id(request, team_id):
     """
     try:
         team = Team.objects.get(id=team_id)
-    except Team.DoesNotExist:
-        return ApiResponse.not_found(message="队伍不存在")
-    try:
+
         if not UserTeam.objects.filter(
             user=request.user, team=team, is_leader=True
         ).exists():
-            return ApiResponse.forbidden(
-                message="只有队长可以删除队伍", status_code=403
-            )
+            return ApiResponse.forbidden(message="只有队长可以删除队伍")
 
         team.delete()
 
         return ApiResponse.success(message="队伍删除成功", status_code=204)
+
+    except Team.DoesNotExist:
+        return ApiResponse.not_found(message="队伍不存在")
+
     except Exception as e:
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
