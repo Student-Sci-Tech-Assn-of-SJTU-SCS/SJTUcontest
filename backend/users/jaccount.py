@@ -123,7 +123,7 @@ def get_jaccount_profile(access_token):
         return response.json()
     except requests.RequestException as e:
         raise Exception(f"Failed to get jAccount profile: {str(e)}")
-
+    
 
 def get_jaccount_id(response):
     if settings.JACCOUNT_SCOPE == "openid":
@@ -132,16 +132,15 @@ def get_jaccount_id(response):
         user_info = decode_id_token(id_token)
         return user_info["sub"]  # jAccount账号
 
-    else:
-        access_token = response["access_token"]
-        user_info = get_jaccount_profile(access_token)
+    access_token = response["access_token"]
+    user_info = get_jaccount_profile(access_token)
 
-        if settings.JACCOUNT_SCOPE == "basic":
-            return user_info["account"]
-        elif settings.JACCOUNT_SCOPE == "essential":
-            return user_info["entities"][0]["account"]
-        else:
-            raise Exception(f"Unsupported jAccount scope: {settings.JACCOUNT_SCOPE}")
+    if settings.JACCOUNT_SCOPE == "basic":
+        return user_info["account"]
+    elif settings.JACCOUNT_SCOPE == "essential":
+        return user_info["entities"][0]["account"]
+    else:
+        raise Exception(f"Unsupported jAccount scope: {settings.JACCOUNT_SCOPE}")
 
 
 def get_jaccount_logout_url(state=None):
@@ -155,6 +154,6 @@ def get_jaccount_logout_url(state=None):
 
     if state:
         params["state"] = state
-
+     
     url = f"{settings.JACCOUNT_LOGOUT_URL}?{urllib.parse.urlencode(params)}"
     return url
