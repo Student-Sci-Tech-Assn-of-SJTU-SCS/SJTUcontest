@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { userAPI } from "../services/UserServices";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -27,6 +28,8 @@ const MainLayout = () => {
     try {
       localStorage.removeItem("user");
       setUser(null);
+      const data = await userAPI.logout();
+      window.location.href = data.jaccount_logout_url;
     } catch (error) {
       console.error("登出失败:", error);
       // 即使请求失败，也清除本地状态
@@ -48,10 +51,18 @@ const MainLayout = () => {
 
       {/* 顶部导航栏 */}
       <AppBar sx={{ display: "flex", flexDirection: "row" }} position="static">
-        {/* <img src="https://pic.rmb.bdstatic.com/bjh/news/7082e39bdd27dbabeed39d95f807893c.png" alt="SJTU Contest" width={60} /> */
-        // 放网站logo
+        {
+          /* <img src="https://pic.rmb.bdstatic.com/bjh/news/7082e39bdd27dbabeed39d95f807893c.png" alt="SJTU Contest" width={60} /> */
+          // 放网站logo
         }
-        <Box sx={{ width: 60, bgcolor: "#1670c6", borderRight: "1px #0d47a1 solid", borderBottom: "1px #0d47a1 solid" }} />
+        <Box
+          sx={{
+            width: 60,
+            bgcolor: "#1670c6",
+            borderRight: "1px #0d47a1 solid",
+            borderBottom: "1px #0d47a1 solid",
+          }}
+        />
         <Toolbar sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}>
           <Typography
             variant="h6"
@@ -110,9 +121,9 @@ const MainLayout = () => {
       </AppBar>
 
       {/* 主要内容区域 */}
-      <Box component="main" sx={{ flex: 1/*, py: 4*/ }}>
+      <Box component="main" sx={{ flex: 1 /*, py: 4*/ }}>
         {/* <Container maxWidth="lg"> */}
-          <Outlet />
+        <Outlet />
         {/* </Container>   */}
       </Box>
 

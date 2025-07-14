@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("teams", "0002_userteam_join_date_alter_team_existing_members_and_more"),
     ]

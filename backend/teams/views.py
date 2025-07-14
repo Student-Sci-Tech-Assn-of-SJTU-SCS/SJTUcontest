@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from django.utils.timezone import now
+from django.utils import timezone
 
 from .models import Team, UserTeam
 from .serializers import (
@@ -41,7 +41,7 @@ def create_team(request):
         active_leader_teams_count = Team.objects.filter(
             team_users__user=request.user,
             team_users__is_leader=True,
-            contest__registration_end__gt=now(),
+            contest__registration_end__gt=timezone.now(),
         ).count()
 
         if active_leader_teams_count >= 5:

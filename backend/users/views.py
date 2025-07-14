@@ -1,13 +1,10 @@
-from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from django.conf import settings
 from django.utils import timezone
-import urllib.parse
 
 from .serializers import (
     UserProfileSerializer,
@@ -17,9 +14,9 @@ from .serializers import (
 from .jaccount import (
     get_jaccount_authorize_url,
     exchange_code_for_tokens,
-    decode_id_token,
-    get_jaccount_profile,
+    get_jaccount_logout_url,
     get_or_create_user_from_jaccount,
+    get_jaccount_id,
 )
 from SJTUcontest.utils import ApiResponse
 
@@ -125,24 +122,8 @@ def login_by_jaccount(request):
         # 用授权码向认证服务器申请令牌
         response = exchange_code_for_tokens(code)
 
-        if settings.JACCOUNT_SCOPE == "openid":
-            # 解析身份令牌获取用户信息
-            id_token = response["id_token"]
-            user_info = decode_id_token(id_token)
-            jaccount_id = user_info["sub"]  # jAccount账号
-
-        else:
-            access_token = response["access_token"]
-            user_info = get_jaccount_profile(access_token)
-
-            if settings.JACCOUNT_SCOPE == "basic":
-                jaccount_id = user_info["account"]
-            elif settings.JACCOUNT_SCOPE == "essential":
-                jaccount_id = user_info["entities"][0]["account"]
-            else:
-                raise Exception(
-                    f"Unsupported jAccount scope: {settings.JACCOUNT_SCOPE}"
-                )
+        # 从 response 中获取 jAccount ID
+        jaccount_id = get_jaccount_id(response)
 
         # 获取或创建用户
         user = get_or_create_user_from_jaccount(jaccount_id)
@@ -173,34 +154,26 @@ def login_by_jaccount(request):
         return ApiResponse.error(message=f"jAccount登录失败: {str(e)}", status_code=500)
 
 
-# 这东西暂时没用
-class JAccountLogoutView(APIView):
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def logout(request):
     """
-    jAccount登出 - 同时处理本地JWT和jAccount登出
+    用户登出接口 - 处理本地 JWT 令牌黑名单和 jAccount登出
     """
+    try:
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
+            return ApiResponse.error(message="Refresh token is required")
 
-    permission_classes = [IsAuthenticated]
+        token = RefreshToken(refresh_token)
+        token.blacklist()
 
-    def post(self, request):
-        try:
-            # 先处理本地JWT令牌黑名单
-            refresh_token = request.data.get("refresh")
-            if refresh_token:
-                token = RefreshToken(refresh_token)
-                token.blacklist()
+        jaccount_logout_url = get_jaccount_logout_url()
 
-            # 构造jAccount登出URL
-            logout_params = {
-                "client_id": settings.JACCOUNT_CLIENT_ID,
-                "post_logout_redirect_uri": request.build_absolute_uri("/"),
-            }
+        data = {"jaccount_logout_url": jaccount_logout_url}
+        return ApiResponse.success(message="登出成功", data=data)
 
-            logout_url = f"{settings.JACCOUNT_LOGOUT_URL}?{urllib.parse.urlencode(logout_params)}"
-
-            data = {"jaccount_logout_url": logout_url}
-            return ApiResponse.success(data=data, message="登出成功")
-
-        except TokenError:
-            return ApiResponse.error(message="无效的token")
-        except Exception as e:
-            return ApiResponse.error(message=f"登出失败: {str(e)}", status_code=500)
+    except TokenError:
+        return ApiResponse.error(message="无效的token")
+    except Exception as e:
+        return ApiResponse.error(message=f"登出失败: {str(e)}", status_code=500)

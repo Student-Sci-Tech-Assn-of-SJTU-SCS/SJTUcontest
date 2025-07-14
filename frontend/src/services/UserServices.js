@@ -22,6 +22,7 @@ export const userAPI = {
     try {
       const response = await api.post("users/jaccount/login/", { code });
       const { access, refresh, user } = response;
+
       // 保存tokens和用户信息
       saveTokens(access, refresh);
       saveUser(user);
@@ -79,16 +80,9 @@ export const userAPI = {
 
   // 登出
   logout: async () => {
-    try {
-      const refreshToken = getRefreshToken();
-      if (refreshToken) {
-        await api.post("users/logout/", { refresh: refreshToken });
-      }
-    } catch (error) {
-      console.error("Logout API error:", error);
-    } finally {
-      // 无论API调用是否成功，都清除本地认证数据
-      clearAuth();
-    }
+    const refreshToken = getRefreshToken();
+    const response = await api.post("users/logout/", { refresh: refreshToken });
+    clearAuth();
+    return response.data;
   },
 };

@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0003_alter_user_options_remove_user_jaccount_id_and_more"),
     ]

@@ -174,7 +174,7 @@ def update_match_by_id(request, match_id):
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
         )
-    
+
 
 @api_view(["DELETE"])
 @permission_classes([IsAdminUser])
@@ -182,7 +182,9 @@ def delete_match_by_id(request, match_id):
     try:
         contest = Contest.objects.get(id=match_id)
         contest.delete()
-        return ApiResponse.success(message="Contest deleted successfully", status_code=204)
+        return ApiResponse.success(
+            message="Contest deleted successfully", status_code=204
+        )
 
     except Contest.DoesNotExist:
         return ApiResponse.not_found(message="Contest not found")
