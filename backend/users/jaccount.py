@@ -123,7 +123,7 @@ def get_jaccount_profile(access_token):
         return response.json()
     except requests.RequestException as e:
         raise Exception(f"Failed to get jAccount profile: {str(e)}")
-    
+
 
 def get_jaccount_id(response):
     if settings.JACCOUNT_SCOPE == "openid":
@@ -154,6 +154,6 @@ def get_jaccount_logout_url(state=None):
 
     if state:
         params["state"] = state
-     
+
     url = f"{settings.JACCOUNT_LOGOUT_URL}?{urllib.parse.urlencode(params)}"
     return url

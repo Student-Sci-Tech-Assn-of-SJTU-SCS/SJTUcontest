@@ -1,15 +1,71 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.core.paginator import Paginator
+from django.db.models import F
 from django.utils import timezone
 
 from .models import Team, UserTeam
 from .serializers import (
+    RecruitingTeamRequestSerializer,
     TeamCreateRequestSerializer,
     TeamResponseSerializer,
     TeamInvitationCodeSerializer,
     TeamUpdateRequestSerializer,
 )
 from SJTUcontest.utils import ApiResponse
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def get_teams_recruiting(request):
+    """
+    获取当前用户可以加入的所有正在招募的队伍。
+    """
+    try:
+        serializer = RecruitingTeamRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return ApiResponse.error(message="Invalid data", data=serializer.errors)
+
+        # 查询所有正在招募的队伍，按创建时间倒序排列
+        teams = Team.objects.filter(
+            contest__registration_end__gt=timezone.now(),
+            existing_members__lt=F("expected_members"),
+        ).order_by("-created_at")
+
+        # 分页处理
+        page_index = serializer.validated_data["page_index"]
+        page_size = serializer.validated_data["page_size"]
+
+        paginator = Paginator(teams, page_size)
+
+        if page_index > paginator.num_pages:
+            return ApiResponse.not_found(
+                message="Too large page index",
+                data={
+                    "total_pages": paginator.num_pages,
+                    "page_index": page_index,
+                },
+            )
+
+        page_teams = paginator.page(page_index)
+        teams_serializer = TeamResponseSerializer(page_teams, many=True)
+
+        response_data = {
+            "total_pages": paginator.num_pages,
+            "page_index": page_index,
+            "team_num": len(teams_serializer.data),
+            "teams": teams_serializer.data,
+        }
+
+        return ApiResponse.success(
+            data=response_data,
+            message="Teams recruiting retrieved successfully",
+        )
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
 
 
 @api_view(["POST"])

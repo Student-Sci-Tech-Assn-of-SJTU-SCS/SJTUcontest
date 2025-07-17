@@ -63,3 +63,11 @@ class ContestCreateRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contest
         exclude = ["id"]  # 排除id字段，自动生成
+
+
+# 考虑到以后可能要添加筛选字段，尽管很多地方都用到了分页序列化器，但还是重复实现了
+class ContestTeamsRequestSerializer(serializers.Serializer):
+    """获取比赛队伍的请求体数据模型"""
+
+    page_index = serializers.IntegerField(min_value=1, required=True)
+    page_size = serializers.IntegerField(min_value=1, max_value=100, required=True)
