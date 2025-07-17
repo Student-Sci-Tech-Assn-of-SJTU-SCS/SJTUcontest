@@ -40,6 +40,9 @@ class Team(models.Model):
         default=True, help_text="邀请码是否有效"
     )
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         verbose_name = "Team"
         verbose_name_plural = "Teams"

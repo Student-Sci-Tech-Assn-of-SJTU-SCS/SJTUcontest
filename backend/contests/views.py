@@ -1,8 +1,8 @@
-from django.core.paginator import Paginator
-from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-
+from django.core.paginator import Paginator
+from django.db.models import Q, F
+from django.utils import timezone
 
 from .models import Contest
 from .serializers import (
@@ -208,7 +208,10 @@ def get_match_teams(request, match_id):
             return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
         # 获取比赛的所有队伍
-        teams = contest.teams.all()
+        teams = contest.teams.filter(
+            recruitment_deadline__gt=timezone.now(),
+            existing_members__lt=F("expected_members"),
+        ).order_by("-updated_at")
 
         page_index = serializer.validated_data["page_index"]
         page_size = serializer.validated_data["page_size"]

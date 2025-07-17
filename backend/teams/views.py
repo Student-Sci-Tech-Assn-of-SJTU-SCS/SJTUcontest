@@ -28,9 +28,9 @@ def get_teams_recruiting(request):
 
         # 查询所有正在招募的队伍，按创建时间倒序排列
         teams = Team.objects.filter(
-            contest__registration_end__gt=timezone.now(),
+            recruitment_deadline__gt=timezone.now(),
             existing_members__lt=F("expected_members"),
-        ).order_by("-created_at")
+        ).order_by("-updated_at")
 
         # 分页处理
         page_index = serializer.validated_data["page_index"]
