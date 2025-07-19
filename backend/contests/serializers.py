@@ -56,13 +56,13 @@ class ContestResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contest
-        fields = "__all__"
+        exclude = ["created_at", "updated_at"]
 
 
 class ContestCreateRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contest
-        exclude = ["id"]  # 排除id字段，自动生成
+        exclude = ["id", "created_at", "updated_at"]
 
 
 # 考虑到以后可能要添加筛选字段，尽管很多地方都用到了分页序列化器，但还是重复实现了

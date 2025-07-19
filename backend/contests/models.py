@@ -55,6 +55,9 @@ class Contest(models.Model):
     # 报名结束时间
     registration_end = models.DateTimeField(default=datetime(1234, 5, 6, 7, 8, 9))
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     # 队伍表中有外键关联到比赛表，可以反向查询
 
     def __str__(self):
