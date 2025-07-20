@@ -9,73 +9,53 @@ import {
 // 用户相关API
 export const userAPI = {
   getjAccountAuthURL: async () => {
-    try {
-      const response = await api.get("users/jaccount/auth/url/");
-      return response.data;
-    } catch (error) {
-      console.error("获取jAccount认证URL失败:", error);
-      throw error;
-    }
+    const response = await api.get("users/jaccount/auth/url/");
+    return response;
   },
 
   loginByjAccount: async (code) => {
-    try {
-      const response = await api.post("users/jaccount/login/", { code });
-      const { access, refresh, user } = response;
+    const response = await api.post("users/jaccount/login/", { code });
+    const { access, refresh, user } = response;
 
-      // 保存tokens和用户信息
-      saveTokens(access, refresh);
-      saveUser(user);
-    } catch (error) {
-      console.error("jAccount登录失败:", error);
-      throw error;
-    }
+    // 保存tokens和用户信息
+    saveTokens(access, refresh);
+    saveUser(user);
   },
 
   // 登录
-  login: async (credentials) => {
-    try {
-      const response = await api.post("users/login/", credentials);
-      const { access, refresh, user } = response.data;
+  login: async (username, password) => {
+    const response = await api.post("users/login/", { username, password });
+    const { access, refresh, user } = response;
 
-      // 保存tokens和用户信息
-      saveTokens(access, refresh);
-      saveUser(user);
-
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    // 保存tokens和用户信息
+    saveTokens(access, refresh);
+    saveUser(user);
   },
 
   // 注册
-  register: async (userData) => {
-    try {
-      const response = await api.post("users/register/", userData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+  register: async (username, email, password) => {
+    const response = await api.post("users/register/", {
+      username,
+      email,
+      password,
+    });
+    return response;
   },
 
   // 获取用户资料
   getUserProfile: async (user_id) => {
-    try {
-      const response = await api.get(`users/${user_id}/`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get(`users/${user_id}/`);
+    return response;
   },
 
   // 更新用户资料
-  updateProfile: async (userData) => {
-    try {
-      const response = await api.post("users/profile/update/", userData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+  updateProfile: async (nick_name, experience, advantage) => {
+    const response = await api.post("users/profile/update/", {
+      nick_name,
+      experience,
+      advantage,
+    });
+    return response;
   },
 
   // 登出
@@ -83,6 +63,6 @@ export const userAPI = {
     const refreshToken = getRefreshToken();
     const response = await api.post("users/logout/", { refresh: refreshToken });
     clearAuth();
-    return response.data;
+    return response;
   },
 };

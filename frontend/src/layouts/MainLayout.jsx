@@ -29,7 +29,7 @@ const MainLayout = () => {
       localStorage.removeItem("user");
       setUser(null);
       const data = await userAPI.logout();
-      window.location.href = data.jaccount_logout_url;
+      window.location.href = data.data.jaccount_logout_url;
     } catch (error) {
       console.error("登出失败:", error);
       // 即使请求失败，也清除本地状态

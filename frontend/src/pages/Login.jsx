@@ -112,7 +112,7 @@ const Login = () => {
           onClick={async () => {
             const data = await userAPI.getjAccountAuthURL();
             // console.log("jAccount login URL response:", body);
-            const auth_url = data.auth_url;
+            const auth_url = data.data.auth_url;
             // console.log("jAccount auth URL:", auth_url);
             sessionStorage.setItem("pre_auth_path", from);
             window.location.href = auth_url;

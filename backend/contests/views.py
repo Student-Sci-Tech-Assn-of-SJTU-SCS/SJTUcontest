@@ -62,6 +62,7 @@ def get_matches(request):
         page_index = validated_data["page_index"]
         page_size = validated_data["page_size"]
 
+        queryset = queryset.order_by("-created_at")
         paginator = Paginator(queryset, page_size)
 
         # 检查页码是否超出范围
