@@ -45,3 +45,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class jAccountLoginRequestSerializer(serializers.Serializer):
     code = serializers.CharField(required=True)
+
+
+class UserTeamsRequestSerializer(serializers.Serializer):
+    page_index = serializers.IntegerField(min_value=1, required=True)
+    page_size = serializers.IntegerField(min_value=1, max_value=100, required=True)
