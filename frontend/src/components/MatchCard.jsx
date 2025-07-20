@@ -1,9 +1,58 @@
-import { Card, CardContent, Box, Link as MuiLink } from "@mui/material";
-import Typography from "@mui/material/Typography";
+import { Typography, Card, CardContent, Box, Link as MuiLink } from "@mui/material";
+import { useState, useEffect } from "react";
 import Tag from "./Tag";
 import { nameToTag } from "./Tag";
 
+// 临时的颜色选项
+const colorChoices = {
+  notStarted: "rgb(128, 128, 128)",
+  ongoing: "rgb(76, 175, 80)",
+  ended: "rgb(244, 67, 54)",
+}
+
 export default function MatchCard({ match }) {
+  const [statusLabel, setStatusLabel] = useState(""); // 倒计时类型标签
+  const [countdown, setCountdown] = useState(""); // 倒计时内容
+  const [countdownColor, setCountdownColor] = useState("");
+
+  useEffect(() => {
+    const start = new Date(match.registration_start);
+    const end = new Date(match.registration_end);
+    if (isNaN(start) || isNaN(end)) return;
+
+    const updateCountdown = () => {
+      const now = new Date();
+
+      if (now < start) { // 报名未开始
+        const diff = start.getTime() - now.getTime();
+        setStatusLabel("距报名开始：");
+        setCountdown(formatDiff(diff));
+        setCountdownColor(colorChoices["notStarted"]);
+      } else if (now >= start && now < end) { // 报名进行中
+        const diff = end.getTime() - now.getTime();
+        setStatusLabel("距报名截止：");
+        setCountdown(formatDiff(diff));
+        setCountdownColor(colorChoices["ongoing"]);
+      } else { // 报名结束
+        setStatusLabel("");
+        setCountdown("报名已结束");
+        setCountdownColor(colorChoices["ended"]);
+      }
+    };
+
+    const formatDiff = (diff) => {
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      return `${days > 0 ? `${days}天` : ""}${hours}小时${minutes}分${seconds}秒`;
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, [match.registration_start, match.registration_end]);
+
   return (
     <MuiLink
       href={`/matches/${match.uuid}`}
@@ -49,7 +98,7 @@ export default function MatchCard({ match }) {
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(180deg,rgba(255,255,255,0.7) 60%,rgba(255,255,255,0.95) 100%)",
+              "linear-gradient(180deg, rgba(255,255,255,0.7) 60%, rgba(255,255,255,0.95) 100%)",
             zIndex: 1,
           }}
         />
@@ -60,10 +109,11 @@ export default function MatchCard({ match }) {
             height: "100%",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "flex-end",
+            justifyContent: "flex-start",
             p: 2,
           }}
         >
+          {/* 名称 */}
           <Typography
             variant="h6"
             title={match.name}
@@ -81,6 +131,8 @@ export default function MatchCard({ match }) {
           >
             {match.name}
           </Typography>
+
+          {/* 标签 */}
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}>
             {[
               match.level,
@@ -92,6 +144,17 @@ export default function MatchCard({ match }) {
               <Tag key={idx} tag={nameToTag(keyword)} />
             ))}
           </Box>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* 倒计时 */}
+          <Typography
+            variant="body2"
+            sx={{ color: countdownColor, fontWeight: 500, mb: 1 }}
+          >
+            {statusLabel}{countdown}
+          </Typography>
+
         </CardContent>
       </Card>
     </MuiLink>

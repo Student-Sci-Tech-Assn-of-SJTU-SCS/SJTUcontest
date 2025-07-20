@@ -1,6 +1,6 @@
-// src/pages/TeamDetail.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { getTeamDetail } from "../../services/TeamServices";
 import {
   Typography,
   Box,
@@ -8,68 +8,74 @@ import {
   TextField,
   Divider,
   Chip,
+  Alert,
+  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
+import dayjs from "dayjs";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 const TeamDetail = () => {
-  const { match_id, team_id } = useParams(); // 从 URL 获取参数
-  const [teamInfo, setTeamInfo] = useState(null); // 队伍信息
+  const { team_id } = useParams();
+  const [teamInfo, setTeamInfo] = useState(null);
   const [inviteCode, setInviteCode] = useState("");
+  const [error, setError] = useState("");
+  const [currentUserId] = useState("user_123"); // 模拟当前用户ID
+  const [showInviteCode, setShowInviteCode] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
+  // 获取队伍详情
   useEffect(() => {
-    // TODO: 替换为后端接口
     const fetchTeamInfo = async () => {
       try {
-        // 预留真实接口
-        // const res = await fetch(`/api/teams/${match_id}/${team_id}`);
-        // const data = await res.json();
-        // setTeamInfo(data);
-
-        // 当前使用 mock 数据
-        const mockData = {
-          name: "你说得不队",
-          description: "我们是最厉害的队伍",
-          matchName: "3025校赛",
-          currentMembers: 3,
-          expectedMembers: 5,
-          deadline: "2025-07-15",
-          leaderContact: "alpha@example.com",
-          members: [
-            { id: 1, name: "小明" },
-            { id: 2, name: "小红" },
-            { id: 3, name: "小李" },
-          ],
-        };
-        setTeamInfo(mockData);
-      } catch (error) {
-        console.error("队伍信息加载失败:", error);
+        const data = await getTeamDetail(team_id);
+        setTeamInfo(data);
+      } catch (err) {
+        setError("加载队伍详情失败");
+        console.error("加载队伍详情失败:", err);
       }
     };
-
     fetchTeamInfo();
-  }, [match_id, team_id]);
+  }, [team_id]);
 
+  if (error) return <Alert severity="error">{error}</Alert>;
   if (!teamInfo) return <Typography>加载中...</Typography>;
+
+  // 核心身份判断逻辑
+  const currentMember = teamInfo.members.find((m) => m.id === currentUserId);
+  const isLeader = currentMember?.is_leader || false;
+  const isMember = !!currentMember;
+  const isRecruitmentClosed = dayjs().isAfter(dayjs(teamInfo.recruitment_deadline));
+
+  // 复制邀请码
+  const handleCopyInviteCode = () => {
+    navigator.clipboard.writeText(teamInfo.invite_code);
+    setSnackbarOpen(true);
+  };
 
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4">{teamInfo.name}</Typography>
       <Typography variant="subtitle1" gutterBottom>
-        {teamInfo.description}
+        {teamInfo.introduction}
       </Typography>
 
       <Divider sx={{ my: 2 }} />
 
       <Typography variant="body1">
         <strong>参赛赛事：</strong>
-        {teamInfo.matchName}
+        {teamInfo.contest}
       </Typography>
       <Typography variant="body1">
         <strong>人数：</strong>
-        {teamInfo.currentMembers} / {teamInfo.expectedMembers}
+        {teamInfo.existing_members} / {teamInfo.expected_members}
       </Typography>
       <Typography variant="body1">
         <strong>招募截止日期：</strong>
-        {teamInfo.deadline}
+        {dayjs(teamInfo.recruitment_deadline).format("YYYY-MM-DD")}
       </Typography>
 
       <Divider sx={{ my: 2 }} />
@@ -79,38 +85,105 @@ const TeamDetail = () => {
         {teamInfo.members.map((member) => (
           <Chip
             key={member.id}
-            label={member.name}
+            label={`${member.nick_name}${member.is_leader ? "（队长）" : ""}`}
+            color={member.id === currentUserId ? "primary" : "default"}
             clickable
             component="a"
-            href={`/uuid:${member.id}`} // 跳转到用户主页
+            href={`/user/${member.id}`}
           />
         ))}
       </Box>
 
       <Divider sx={{ my: 3 }} />
 
-      <Typography variant="h6">加入队伍：</Typography>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
-        <TextField
-          label="邀请码"
-          size="small"
-          value={inviteCode}
-          onChange={(e) => setInviteCode(e.target.value)}
-        />
-        <Button variant="contained" onClick={() => alert("模拟加入成功")}>
-          加入
-        </Button>
+      {/* 操作按钮区域 */}
+      <Box sx={{ display: "flex", gap: 2, mt: 3, flexWrap: "wrap" }}>
+        {isLeader ? (
+          <>
+            {!isRecruitmentClosed && (
+              <Button variant="contained" onClick={() => setShowInviteCode(true)}>
+                获取邀请码
+              </Button>
+            )}
+            <Button variant="contained" onClick={() => alert("跳转编辑页面")}>
+              编辑队伍
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                if (window.confirm("确定要解散队伍吗？")) {
+                  alert("解散队伍成功");
+                }
+              }}
+            >
+              解散队伍
+            </Button>
+          </>
+        ) : isMember ? (
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => {
+              if (window.confirm("确定要退出队伍吗？")) {
+                alert("退出队伍成功");
+              }
+            }}
+          >
+            退出队伍
+          </Button>
+        ) : !isRecruitmentClosed ? (
+          <>
+            <TextField
+              label="邀请码"
+              size="small"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value)}
+              sx={{ width: 200 }}
+            />
+            <Button
+              variant="contained"
+              onClick={() => {
+                if (!inviteCode) {
+                  alert("请输入邀请码");
+                  return;
+                }
+                alert(`使用邀请码 ${inviteCode} 申请加入`);
+              }}
+            >
+              申请加入
+            </Button>
+          </>
+        ) : (
+          <Typography color="text.secondary">招募已截止</Typography>
+        )}
       </Box>
 
-      <Box sx={{ mt: 3 }}>
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={() => alert("模拟退出成功")}
-        >
-          退出队伍
-        </Button>
-      </Box>
+      {/* 邀请码弹窗（仅队长可见） */}
+      <Dialog open={showInviteCode} onClose={() => setShowInviteCode(false)}>
+        <DialogTitle>队伍邀请码</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            将此邀请码分享给新成员：
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <TextField value={teamInfo.invite_code} size="small" InputProps={{ readOnly: true }} />
+            <Button startIcon={<ContentCopyIcon />} onClick={handleCopyInviteCode}>
+              复制
+            </Button>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowInviteCode(false)}>关闭</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        message="邀请码已复制到剪贴板"
+      />
     </Box>
   );
 };
