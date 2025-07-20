@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { userAPI } from "../services/UserServices";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -27,6 +28,8 @@ const MainLayout = () => {
     try {
       localStorage.removeItem("user");
       setUser(null);
+      const data = await userAPI.logout();
+      window.location.href = data.data.jaccount_logout_url;
     } catch (error) {
       console.error("登出失败:", error);
       // 即使请求失败，也清除本地状态
@@ -47,12 +50,12 @@ const MainLayout = () => {
       <CssBaseline />
 
       {/* 顶部导航栏 */}
-      <AppBar position="static">
-        <Toolbar>
+      <AppBar sx={{ display: "flex", flexDirection: "row" }} position="static">
+        <Toolbar sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}>
           <Typography
             variant="h6"
             component="div"
-            sx={{ mr: 4, cursor: "pointer" }}
+            sx={{ mr: 4, cursor: "pointer", alignSelf: "center" }}
             onClick={() => navigate("/")}
           >
             SJTU Contest
@@ -106,10 +109,10 @@ const MainLayout = () => {
       </AppBar>
 
       {/* 主要内容区域 */}
-      <Box component="main" sx={{ flex: 1, py: 4 }}>
+      <Box component="main" sx={{ flex: 1 /*, py: 4*/ }}>
         <Container maxWidth="lg">
           <Outlet />
-        </Container>
+        </Container>  
       </Box>
 
       {/* 页脚 */}

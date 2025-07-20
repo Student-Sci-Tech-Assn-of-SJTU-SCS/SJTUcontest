@@ -5,6 +5,7 @@ from .views import (
     create_team,
     get_team_by_id,
     get_invitation_code,
+    get_teams_recruiting,
     join_team,
     quit_team_by_id,
     update_team_by_id,
@@ -12,6 +13,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path("", get_teams_recruiting, name="get_teams_recruiting"),
     path("create/", create_team, name="create_team"),
     path("<uuid:team_id>/", get_team_by_id, name="get_team_by_id"),
     path("<uuid:team_id>/join/", join_team, name="join_team"),

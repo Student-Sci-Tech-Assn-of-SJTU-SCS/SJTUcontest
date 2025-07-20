@@ -51,48 +51,23 @@ class ContestListRequestSerializer(serializers.Serializer):
     options = ContestOptionsSerializer(required=False)
 
 
-class ContestUpdateRequestSerializer(serializers.ModelSerializer):
-    """更新比赛的请求体数据模型"""
-
-    class Meta:
-        model = Contest
-        fields = [
-            "name",
-            "description",
-            "logo",
-            "place",
-            "level",
-            "quality",
-            "months",
-            "keywords",
-            "website",
-            "materials",
-        ]
-        extra_kwargs = {
-            "name": {"required": False},
-            "place": {"required": False},
-            "level": {"required": False},
-            "quality": {"required": False},
-        }
-
-    level = serializers.ChoiceField(choices=ContestLevel.choices, required=False)
-    quality = serializers.ChoiceField(choices=ContestQuality.choices, required=False)
-    keywords = serializers.ListField(
-        child=serializers.ChoiceField(choices=ContestKeywords.choices),
-        required=False,
-        allow_empty=True,
-    )
-
-
 class ContestResponseSerializer(serializers.ModelSerializer):
     """比赛响应数据模型"""
 
     class Meta:
         model = Contest
-        fields = "__all__"
+        exclude = ["created_at", "updated_at"]
 
 
 class ContestCreateRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contest
-        exclude = ["id"]  # 排除id字段，自动生成
+        exclude = ["id", "created_at", "updated_at"]
+
+
+# 考虑到以后可能要添加筛选字段，尽管很多地方都用到了分页序列化器，但还是重复实现了
+class ContestTeamsRequestSerializer(serializers.Serializer):
+    """获取比赛队伍的请求体数据模型"""
+
+    page_index = serializers.IntegerField(min_value=1, required=True)
+    page_size = serializers.IntegerField(min_value=1, max_value=100, required=True)

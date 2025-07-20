@@ -71,7 +71,7 @@ export default function User() {
       </Typography>
       <Grid container spacing={2}>
         {teams.map((team) => (
-          <Grid item xs={12} sm={6} md={4} key={team.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={team.id}>
             <Card>
               <CardContent>
                 <Typography variant="h6">{team.name}</Typography>
