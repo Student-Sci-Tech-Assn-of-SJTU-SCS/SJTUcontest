@@ -1,4 +1,4 @@
-import { Typography, Box, Grid, Divider, Pagination } from "@mui/material";
+import { Typography, Box, Grid, Divider, Pagination, cardClasses } from "@mui/material";
 import MatchSearchBar from "../../components/MatchSearchBar";
 import MatchCard from "../../components/MatchCard";
 import { useState, useEffect } from "react";
@@ -118,7 +118,6 @@ import api from "../../utils/api";
 // });
 
 const Matches = () => {
-  // 搜索和筛选状态
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState({
     [categories.LEVEL]: [],
@@ -168,11 +167,12 @@ const Matches = () => {
           { signal: controller.signal },
         );
 
-        if (res.data.success) {
-          setMatches(res.data.data.matches || []);
-          setPageCount(res.data.data.total_pages);
+        if (res.success) {
+          setMatches(res.data.matches || []);
+          setPageCount(res.data.total_pages);
         } else {
-          setError(res.data.message || "未知错误");
+          setError(res.message || "未知错误");
+          console.log(error);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
@@ -233,19 +233,18 @@ const Matches = () => {
   }, [pageSize]);
 
   return (
-    <Box
-      sx={{
-        py: 5,
-        minHeight: "100vh",
-      }}
-    >
+    <Box sx={{
+      px: 5,
+      py: 5,
+      transition: "width 0.5s ease",
+    }}>
       <Typography
         variant="h4"
         fontWeight={700}
         gutterBottom
         sx={{ letterSpacing: 1, color: "#222", textAlign: "center" }}
       >
-        比赛列表
+        比赛
       </Typography>
       <Divider sx={{ mb: 4, mx: "auto", width: 120, borderColor: "#1976d2" }} />
 
