@@ -25,11 +25,11 @@ const levelTags = {
     D_LEVEL: new TagClass("D_level", "D类赛事", categories.QUAL),
   },
   keywordTags = {
-    AI: new TagClass("AI", "人工智能", categories.KWORD),
     CS: new TagClass("CS", "计算机科学", categories.KWORD),
+    MATH: new TagClass("math", "数学", categories.KWORD),
+    AI: new TagClass("AI", "人工智能", categories.KWORD),
     IS: new TagClass("IS", "信息安全", categories.KWORD),
     EE: new TagClass("EE", "电气工程", categories.KWORD),
-    MATH: new TagClass("math", "数学", categories.KWORD),
     INNOVATION: new TagClass("innovation", "创新创业", categories.KWORD),
     OTHERS: new TagClass("others", "其他", categories.KWORD),
   },
@@ -153,6 +153,8 @@ const colorStyles = {
 };
 
 export default function Tag({
+  width = "auto",
+  height = "auto",
   tag,
   clickable = false,
   selected = false,
@@ -171,8 +173,10 @@ export default function Tag({
       className={isSelected ? "Mui-selected" : ""}
       variant={isSelected ? "filled" : "outlined"}
       sx={{
+        // width: width,
+        // height: height,
         margin: "2px",
-        fontSize: "0.85rem",
+        fontSize: "0.75rem",
         fontWeight: 400,
         borderRadius: 2,
         boxShadow: "none",

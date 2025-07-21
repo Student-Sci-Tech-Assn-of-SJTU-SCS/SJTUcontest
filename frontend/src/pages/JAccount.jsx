@@ -22,8 +22,8 @@ const JAccount = () => {
         await userAPI.loginByjAccount(code);
 
         // 重定向到原始请求页面或首页
-        const redirectPath = sessionStorage.getItem("pre_auth_path") || "/";
-        sessionStorage.removeItem("pre_auth_path");
+        const redirectPath = localStorage.getItem("pre_auth_path") || "/";
+        localStorage.removeItem("pre_auth_path");
         navigate(redirectPath);
       } catch (error) {
         console.error("jAccount登录失败:", error);
