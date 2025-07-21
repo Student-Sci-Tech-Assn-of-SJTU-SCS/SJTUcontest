@@ -17,7 +17,11 @@ urlpatterns = [
     path("create/", create_team, name="create_team"),
     path("<uuid:team_id>/", get_team_by_id, name="get_team_by_id"),
     path("<uuid:team_id>/join/", join_team_by_id, name="join_team_by_id"),
-    path("<uuid:team_id>/invitation/", get_invitation_code_by_id, name="get_invitation_code_by_id"),
+    path(
+        "<uuid:team_id>/invitation/",
+        get_invitation_code_by_id,
+        name="get_invitation_code_by_id",
+    ),
     path("<uuid:team_id>/quit/", quit_team_by_id, name="quit_team_by_id"),
     path("<uuid:team_id>/update/", update_team_by_id, name="update_team_by_id"),
     path("<uuid:team_id>/delete/", delete_team_by_id, name="delete_team_by_id"),

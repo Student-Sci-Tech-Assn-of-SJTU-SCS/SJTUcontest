@@ -12,6 +12,7 @@ from .serializers import (
     TeamCreateRequestSerializer,
     TeamResponseSerializer,
     TeamInvitationCodeSerializer,
+    JoinTeamRequestSerializer,
     TeamUpdateRequestSerializer,
 )
 from SJTUcontest.utils import ApiResponse, generate_random_string
@@ -153,14 +154,11 @@ def join_team_by_id(request, team_id):
     根据邀请码加入队伍
     """
     try:
-        serializer = TeamInvitationCodeSerializer(data=request.data)
+        serializer = JoinTeamRequestSerializer(data=request.data)
         if not serializer.is_valid():
             return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
         invitation_code = serializer.validated_data["invitation_code"]
-        invitation_code_created_at = serializer.validated_data[
-            "invitation_code_created_at"
-        ]
 
         try:
             team = Team.objects.get(id=team_id)
@@ -171,7 +169,7 @@ def join_team_by_id(request, team_id):
         if (
             team.invitation_code != invitation_code
             or not team.is_invitation_code_valid
-            or (timezone.now() - invitation_code_created_at) >= timedelta(days=1)
+            or (timezone.now() - team.invitation_code_created_at) >= timedelta(days=1)
         ):
             return ApiResponse.forbidden("非法的邀请码")
 
