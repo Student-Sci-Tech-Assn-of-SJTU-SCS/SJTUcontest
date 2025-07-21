@@ -11,19 +11,19 @@
 **在`backend/`目录下创建`.env`文件并配置以下字段：**
 ```
 # 把以下字段改为你自己的数据库配置信息
-DB_NAME=replace
-DB_USER=replace
-DB_PASSWORD=replace
-DB_HOST=replace
-DB_PORT=replace
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
 
 # Django Secret Key
-DJANGO_SECRET_KEY=fake_secret_key_replace_with_real_value
+DJANGO_SECRET_KEY=
 
 # jAccount OAuth2 配置
-JACCOUNT_CLIENT_ID=replace
-JACCOUNT_CLIENT_SECRET=replace
-JACCOUNT_SCOPE=replace
+JACCOUNT_CLIENT_ID=
+JACCOUNT_CLIENT_SECRET=
+JACCOUNT_SCOPE=
 ```
 
 ## 定期清理 Django Simple JWT 的 token blacklist

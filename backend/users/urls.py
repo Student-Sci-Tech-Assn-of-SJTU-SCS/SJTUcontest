@@ -24,5 +24,5 @@ urlpatterns = [
     path("profile/update/", update_user_profile, name="update_user_profile"),
     path("jaccount/auth/url/", get_jaccount_auth_url, name="get_jaccount_auth_url"),
     path("jaccount/login/", login_by_jaccount, name="login_by_jaccount"),
-    path("my/teams/", get_user_teams, name="get_user_teams"),  
+    path("my/teams/", get_user_teams, name="get_user_teams"),
 ]

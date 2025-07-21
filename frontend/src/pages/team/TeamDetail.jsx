@@ -48,7 +48,9 @@ const TeamDetail = () => {
   const currentMember = teamInfo.members.find((m) => m.id === currentUserId);
   const isLeader = currentMember?.is_leader || false;
   const isMember = !!currentMember;
-  const isRecruitmentClosed = dayjs().isAfter(dayjs(teamInfo.recruitment_deadline));
+  const isRecruitmentClosed = dayjs().isAfter(
+    dayjs(teamInfo.recruitment_deadline),
+  );
 
   // 复制邀请码
   const handleCopyInviteCode = () => {
@@ -101,7 +103,10 @@ const TeamDetail = () => {
         {isLeader ? (
           <>
             {!isRecruitmentClosed && (
-              <Button variant="contained" onClick={() => setShowInviteCode(true)}>
+              <Button
+                variant="contained"
+                onClick={() => setShowInviteCode(true)}
+              >
                 获取邀请码
               </Button>
             )}
@@ -167,8 +172,15 @@ const TeamDetail = () => {
             将此邀请码分享给新成员：
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <TextField value={teamInfo.invite_code} size="small" InputProps={{ readOnly: true }} />
-            <Button startIcon={<ContentCopyIcon />} onClick={handleCopyInviteCode}>
+            <TextField
+              value={teamInfo.invite_code}
+              size="small"
+              InputProps={{ readOnly: true }}
+            />
+            <Button
+              startIcon={<ContentCopyIcon />}
+              onClick={handleCopyInviteCode}
+            >
               复制
             </Button>
           </Box>

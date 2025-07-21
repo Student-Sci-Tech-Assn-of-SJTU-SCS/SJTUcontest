@@ -14,7 +14,12 @@ const Teams = () => {
 
   // 模拟数据
   const teams = [
-    { id: "123e4567-e89b-12d3-a456-426614174000", name: "示例团队 1", members: 3, description: "寻找算法大师" },
+    {
+      id: "123e4567-e89b-12d3-a456-426614174000",
+      name: "示例团队 1",
+      members: 3,
+      description: "寻找算法大师",
+    },
     {
       id: "456e7890-e12c-34d5-b678-987654321000",
       name: "示例团队 2",

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAccessToken } from "../utils/auth";  // 如果需要加 token，也可以统一处理
+import { getAccessToken } from "../utils/auth"; // 如果需要加 token，也可以统一处理
 
 // 单独使用一个 axios 实例，请求 mock 接口
 const mockApi = axios.create({

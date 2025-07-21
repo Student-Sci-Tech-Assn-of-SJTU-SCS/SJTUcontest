@@ -182,6 +182,7 @@ def logout(request):
     except Exception as e:
         return ApiResponse.error(message=f"登出失败: {str(e)}", status_code=500)
 
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def get_user_teams(request):
@@ -226,7 +227,5 @@ def get_user_teams(request):
 
     except Exception as e:
         return ApiResponse.error(
-            message=f"服务器内部错误: {str(e)}", status_code=500
+            message=f"Internal server error: {str(e)}", status_code=500
         )
-
-    
