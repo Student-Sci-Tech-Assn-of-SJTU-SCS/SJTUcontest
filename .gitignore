@@ -23,3 +23,6 @@ build/
 
 # jetbrains
 .idea/
+
+# 环境变量
+backend/.env
