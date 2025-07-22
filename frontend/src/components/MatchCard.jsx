@@ -28,24 +28,35 @@ export default function MatchCard({ match }) {
       let monthList = [...match.months, 100];
       let label = `${String(match.year)}年`;
       let yearOffset = 0;
-      let consecStart = monthList[0];
-      let isConsecCrossYear = false;
+      let consecStart = {
+        year: match.year,
+        month: monthList[0]
+      };
+      let isJustCrossedYear = false;
       let isFirst = true;
 
       for (let i = 1; i <= monthList.length - 1; i ++) {
         if (monthList[i] !== (monthList[i - 1] + 1) % 12) {
-          if (consecStart === monthList[i - 1]) { // 单个月份
-            label += `${isFirst ? "" : "、"}${isConsecCrossYear ? String(match.year + yearOffset) + "年" : ""}${String(consecStart)}月`;
-            isConsecCrossYear = false;
-          } else if (consecStart > monthList[i - 1]) { // 跨年
-            label += `${isFirst ? "" : "、"}${isConsecCrossYear ? String(match.year + yearOffset) + "年" : ""}${String(consecStart)}月-${String(match.year + yearOffset)}${String(monthList[i - 1])}月`;
-            isConsecCrossYear = true;
+          if (consecStart.month === monthList[i - 1]) { // 单个月份
+            label += `${isFirst ? "" : "、"}${isJustCrossedYear ? String(consecStart.year) + "年" : ""}${String(consecStart.month)}月`;
+            isJustCrossedYear = false;
+          } else if (isJustCrossedYear) { // 跨年
+            label += `${isFirst ? "" : "、"}${isJustCrossedYear ? String(consecStart.year) + "年" : ""}${String(consecStart.month)}月-${String(match.year + yearOffset)}年${String(monthList[i - 1])}月`;
           } else {
-            label += `${isFirst ? "" : "、"}${isConsecCrossYear ? String(match.year + yearOffset) + "年" : ""}${String(consecStart)}-${String(monthList[i - 1])}月`;
-            isConsecCrossYear = false;
+            label += `${isFirst ? "" : "、"}${isJustCrossedYear ? String(consecStart.year) + "年" : ""}${String(consecStart.month)}-${String(monthList[i - 1])}月`;
+            isJustCrossedYear = false;
           }
-          consecStart = monthList[i];
           isFirst = false;
+        }
+        if (monthList[i - 1] > monthList[i]) {
+          yearOffset += 1;
+          isJustCrossedYear = true;
+        }
+        if (monthList[i] !== (monthList[i - 1] + 1) % 12) {
+          consecStart = {
+            year: match.year + yearOffset,
+            month: monthList[i]
+          };
         }
       }
       setMatchTimeLabel(label);
