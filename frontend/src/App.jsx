@@ -37,7 +37,7 @@ const Router = createBrowserRouter([
         element: <Matches />,
       },
       {
-        path: "matches/:match_uuid",
+        path: "matches/:match_id",
         element: <MatchDetail />,
       },
       {
