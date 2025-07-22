@@ -3,7 +3,8 @@ import {
   Card,
   CardContent,
   Box,
-  Link as MuiLink,
+  Link,
+  Divider
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import Tag from "./Tag";
@@ -63,7 +64,7 @@ export default function MatchCard({ match }) {
   }, [match.registration_start, match.registration_end]);
 
   return (
-    <MuiLink
+    <Link
       href={`/matches/${match.id}`}
       underline="none"
       sx={{
@@ -141,6 +142,26 @@ export default function MatchCard({ match }) {
             {match.name}
           </Typography>
 
+          <Divider sx={{ my: "5px", mx: "auto", width: "calc(100%)" }} />
+
+          {/* 简介 */}
+          <Typography
+            variant="body2"
+            title={match.description}
+            sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "normal",
+              color: "#222",
+              my: "10px",
+            }}
+          >
+            {match.description || "暂无简介"}
+          </Typography>
+
           <Box sx={{ flexGrow: 1 }} />
 
           {/* 标签 */}
@@ -158,7 +179,7 @@ export default function MatchCard({ match }) {
 
           {/* 倒计时 */}
           <Typography
-            variant="body2"
+            variant="body1"
             sx={{ color: countdownColor, fontWeight: 500, mt: 1, textAlign: 'center' }}
           >
             {statusLabel}
@@ -166,6 +187,6 @@ export default function MatchCard({ match }) {
           </Typography>
         </CardContent>
       </Card>
-    </MuiLink>
+    </Link>
   );
 }
