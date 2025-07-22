@@ -18,9 +18,43 @@ const colorChoices = {
 };
 
 export default function MatchCard({ match }) {
+  const [matchTimeLabel, setMatchTimeLabel] = useState("");
   const [statusLabel, setStatusLabel] = useState(""); // 倒计时类型标签
   const [countdown, setCountdown] = useState(""); // 倒计时内容
-  const [countdownColor, setCountdownColor] = useState("");
+  const [countdownColor, setCountdownColor] = useState(""); // 倒计时显示颜色
+
+  useEffect(() => {
+    if (match.year && match.months) {
+      let monthList = [...match.months, 100];
+      let label = `${String(match.year)}年`;
+      let yearOffset = 0;
+      let consecStart = monthList[0];
+      let isConsecCrossYear = false;
+      let isFirst = true;
+
+      for (let i = 1; i <= monthList.length - 1; i ++) {
+        if (monthList[i] !== (monthList[i - 1] + 1) % 12) {
+          if (consecStart === monthList[i - 1]) { // 单个月份
+            label += `${isFirst ? "" : "、"}${isConsecCrossYear ? String(match.year + yearOffset) + "年" : ""}${String(consecStart)}月`;
+            isConsecCrossYear = false;
+          } else if (consecStart > monthList[i - 1]) { // 跨年
+            label += `${isFirst ? "" : "、"}${isConsecCrossYear ? String(match.year + yearOffset) + "年" : ""}${String(consecStart)}月-${String(match.year + yearOffset)}${String(monthList[i - 1])}月`;
+            isConsecCrossYear = true;
+          } else {
+            label += `${isFirst ? "" : "、"}${isConsecCrossYear ? String(match.year + yearOffset) + "年" : ""}${String(consecStart)}-${String(monthList[i - 1])}月`;
+            isConsecCrossYear = false;
+          }
+          consecStart = monthList[i];
+          isFirst = false;
+        }
+      }
+      setMatchTimeLabel(label);
+    } else if (match.year) {
+      setMatchTimeLabel(`${String(match.year)}年`);
+    } else {
+      setMatchTimeLabel("时间未定");
+    }
+  }, [match.year, match.months]);
 
   useEffect(() => {
     const start = new Date(match.registration_start);
@@ -71,7 +105,7 @@ export default function MatchCard({ match }) {
         display: "block",
         color: "inherit",
         width: "100%",
-        height: 250,
+        height: 280,
         m: 1,
       }}
     >
@@ -170,20 +204,27 @@ export default function MatchCard({ match }) {
               match.level,
               match.quality,
               ...match.keywords,
-              match.year,
-              ...match.months,
+              // match.year,
+              // ...match.months,
             ].map((keyword, idx) => (
               <Tag key={idx} tag={nameToTag(keyword)} />
             ))}
           </Box>
+          
+          {/* 比赛时间 */}
+          <Typography
+            variant="body2"
+            sx={{ color: "#222", fontWeight: 600, mt: 1, textAlign: 'center' }}
+          >
+            比赛时间：{matchTimeLabel}
+          </Typography>
 
           {/* 倒计时 */}
           <Typography
             variant="body1"
             sx={{ color: countdownColor, fontWeight: 500, mt: 1, textAlign: 'center' }}
           >
-            {statusLabel}
-            {countdown}
+            {statusLabel}{countdown}
           </Typography>
         </CardContent>
       </Card>
