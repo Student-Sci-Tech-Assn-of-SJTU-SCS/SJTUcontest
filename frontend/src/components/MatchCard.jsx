@@ -1,4 +1,10 @@
-import { Typography, Card, CardContent, Box, Link as MuiLink } from "@mui/material";
+import {
+  Typography,
+  Card,
+  CardContent,
+  Box,
+  Link as MuiLink,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import Tag from "./Tag";
 import { nameToTag } from "./Tag";
@@ -8,7 +14,7 @@ const colorChoices = {
   notStarted: "rgb(128, 128, 128)",
   ongoing: "rgb(76, 175, 80)",
   ended: "rgb(244, 67, 54)",
-}
+};
 
 export default function MatchCard({ match }) {
   const [statusLabel, setStatusLabel] = useState(""); // 倒计时类型标签
@@ -23,17 +29,20 @@ export default function MatchCard({ match }) {
     const updateCountdown = () => {
       const now = new Date();
 
-      if (now < start) { // 报名未开始
+      if (now < start) {
+        // 报名未开始
         const diff = start.getTime() - now.getTime();
         setStatusLabel("距报名开始：");
         setCountdown(formatDiff(diff));
         setCountdownColor(colorChoices["notStarted"]);
-      } else if (now >= start && now < end) { // 报名进行中
+      } else if (now >= start && now < end) {
+        // 报名进行中
         const diff = end.getTime() - now.getTime();
         setStatusLabel("距报名截止：");
         setCountdown(formatDiff(diff));
         setCountdownColor(colorChoices["ongoing"]);
-      } else { // 报名结束
+      } else {
+        // 报名结束
         setStatusLabel("");
         setCountdown("报名已结束");
         setCountdownColor(colorChoices["ended"]);
@@ -152,9 +161,9 @@ export default function MatchCard({ match }) {
             variant="body2"
             sx={{ color: countdownColor, fontWeight: 500, mt: 1, textAlign: 'center' }}
           >
-            {statusLabel}{countdown}
+            {statusLabel}
+            {countdown}
           </Typography>
-
         </CardContent>
       </Card>
     </MuiLink>

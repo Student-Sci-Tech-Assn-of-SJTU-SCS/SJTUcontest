@@ -1,3 +1,4 @@
+// App.jsx
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/Login";
@@ -49,7 +50,7 @@ const Router = createBrowserRouter([
         ),
       },
       {
-        path: "teams/:match_id/:team_id",
+        path: "teams/:team_id",
         element: (
           <PrivateRoute>
             <TeamDetail />

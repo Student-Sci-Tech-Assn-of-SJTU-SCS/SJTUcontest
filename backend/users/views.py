@@ -5,11 +5,13 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.core.paginator import Paginator
 
 from .serializers import (
     UserProfileSerializer,
     UserRegisterSerializer,
     jAccountLoginRequestSerializer,
+    UserTeamsRequestSerializer,
 )
 from .jaccount import (
     get_jaccount_authorize_url,
@@ -19,6 +21,8 @@ from .jaccount import (
     get_jaccount_id,
 )
 from SJTUcontest.utils import ApiResponse
+from teams.models import Team
+from teams.serializers import TeamResponseSerializer
 
 User = get_user_model()
 
@@ -177,3 +181,51 @@ def logout(request):
         return ApiResponse.error(message="无效的token")
     except Exception as e:
         return ApiResponse.error(message=f"登出失败: {str(e)}", status_code=500)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def get_user_teams(request):
+    """
+    获取用户的所有队伍
+    """
+    try:
+        serializer = UserTeamsRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return ApiResponse.error(message="无效的分页参数", data=serializer.errors)
+
+        teams = Team.objects.filter(team_users__user=request.user)
+
+        page_index = serializer.validated_data["page_index"]
+        page_size = serializer.validated_data["page_size"]
+
+        paginator = Paginator(teams, page_size)
+
+        if page_index > paginator.num_pages:
+            return ApiResponse.not_found(
+                message="请求的页码超出范围",
+                data={
+                    "total_pages": paginator.num_pages,
+                    "page_index": page_index,
+                },
+            )
+
+        page_teams = paginator.page(page_index)
+        teams_serializer = TeamResponseSerializer(page_teams, many=True)
+
+        response_data = {
+            "total_pages": paginator.num_pages,
+            "page_index": page_index,
+            "team_num": len(teams_serializer.data),
+            "teams": teams_serializer.data,
+        }
+
+        return ApiResponse.success(
+            data=response_data,
+            message="成功获取用户队伍信息",
+        )
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )

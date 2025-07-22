@@ -1,4 +1,11 @@
-import { Typography, TextField, Stack, Box, Button, Collapse } from "@mui/material";
+import {
+  Typography,
+  TextField,
+  Stack,
+  Box,
+  Button,
+  Collapse,
+} from "@mui/material";
 // import SearchIcon from "@mui/icons-material/Search";
 // import LabelIcon from '@mui/icons-material/Label';
 // import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -45,11 +52,16 @@ export default function MatchSearchBar({
           startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           sx={{ width: "110px", height: "40px" }}
         >
-          {expanded ? '收起筛选' : '展开筛选'}
+          {expanded ? "收起筛选" : "展开筛选"}
         </Button>
       </Stack>
 
-      <Collapse in={expanded} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
+      <Collapse
+        in={expanded}
+        timeout="auto"
+        unmountOnExit
+        sx={{ width: "100%" }}
+      >
         <Stack
           direction="row"
           flexWrap="wrap"

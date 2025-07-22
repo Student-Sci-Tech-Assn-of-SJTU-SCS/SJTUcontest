@@ -1,4 +1,11 @@
-import { Typography, Box, Grid, Divider, Pagination, cardClasses } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Grid,
+  Divider,
+  Pagination,
+  cardClasses,
+} from "@mui/material";
 import MatchSearchBar from "../../components/MatchSearchBar";
 import MatchCard from "../../components/MatchCard";
 import { useState, useEffect } from "react";
@@ -234,11 +241,13 @@ const Matches = () => {
   }, [pageSize]);
 
   return (
-    <Box sx={{
-      px: 5,
-      py: 5,
-      transition: "width 0.5s ease",
-    }}>
+    <Box
+      sx={{
+        px: 5,
+        py: 5,
+        transition: "width 0.5s ease",
+      }}
+    >
       <Typography
         variant="h4"
         fontWeight={700}

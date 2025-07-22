@@ -14,9 +14,14 @@ const Teams = () => {
 
   // 模拟数据
   const teams = [
-    { id: 1, name: "示例团队 1", members: 3, description: "寻找算法大师" },
     {
-      id: 2,
+      id: "123e4567-e89b-12d3-a456-426614174000",
+      name: "示例团队 1",
+      members: 3,
+      description: "寻找算法大师",
+    },
+    {
+      id: "456e7890-e12c-34d5-b678-987654321000",
       name: "示例团队 2",
       members: 2,
       description: "欢迎加入我们的队伍",
@@ -35,7 +40,7 @@ const Teams = () => {
         {teams.map((team) => (
           <Grid size={{ xs: 12, md: 6 }} key={team.id}>
             <Card
-              onClick={() => navigate(`/teams/1/${team.id}`)}
+              onClick={() => navigate(`/teams/${team.id}`)} // ✅ 跳转新路径
               style={{ cursor: "pointer" }}
             >
               <CardContent>
@@ -49,7 +54,7 @@ const Teams = () => {
                   color="primary"
                   sx={{ mt: 2 }}
                   onClick={(e) => {
-                    e.stopPropagation(); // 阻止冒泡防止跳详情
+                    e.stopPropagation();
                     alert("模拟申请加入");
                   }}
                 >
