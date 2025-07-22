@@ -282,7 +282,7 @@ const Matches = () => {
             <Grid
               key={match.id}
               // size={{ xs: 12, sm: 12, md: 6, lg: 4, xl: 3 }}
-              size={{ xs: 12, sm: 12, md: 6, lg: 6, xl: 6 }}
+              size={{ sm: 12, md: 6 }}
               display="flex"
               justifyContent="center"
             >
