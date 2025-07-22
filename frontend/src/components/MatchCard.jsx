@@ -55,7 +55,7 @@ export default function MatchCard({ match }) {
 
   return (
     <MuiLink
-      href={`/matches/${match.uuid}`}
+      href={`/matches/${match.id}`}
       underline="none"
       sx={{
         display: "block",
@@ -132,8 +132,10 @@ export default function MatchCard({ match }) {
             {match.name}
           </Typography>
 
+          <Box sx={{ flexGrow: 1 }} />
+
           {/* 标签 */}
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, my: 1 }}>
             {[
               match.level,
               match.quality,
@@ -145,12 +147,10 @@ export default function MatchCard({ match }) {
             ))}
           </Box>
 
-          <Box sx={{ flexGrow: 1 }} />
-
           {/* 倒计时 */}
           <Typography
             variant="body2"
-            sx={{ color: countdownColor, fontWeight: 500, mb: 1 }}
+            sx={{ color: countdownColor, fontWeight: 500, mt: 1, textAlign: 'center' }}
           >
             {statusLabel}{countdown}
           </Typography>

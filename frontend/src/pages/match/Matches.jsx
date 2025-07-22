@@ -137,7 +137,8 @@ const Matches = () => {
   const lg = useMediaQuery(theme.breakpoints.between("lg", "xl"));
   const xl = useMediaQuery(theme.breakpoints.up("xl"));
 
-  const pageSize = sm ? 3 : md ? 6 : lg ? 9 : 12;
+  const pageSize = md ? 5 : 10;
+  // const pageSize = sm ? 3 : md ? 6 : lg ? 9 : 12;
   // const pageSize = 1; // 调试用
 
   const [matches, setMatches] = useState([]);
@@ -271,7 +272,8 @@ const Matches = () => {
           matches.map((match) => (
             <Grid
               key={match.id}
-              size={{ xs: 12, sm: 12, md: 6, lg: 4, xl: 3 }}
+              // size={{ xs: 12, sm: 12, md: 6, lg: 4, xl: 3 }}
+              size={{ xs: 12, sm: 12, md: 6, lg: 6, xl: 6 }}
               display="flex"
               justifyContent="center"
             >
