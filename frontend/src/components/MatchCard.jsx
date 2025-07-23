@@ -174,7 +174,7 @@ export default function MatchCard({ match }) {
             title={match.name}
             sx={{
               display: "-webkit-box",
-              WebkitLineClamp: 3,
+              WebkitLineClamp: 1,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -225,7 +225,19 @@ export default function MatchCard({ match }) {
           {/* 比赛时间 */}
           <Typography
             variant="body2"
-            sx={{ color: "#222", fontWeight: 600, mt: 1, textAlign: 'center' }}
+            title={matchTimeLabel}
+            sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textAlign: 'center',
+              textOverflow: "ellipsis",
+              whiteSpace: "normal",
+              color: "#222",
+              fontWeight: 600,
+              mt: 1,
+            }}
           >
             比赛时间：{matchTimeLabel}
           </Typography>
