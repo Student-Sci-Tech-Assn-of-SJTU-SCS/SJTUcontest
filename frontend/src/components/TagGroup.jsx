@@ -2,7 +2,13 @@ import Tag, { nameToTag } from "./Tag";
 import { Box, Stack, Tooltip } from "@mui/material";
 import { useState, useLayoutEffect, useRef } from "react";
 
-export default function TagGroup({ tags, truncate = false, ...rest }) {
+export default function TagGroup({
+  tags,
+  truncate = false,
+  clickable = false,
+  selectedTags = [],
+  onTagClick = () => {},
+}) {
   const containerRef = useRef(null);
   const hiddenRef = useRef(null);
   const [visibleTags, setVisibleTags] = useState(tags);
@@ -43,7 +49,7 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
       }
     }
 
-    console.log(`lastVisibleIndex=${lastVisible}`);
+    // console.log(`lastVisibleIndex=${lastVisible}`);
 
     setVisibleTags([...tags.slice(0, lastVisible), nameToTag("…")]);
     setHiddenTags(tags.slice(lastVisible));
@@ -80,13 +86,12 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
       <Stack
         ref={containerRef}
         sx={{
-          width: "100%",
+          width: truncate ? "100%" : "auto",
           display: "flex",
           flexDirection: "row",
           flexWrap: truncate ? "nowrap" : "wrap",
           justifyContent: truncate ? "flex-start" : "center",
           gap: 1,
-          mt: 1,
         }}
       >
         {visibleTags.map((t, idx) =>
@@ -98,7 +103,7 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
               title={
                 <Box
                   sx={{
-                    width: 83,
+                    width: 93,
                     padding: 0.5,
                     display: "flex",
                     flexWrap: "wrap",
@@ -106,18 +111,36 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
                     gap: 1,
                   }}
                 >
-                  {hiddenTags.map((ht) => (
-                    <Tag key={ht.description} tag={ht} {...rest} />
+                  {hiddenTags.map((t) => (
+                    <Tag
+                      key={t.description}
+                      tag={t}
+                      clickable={clickable}
+                      selected={selectedTags.includes(t)}
+                      onClick={onTagClick}
+                    />
                   ))}
                 </Box>
               }
             >
               <Box component="span">
-                <Tag tag={t} {...rest} />
+                <Tag
+                  key={t.description}
+                  tag={t}
+                  clickable={clickable}
+                  selected={selectedTags.includes(t)}
+                  onClick={onTagClick}
+                />
               </Box>
             </Tooltip>
           ) : (
-            <Tag key={t.description} tag={t} {...rest} />
+            <Tag
+              key={t.description}
+              tag={t}
+              clickable={clickable}
+              selected={selectedTags.includes(t)}
+              onClick={onTagClick}
+            />
           ),
         )}
       </Stack>
