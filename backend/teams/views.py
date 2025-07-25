@@ -167,11 +167,11 @@ def join_team_by_id(request, team_id):
             or (timezone.now() - team.invitation_code_created_at) >= timedelta(days=1)
             or team.invitation_code != invitation_code
         ):
-            return ApiResponse.forbidden("非法的邀请码")
+            return ApiResponse.forbidden(message="非法的邀请码")
 
         # 检查用户是否已经在队伍中
         if UserTeam.objects.filter(user=request.user, team=team).exists():
-            return ApiResponse.error("你已经在队伍中")
+            return ApiResponse.error(message="你已经在队伍中")
 
         if team.existing_members >= team.expected_members:
             return ApiResponse.error(message="队伍人数已满，请联系队长扩容")
@@ -187,7 +187,7 @@ def join_team_by_id(request, team_id):
         )
 
     except Team.DoesNotExist:
-        return ApiResponse.not_found("队伍不存在")
+        return ApiResponse.not_found(message="队伍不存在")
 
     except Exception as e:
         return ApiResponse.error(
