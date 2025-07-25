@@ -60,12 +60,17 @@ export default function MatchSearchBar({
         in={expanded}
         timeout="auto"
         unmountOnExit
-        sx={{ width: "100%" }}
+        sx={{
+          mt: 2,
+          minWidth: "710px",
+          borderRadius: 2,
+          bgcolor: "#f0f0f0",
+        }}
       >
         <Stack
-          direction="row"
+          direction="column"
           flexWrap="wrap"
-          sx={{ width: "100%", justifyContent: "center" }}
+          sx={{ width: "auto", m: 1.5, justifyContent: 'flex-start' }}
         >
           {Object.values(categories).map((cat) => {
             if (cat == categories.UNDEF) {
@@ -75,28 +80,36 @@ export default function MatchSearchBar({
               <Box
                 key={cat.description}
                 sx={{
-                  m: "10px !important",
-                  width: "180px",
-                  padding: "10px",
+                  m: "6px",
+                  // width: "180px",
+                  // width: "100%",
+                  padding: "4px",
                   display: "flex",
-                  flexDirection: "column",
-                  borderRadius: 2,
-                  bgcolor: "#f0f0f0",
+                  flexDirection: "row",
                 }}
               >
                 <Typography
                   variant="h6"
                   fontWeight={500}
-                  sx={{ letterSpacing: 1, color: "#222", textAlign: "center" }}
+                  sx={{
+                    minWidth: "100px",
+                    ml: 2, mr: 1,
+                    letterSpacing: 1,
+                    color: "#222",
+                    textAlign: "center"
+                  }}
                 >
                   {cat.description}
                 </Typography>
-                <TagGroup
-                  tags={Object.values(categoryTags[cat])}
-                  clickable={true}
-                  selectedTags={selectedTags[cat]}
-                  onTagClick={onTagClick}
-                />
+                <Box sx={{ ml: 1, mr: 2 }}>
+                  <TagGroup
+                    tags={Object.values(categoryTags[cat])}
+                    // truncate={true}
+                    clickable={true}
+                    selectedTags={selectedTags[cat]}
+                    onTagClick={onTagClick}
+                  />
+                </Box>
               </Box>
             );
           })}
