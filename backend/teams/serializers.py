@@ -51,10 +51,10 @@ class TeamResponseSerializer(serializers.ModelSerializer):
         ]
 
 
-class TeamInvitationCodeSerializer(serializers.ModelSerializer):
+class TeamInvitationCodeResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
-        fields = ["invitation_code", "invitation_code_created_at"]
+        fields = ["id", "invitation_code", "invitation_code_created_at"]
 
 
 class JoinTeamRequestSerializer(serializers.ModelSerializer):
