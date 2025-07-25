@@ -137,6 +137,19 @@ const colorStyles = {
       border: "1px solid #880e4f",
     },
   },
+  [categories.MONTH]: {
+    backgroundColor: "#e8eaf6",
+    color: "#283593",
+    "&:hover": {
+      backgroundColor: "#c5cae9",
+      boxShadow: "0 0 0 1px #283593 inset",
+    },
+    "&.Mui-selected": {
+      backgroundColor: "#7986cb",
+      fontWeight: "bold",
+      border: "1px solid #283593",
+    },
+  },
   [categories.UNDEF]: {
     backgroundColor: "#f5f5f5",
     color: "#616161",
