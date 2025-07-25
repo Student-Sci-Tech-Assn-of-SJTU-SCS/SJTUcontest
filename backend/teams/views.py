@@ -5,13 +5,12 @@ from django.db.models import F
 from django.utils import timezone
 from datetime import timedelta
 
-
 from .models import Team, UserTeam
 from .serializers import (
     RecruitingTeamRequestSerializer,
     TeamCreateRequestSerializer,
     TeamResponseSerializer,
-    TeamInvitationCodeSerializer,
+    TeamInvitationCodeResponseSerializer,
     JoinTeamRequestSerializer,
     TeamUpdateRequestSerializer,
 )
@@ -160,36 +159,35 @@ def join_team_by_id(request, team_id):
 
         invitation_code = serializer.validated_data["invitation_code"]
 
-        try:
-            team = Team.objects.get(id=team_id)
-        except Team.DoesNotExist:
-            return ApiResponse.forbidden("非法的邀请码")
+        team = Team.objects.get(id=team_id)
 
         # 邀请码合法：is_valid and 未过期
         if (
-            team.invitation_code != invitation_code
-            or not team.is_invitation_code_valid
+            not team.is_invitation_code_valid
             or (timezone.now() - team.invitation_code_created_at) >= timedelta(days=1)
+            or team.invitation_code != invitation_code
         ):
             return ApiResponse.forbidden("非法的邀请码")
 
         # 检查用户是否已经在队伍中
         if UserTeam.objects.filter(user=request.user, team=team).exists():
-            return ApiResponse.forbidden("你已经在队伍中")
+            return ApiResponse.error("你已经在队伍中")
+
         if team.existing_members >= team.expected_members:
-            return ApiResponse.error(
-                message="队伍人数已满，请联系队长扩容", status_code=400
-            )
+            return ApiResponse.error(message="队伍人数已满，请联系队长扩容")
 
         UserTeam.objects.create(user=request.user, team=team, is_leader=False)
         team.existing_members += 1
+        team.is_invitation_code_valid = False  # 使用后失效
         team.save()
 
         return ApiResponse.success(
             data=TeamResponseSerializer(team).data,
             message="加入队伍成功",
-            status_code=200,
         )
+
+    except Team.DoesNotExist:
+        return ApiResponse.not_found("队伍不存在")
 
     except Exception as e:
         return ApiResponse.error(
@@ -204,38 +202,31 @@ def get_invitation_code_by_id(request, team_id):
     获取队伍的邀请码
     """
     try:
-        try:
-            team = Team.objects.get(id=team_id)
-        except Team.DoesNotExist:
-            return ApiResponse.not_found(message="队伍不存在")
+        team = Team.objects.get(id=team_id)
 
         if not UserTeam.objects.filter(
             user=request.user, team=team, is_leader=True
         ).exists():
             return ApiResponse.forbidden(message="只有队长可以获取邀请码")
 
-        # 邀请码合法条件：is_valid and 超过创建时间一天
-        is_valid = team.is_invitation_code_valid
-        is_not_expired = (timezone.now() - team.invitation_code_created_at) < timedelta(
-            days=1
-        )
+        # 邀请码合法条件：is_valid 且 不超过创建时间一天
+        if team.is_invitation_code_valid and (
+            timezone.now() - team.invitation_code_created_at
+        ) < timedelta(days=1):
+            data = TeamInvitationCodeResponseSerializer(team).data
+            return ApiResponse.success(message="邀请码获取成功", data=data)
 
-        if is_valid and is_not_expired:
-            data = TeamInvitationCodeSerializer(team).data
-            return ApiResponse.success(
-                message="邀请码获取成功", data=data, status_code=200
-            )
-        else:
-            # 重置邀请码
-            team.invitation_code = generate_random_string()
-            team.is_invitation_code_valid = True
-            team.invitation_code_created_at = timezone.now()
-            team.save()
+        # 重置邀请码
+        team.invitation_code = generate_random_string()
+        team.is_invitation_code_valid = True
+        team.invitation_code_created_at = timezone.now()
+        team.save()
 
-            data = TeamInvitationCodeSerializer(team).data
-            return ApiResponse.success(
-                message="邀请码已重置", data=data, status_code=200
-            )
+        data = TeamInvitationCodeResponseSerializer(team).data
+        return ApiResponse.success(message="邀请码已重置", data=data)
+
+    except Team.DoesNotExist:
+        return ApiResponse.not_found(message="队伍不存在")
 
     except Exception as e:
         return ApiResponse.error(

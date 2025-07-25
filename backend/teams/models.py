@@ -29,6 +29,7 @@ class Team(models.Model):
     # 队伍邀请码
     invitation_code = models.CharField(
         default=generate_random_string,
+        max_length=40,
         help_text="队伍邀请码",
     )
     # 邀请码创建时间

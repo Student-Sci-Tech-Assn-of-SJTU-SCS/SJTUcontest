@@ -20,6 +20,8 @@ export const userAPI = {
     // 保存tokens和用户信息
     saveTokens(access, refresh);
     saveUser(user);
+
+    return response;
   },
 
   // 登录
@@ -30,6 +32,8 @@ export const userAPI = {
     // 保存tokens和用户信息
     saveTokens(access, refresh);
     saveUser(user);
+
+    return response;
   },
 
   // 注册
