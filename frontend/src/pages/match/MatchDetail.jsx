@@ -1,7 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { Box, Typography, Chip, Button, Stack, Link, CircularProgress } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import {
+  Box,
+  Typography,
+  Chip,
+  Button,
+  Stack,
+  Link,
+  CircularProgress,
+} from "@mui/material";
 
 import api from "../../utils/api";
 
@@ -13,13 +21,14 @@ export default function MatchDetail() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get(`/matches/${match_id}/`)
-      .then(res => {
+    api
+      .get(`/matches/${match_id}/`)
+      .then((res) => {
         if (res.success) {
           setMatch(res.data);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to fetch match:", err);
       })
       .finally(() => setLoading(false));

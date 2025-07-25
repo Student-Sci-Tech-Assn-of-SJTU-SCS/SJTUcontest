@@ -4,7 +4,7 @@ import {
   CardContent,
   Box,
   Link,
-  Divider
+  Divider,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import Tag from "./Tag";
@@ -30,17 +30,19 @@ export default function MatchCard({ match }) {
       let yearOffset = 0;
       let consecStart = {
         year: match.year,
-        month: monthList[0]
+        month: monthList[0],
       };
       let isJustCrossedYear = false;
       let isFirst = true;
 
-      for (let i = 1; i <= monthList.length - 1; i ++) {
+      for (let i = 1; i <= monthList.length - 1; i++) {
         if (monthList[i] !== (monthList[i - 1] + 1) % 12) {
-          if (consecStart.month === monthList[i - 1]) { // 单个月份
+          if (consecStart.month === monthList[i - 1]) {
+            // 单个月份
             label += `${isFirst ? "" : "、"}${isJustCrossedYear ? String(consecStart.year) + "年" : ""}${String(consecStart.month)}月`;
             isJustCrossedYear = false;
-          } else if (isJustCrossedYear) { // 跨年
+          } else if (isJustCrossedYear) {
+            // 跨年
             label += `${isFirst ? "" : "、"}${isJustCrossedYear ? String(consecStart.year) + "年" : ""}${String(consecStart.month)}月-${String(match.year + yearOffset)}年${String(monthList[i - 1])}月`;
           } else {
             label += `${isFirst ? "" : "、"}${isJustCrossedYear ? String(consecStart.year) + "年" : ""}${String(consecStart.month)}-${String(monthList[i - 1])}月`;
@@ -55,7 +57,7 @@ export default function MatchCard({ match }) {
         if (monthList[i] !== (monthList[i - 1] + 1) % 12) {
           consecStart = {
             year: match.year + yearOffset,
-            month: monthList[i]
+            month: monthList[i],
           };
         }
       }
@@ -221,7 +223,7 @@ export default function MatchCard({ match }) {
               <Tag key={idx} tag={nameToTag(keyword)} />
             ))}
           </Box>
-          
+
           {/* 比赛时间 */}
           <Typography
             variant="body2"
@@ -231,7 +233,7 @@ export default function MatchCard({ match }) {
               WebkitLineClamp: 1,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              textAlign: 'center',
+              textAlign: "center",
               textOverflow: "ellipsis",
               whiteSpace: "normal",
               color: "#222",
@@ -245,9 +247,15 @@ export default function MatchCard({ match }) {
           {/* 倒计时 */}
           <Typography
             variant="body1"
-            sx={{ color: countdownColor, fontWeight: 500, mt: 1, textAlign: 'center' }}
+            sx={{
+              color: countdownColor,
+              fontWeight: 500,
+              mt: 1,
+              textAlign: "center",
+            }}
           >
-            {statusLabel}{countdown}
+            {statusLabel}
+            {countdown}
           </Typography>
         </CardContent>
       </Card>
