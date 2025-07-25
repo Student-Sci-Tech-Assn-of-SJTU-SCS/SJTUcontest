@@ -76,7 +76,6 @@ export default function MatchSearchBar({
                 key={cat.description}
                 sx={{
                   m: "10px !important",
-                  // width: "fit-content",
                   width: "180px",
                   padding: "10px",
                   display: "flex",
@@ -85,7 +84,6 @@ export default function MatchSearchBar({
                   bgcolor: "#f0f0f0",
                 }}
               >
-                {/* {console.log('Rendering:', cat.description, categoryTags[cat])} */}
                 <Typography
                   variant="h6"
                   fontWeight={500}
@@ -94,7 +92,7 @@ export default function MatchSearchBar({
                   {cat.description}
                 </Typography>
                 <TagGroup
-                  tags={categoryTags[cat]}
+                  tags={Object.values(categoryTags[cat])}
                   clickable={true}
                   selectedTags={selectedTags[cat]}
                   onTagClick={onTagClick}

@@ -81,7 +81,7 @@ export function nameToTag(str) {
       }
     }
   }
-  return new TagClass("", "", categories.UNDEF);
+  return new TagClass(str, str, categories.UNDEF);
 }
 
 const colorStyles = {
@@ -153,8 +153,6 @@ const colorStyles = {
 };
 
 export default function Tag({
-  width = "auto",
-  height = "auto",
   tag,
   clickable = false,
   selected = false,
@@ -162,8 +160,6 @@ export default function Tag({
 }) {
   const colorStyle = colorStyles[tag.category];
   const isSelected = clickable && selected;
-
-  // console.log(tag.description);
 
   return (
     <Chip
@@ -173,9 +169,6 @@ export default function Tag({
       className={isSelected ? "Mui-selected" : ""}
       variant={isSelected ? "filled" : "outlined"}
       sx={{
-        // width: width,
-        // height: height,
-        margin: "2px",
         fontSize: "0.75rem",
         fontWeight: 400,
         borderRadius: 2,
