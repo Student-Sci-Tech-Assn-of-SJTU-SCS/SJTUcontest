@@ -213,7 +213,9 @@ export default function MatchCard({ match }) {
 
           {/* 标签 */}
           <TagGroup
-            tags={[match.level, match.quality, ...match.keywords].map((keyword) => nameToTag(keyword))}
+            tags={[match.level, match.quality, ...match.keywords].map(
+              (keyword) => nameToTag(keyword),
+            )}
             truncate={true}
           />
           {/* <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, my: 1 }}>

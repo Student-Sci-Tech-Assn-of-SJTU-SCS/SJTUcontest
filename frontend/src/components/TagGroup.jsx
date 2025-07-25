@@ -1,5 +1,5 @@
 import Tag, { nameToTag } from "./Tag";
-import { Box, Stack, Tooltip  } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import { useState, useLayoutEffect, useRef } from "react";
 
 export default function TagGroup({ tags, truncate = false, ...rest }) {
@@ -15,8 +15,9 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
 
     const allTagNodes = Array.from(hidden.children);
 
-    let isToTruncate = false, totalWidth = 0;
-    for (let i = 0; i < allTagNodes.length; i ++) {
+    let isToTruncate = false,
+      totalWidth = 0;
+    for (let i = 0; i < allTagNodes.length; i++) {
       totalWidth += allTagNodes[i].offsetWidth + (i != 0 ? 8 : 0); // gap: 8px
       if (totalWidth > container.offsetWidth) {
         isToTruncate = true;
@@ -34,7 +35,7 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
 
     totalWidth = 0;
     let lastVisible = allTagNodes.length;
-    for (let i = 0; i < allTagNodes.length; i ++) {
+    for (let i = 0; i < allTagNodes.length; i++) {
       totalWidth += allTagNodes[i].offsetWidth + (i != 0 ? 8 : 0);
       if (totalWidth > container.offsetWidth - 32) {
         lastVisible = i - 1;
@@ -42,7 +43,7 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
       }
     }
 
-    console.log(`lastVisibleIndex=${lastVisible}`)
+    console.log(`lastVisibleIndex=${lastVisible}`);
 
     setVisibleTags([...tags.slice(0, lastVisible), nameToTag("…")]);
     setHiddenTags(tags.slice(lastVisible));
@@ -68,16 +69,19 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
           position: "absolute",
           visibility: "hidden",
           height: 0,
-          overflow: "hidden"
+          overflow: "hidden",
         }}
       >
-        {tags.map(tag => <Tag key={tag.description} tag={tag} />)}
+        {tags.map((tag) => (
+          <Tag key={tag.description} tag={tag} />
+        ))}
       </div>
 
       <Stack
         ref={containerRef}
         sx={{
-          width: "100%", display: "flex",
+          width: "100%",
+          display: "flex",
           flexDirection: "row",
           flexWrap: truncate ? "nowrap" : "wrap",
           justifyContent: truncate ? "flex-start" : "center",
@@ -89,11 +93,20 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
           t.description === "…" ? (
             <Tooltip
               key={idx}
-              placement='right-start'
+              placement="right-start"
               arrow
               title={
-                <Box sx={{ width: 83, padding: 0.5, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1 }}>
-                  {hiddenTags.map(ht => (
+                <Box
+                  sx={{
+                    width: 83,
+                    padding: 0.5,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    gap: 1,
+                  }}
+                >
+                  {hiddenTags.map((ht) => (
                     <Tag key={ht.description} tag={ht} {...rest} />
                   ))}
                 </Box>
@@ -105,7 +118,7 @@ export default function TagGroup({ tags, truncate = false, ...rest }) {
             </Tooltip>
           ) : (
             <Tag key={t.description} tag={t} {...rest} />
-          )
+          ),
         )}
       </Stack>
     </>
