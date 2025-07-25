@@ -244,7 +244,7 @@ export default function MatchCard({ match }) {
               whiteSpace: "normal",
               color: "#222",
               fontWeight: 600,
-              mt: 1,
+              mt: 2,
             }}
           >
             比赛时间：{matchTimeLabel}
