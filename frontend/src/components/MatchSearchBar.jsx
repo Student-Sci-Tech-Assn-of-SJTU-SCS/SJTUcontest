@@ -70,7 +70,7 @@ export default function MatchSearchBar({
         <Stack
           direction="column"
           flexWrap="wrap"
-          sx={{ width: "auto", m: 1.5, justifyContent: 'flex-start' }}
+          sx={{ width: "auto", m: 1.5, justifyContent: "flex-start" }}
         >
           {Object.values(categories).map((cat) => {
             if (cat == categories.UNDEF) {
@@ -93,10 +93,11 @@ export default function MatchSearchBar({
                   fontWeight={500}
                   sx={{
                     minWidth: "100px",
-                    ml: 2, mr: 1,
+                    ml: 2,
+                    mr: 1,
                     letterSpacing: 1,
                     color: "#222",
-                    textAlign: "center"
+                    textAlign: "center",
                   }}
                 >
                   {cat.description}

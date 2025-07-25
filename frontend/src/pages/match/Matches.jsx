@@ -4,7 +4,7 @@ import {
   Grid,
   Divider,
   Pagination,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import MatchSearchBar from "../../components/MatchSearchBar";
 import MatchCard from "../../components/MatchCard";
@@ -16,7 +16,7 @@ import { useMediaQuery } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 
 import axios from "axios";
-import api from "../../utils/api";
+// import api from "../../utils/api";
 import { contestAPI } from "../../services/MatchServices";
 
 const Matches = () => {
@@ -148,13 +148,18 @@ const Matches = () => {
         onTagClick={handleTagClick}
       />
 
-      { loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
           <CircularProgress />
         </Box>
       ) : (
         <>
-          <Grid container spacing={1} justifyContent="center" alignItems="stretch">
+          <Grid
+            container
+            spacing={1}
+            justifyContent="center"
+            alignItems="stretch"
+          >
             {matches.length === 0 ? (
               <Grid key={"no_match"} size={12}>
                 <Typography
