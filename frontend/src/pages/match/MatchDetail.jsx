@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
-  Chip,
   Button,
   Stack,
   Link,
@@ -30,7 +29,6 @@ export default function MatchDetail() {
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [regTime, setRegTime] = useState("");
   const navigate = useNavigate();
 
   const getTimeStr = (t) =>
@@ -85,7 +83,7 @@ export default function MatchDetail() {
 
   if (!match) {
     return (
-      <Typography color="error" align="center" sx={{ mt: 4 }}>
+      <Typography color="error" align="center" sx={{ mt: 5 }}>
         未能加载比赛信息。
       </Typography>
     );
@@ -94,42 +92,97 @@ export default function MatchDetail() {
   return (
     <Card elevation={3} sx={{ p: 2, my: 5 }}>
       <CardContent>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
-          {match.name}
-        </Typography>
+        <Box
+          sx={{
+            mb: 2,
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: {
+              xs: "wrap",
+              sm: "nowrap",
+            },
+            rowGap: 1,
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              mr: 2,
+              width: "fit-content",
+              fontWeight: 700,
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+            }}
+          >
+            {match.name}
+          </Typography>
 
-        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }} />
+
+          <Box
+            sx={{
+              mr: 2,
+              textAlign: "center",
+              ml: { xs: "auto", sm: 0 },
+              alignSelf: { xs: "flex-end", sm: "auto" },
+            }}
+          >
+            <Button
+              variant="contained"
+              size="large"
+              sx={{
+                width: "fit-content",
+                whiteSpace: "nowrap",
+              }}
+              onClick={() => navigate(`/teams/${match.id}/`)}
+            >
+              寻找参赛团队
+            </Button>
+          </Box>
+        </Box>
+
+        <Grid container spacing={1.5} sx={{ mb: 2 }}>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <Typography variant="body1">
-              <strong>报名时间:</strong>{" "}
+            <Typography
+              variant="body1"
+              noWrap
+              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+            >
+              <strong>报名时间：</strong>{" "}
               {getRegTime(match.registration_start, match.registration_end)}
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <Typography variant="body1">
-              <strong>地点:</strong> {match.place}
+            <Typography
+              variant="body1"
+              noWrap
+              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+            >
+              <strong>地点：</strong> {match.place}
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <Typography variant="body1">
-              <strong>赛事级别:</strong> {nameToTag(match.level).description}
+            <Typography
+              variant="body1"
+              noWrap
+              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+            >
+              <strong>赛事级别：</strong> {nameToTag(match.level).description}
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <Typography variant="body1">
-              <strong>素拓等级:</strong> {nameToTag(match.quality).description}
+            <Typography
+              variant="body1"
+              noWrap
+              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+            >
+              <strong>素拓等级：</strong> {nameToTag(match.quality).description}
             </Typography>
           </Grid>
         </Grid>
 
         <Divider sx={{ my: 3 }} />
-
-        <Box sx={{ mb: 3 }}>
-          <SectionTitle variant="h6">简介</SectionTitle>
-          <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
-            {match.description}
-          </Typography>
-        </Box>
 
         <Box sx={{ mb: 3 }}>
           <SectionTitle variant="h6">关键词</SectionTitle>
@@ -138,6 +191,13 @@ export default function MatchDetail() {
               tags={match.keywords.map((keyword) => nameToTag(keyword))}
             />
           </Box>
+        </Box>
+
+        <Box sx={{ mb: 3 }}>
+          <SectionTitle variant="h6">简介</SectionTitle>
+          <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
+            {match.description}
+          </Typography>
         </Box>
 
         {match.website && (
@@ -167,16 +227,6 @@ export default function MatchDetail() {
             </Stack>
           </Box>
         )}
-
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate(`/teams/${match.id}/`)}
-          >
-            寻找参赛团队
-          </Button>
-        </Box>
       </CardContent>
     </Card>
   );
