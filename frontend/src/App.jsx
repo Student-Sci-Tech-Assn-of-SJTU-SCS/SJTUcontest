@@ -50,6 +50,14 @@ const Router = createBrowserRouter([
         ),
       },
       {
+        path: "teams/:match_id",
+        element: (
+          <PrivateRoute>
+            <Teams />
+          </PrivateRoute>
+        )
+      },
+      {
         path: "teams/:team_id",
         element: (
           <PrivateRoute>
