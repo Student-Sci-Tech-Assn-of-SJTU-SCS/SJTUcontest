@@ -52,6 +52,15 @@ export const userAPI = {
     return response;
   },
 
+  // 获取用户参与队伍
+  getUserTeams: async (page_index, page_size) => {
+    const response = await api.post(`users/my/teams/`, {
+      page_index,
+      page_size,
+    });
+    return response;
+  },
+
   // 更新用户资料
   updateProfile: async (nick_name, experience, advantage) => {
     const response = await api.post("users/profile/update/", {
