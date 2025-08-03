@@ -18,7 +18,7 @@ export default function User() {
   const { user_id } = useParams();
   const [userProfile, setUserProfile] = useState(null);
   const [userIdentity, setUserIdentity] = useState("");
-  const [userTeams, setUserTeams] = useState(null);
+  const [userTeams, setUserTeams] = useState([]);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const pageSize = 10;
@@ -64,7 +64,7 @@ export default function User() {
 
   useEffect(() => {
     if (userIdentity !== "me") {
-      setUserTeams(null);
+      setUserTeams([]);
       return;
     }
 
@@ -194,7 +194,7 @@ export default function User() {
                 我参加的队伍
               </Typography>
               <Grid container spacing={2}>
-                {userTeams?.length === 0 ? (
+                {userTeams.length === 0 ? (
                   <Grid key={"no_team"} size={12}>
                     <Typography
                       key={"no_team"}
@@ -206,7 +206,7 @@ export default function User() {
                     </Typography>
                   </Grid>
                 ) : (
-                  userTeams?.map((team) => (
+                  userTeams.map((team) => (
                     <Grid key={team.id} size={{ xs: 12, sm: 6, md: 4 }}>
                       {/* TeamCard 待设计 */}
                       <Card elevation={2} sx={{ height: "100%" }}>
