@@ -135,7 +135,7 @@ export default function MatchDetail() {
                 width: "fit-content",
                 whiteSpace: "nowrap",
               }}
-              onClick={() => navigate(`/teams/${match.id}/`)}
+              onClick={() => navigate(`/matches/${match.id}/teams`)}
             >
               寻找参赛团队
             </Button>
