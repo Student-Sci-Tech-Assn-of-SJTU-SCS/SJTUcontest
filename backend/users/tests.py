@@ -69,7 +69,7 @@ class UserAPITestCase(TestCase):
         # 为 get_user_teams 测试创建比赛和队伍 (Create contest and team for get_user_teams test)
         self.contest = Contest.objects.create(name="Sample Contest", year=2025)
         self.team = Team.objects.create(
-            name="User1's Team", contest=self.contest, expected_members=5
+            name="User1's Team", contest=self.contest, expected_members=5,recruitment_deadline= "2025-12-31T23:59:59Z"
         )
         UserTeam.objects.create(user=self.user1, team=self.team, is_leader=True)
 
