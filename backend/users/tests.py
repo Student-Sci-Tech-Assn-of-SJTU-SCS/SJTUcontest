@@ -20,30 +20,37 @@ User = get_user_model()
 #    - Test registration with a duplicate username.
 #    - Test registration with invalid data.
 #
-# 2. Login API (/api/users/login/)
+# 2. Login&Logout API (/api/users/login/)(/api/users/logout/)
 #    - Test successful login with valid credentials.
 #    - Test login with an incorrect password.
 #    - Test login for a non-existent user.
-#
-# 3. Logout API (/api/users/logout/)
 #    - Test successful logout by blacklisting the refresh token.
 #    - Test logout attempt by an unauthenticated user.
 #
-# 4. Get User Profile API (/api/users/<uuid:user_id>/)
+# 3. Get User Profile API (/api/users/<uuid:user_id>/)
 #    - Test successful retrieval of another user's profile.
 #    - Test retrieving a non-existent user's profile.
 #    - Test retrieval attempt by an unauthenticated user.
 #
-# 5. Update User Profile API (/api/users/profile/update/)
+# 4. Update User Profile API (/api/users/profile/update/)
 #    - Test successful update of the user's own profile.
 #    - Test partial update of the profile.
 #    - Test update attempt by an unauthenticated user.
 #
-# 6. Get User's Teams API (/api/users/my/teams/)
+# 5. Get User's Teams API (/api/users/my/teams/)
 #    - Test successful retrieval of the user's teams with pagination.
 #    - Test retrieval for a user with no teams.
 #    - Test retrieval with an out-of-bounds page index.
 #    - Test retrieval attempt by an unauthenticated user.
+#
+# 6. Forbid User API (/api/users/<uuid:user_id>/forbid/)
+#    - Test successful user forbidding by a superuser.
+#    - Test forbidding attempt by a non-superuser admin.
+#    - Test forbidding attempt by a regular user.
+#    - Test a superuser's attempt to forbid themselves.
+#    - Test a superuser's attempt to forbid another superuser.
+#    - Test forbidding a non-existent user.
+#
 # ==========================================================================================
 
 
@@ -64,6 +71,18 @@ class UserAPITestCase(TestCase):
             password="testpassword123",
             email="user2@test.com",
             nick_name="TestUserTwo",
+        )
+        self.admin_user = User.objects.create_user(
+            username="adminuser",
+            password="adminpassword",
+            email="admin@test.com",
+            is_staff=True, # Staff user
+        )
+        # 创建超级管理员用户 (Create a superuser)
+        self.superuser = User.objects.create_superuser(
+            username="superuser",
+            password="superpassword",
+            email="super@test.com",
         )
 
         # 为 get_user_teams 测试创建比赛和队伍 (Create contest and team for get_user_teams test)
@@ -218,3 +237,78 @@ class UserAPITestCase(TestCase):
         data = {"page_index": 1, "page_size": 10}
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, 401)
+
+     # 6. Test Forbid User API
+    def test_forbid_user_success_by_superuser(self):
+        """测试超级管理员成功封禁普通用户 (Test superuser successfully forbids a regular user)"""
+        refresh = self._get_user_tokens(self.superuser)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+        # Ensure the user is active before being forbidden
+        self.assertTrue(User.objects.get(id=self.user1.id).is_active)
+
+        url = reverse("forbid_user", args=[self.user1.id])
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["message"], "User has been forbidden successfully.")
+        
+        # Verify the user is now inactive
+        self.user1.refresh_from_db()
+        self.assertFalse(self.user1.is_active)
+
+    def test_forbid_user_fail_by_admin_user(self):
+        """测试普通管理员尝试封禁用户失败 (Test regular admin fails to forbid a user)"""
+        refresh = self._get_user_tokens(self.admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+        url = reverse("forbid_user", args=[self.user1.id])
+        response = self.client.post(url)
+
+        # Expecting 403 Forbidden as only superusers can access this
+        self.assertEqual(response.status_code, 403)
+
+    def test_forbid_user_fail_by_regular_user(self):
+        """测试普通用户尝试封禁用户失败 (Test regular user fails to forbid a user)"""
+        refresh = self._get_user_tokens(self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+        url = reverse("forbid_user", args=[self.user2.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_forbid_user_fail_on_self(self):
+        """测试超级管理员封禁自己失败 (Test superuser fails to forbid self)"""
+        refresh = self._get_user_tokens(self.superuser)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+        url = reverse("forbid_user", args=[self.superuser.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["message"], "You cannot ban yourself.")
+
+    def test_forbid_user_fail_on_another_superuser(self):
+        """测试超级管理员封禁另一个超级管理员失败 (Test superuser fails to forbid another superuser)"""
+        # Create another superuser for this test
+        another_superuser = User.objects.create_superuser(
+            username="super2", password="superpassword2"
+        )
+
+        refresh = self._get_user_tokens(self.superuser)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+        url = reverse("forbid_user", args=[another_superuser.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["message"], "Super administrators cannot be banned.")
+
+    def test_forbid_nonexistent_user(self):
+        """测试封禁不存在的用户 (Test forbidding a non-existent user)"""
+        refresh = self._get_user_tokens(self.superuser)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+        non_existent_uuid = uuid.uuid4()
+        url = reverse("forbid_user", args=[non_existent_uuid])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["message"], "User not found")

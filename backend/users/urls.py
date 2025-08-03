@@ -13,6 +13,7 @@ from .views import (
     login_by_jaccount,
     logout,
     get_user_teams,
+    forbid_user,
 )
 
 urlpatterns = [
@@ -25,4 +26,5 @@ urlpatterns = [
     path("jaccount/auth/url/", get_jaccount_auth_url, name="get_jaccount_auth_url"),
     path("jaccount/login/", login_by_jaccount, name="login_by_jaccount"),
     path("my/teams/", get_user_teams, name="get_user_teams"),
+    path("<uuid:user_id>/forbid/", forbid_user, name="forbid_user"),
 ]

@@ -229,3 +229,49 @@ def get_user_teams(request):
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
         )
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated]) 
+def forbid_user(request, user_id):
+    """
+    超级管理员封禁用户接口。
+    将用户的 is_active 状态设置为 False。
+    """
+    # 检查请求者是否为超级管理员
+    if not request.user.is_superuser:
+        return ApiResponse.error(
+            message="Permission denied. Only super administrators can perform this action.",
+            status_code=403 
+        )
+
+    try:
+        target_user = User.objects.get(id=user_id)
+
+        # 超级管理员不能封禁自己
+        if target_user == request.user:
+            return ApiResponse.error(
+                message="You cannot ban yourself.", status_code=400
+            )
+        
+        # 为了安全，增加一层保护：不允许一个超级管理员封禁另一个超级管理员
+        if target_user.is_superuser:
+            return ApiResponse.error(
+                message="Super administrators cannot be banned.", status_code=400
+            )
+
+        # 执行封禁操作
+        target_user.is_active = False
+        target_user.save(update_fields=["is_active"])
+
+        serializer = UserProfileSerializer(target_user)
+        return ApiResponse.success(
+            data=serializer.data, message="User has been forbidden successfully."
+        )
+
+    except User.DoesNotExist:
+        return ApiResponse.not_found(message="User not found")
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
