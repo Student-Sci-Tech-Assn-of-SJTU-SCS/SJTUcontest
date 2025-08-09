@@ -76,7 +76,7 @@ class UserAPITestCase(TestCase):
             username="adminuser",
             password="adminpassword",
             email="admin@test.com",
-            is_staff=True, # Staff user
+            is_staff=True,  # Staff user
         )
         # 创建超级管理员用户 (Create a superuser)
         self.superuser = User.objects.create_superuser(
@@ -88,7 +88,10 @@ class UserAPITestCase(TestCase):
         # 为 get_user_teams 测试创建比赛和队伍 (Create contest and team for get_user_teams test)
         self.contest = Contest.objects.create(name="Sample Contest", year=2025)
         self.team = Team.objects.create(
-            name="User1's Team", contest=self.contest, expected_members=5,recruitment_deadline= "2025-12-31T23:59:59Z"
+            name="User1's Team",
+            contest=self.contest,
+            expected_members=5,
+            recruitment_deadline="2025-12-31T23:59:59Z",
         )
         UserTeam.objects.create(user=self.user1, team=self.team, is_leader=True)
 
@@ -122,7 +125,9 @@ class UserAPITestCase(TestCase):
             "email": "new@test.com",
         }
         response = self.client.post(url, data, format="json")
-        self.assertEqual(response.status_code, 400) # Assuming serializer validation catches this
+        self.assertEqual(
+            response.status_code, 400
+        )  # Assuming serializer validation catches this
 
     # 2. Test Login & Logout API
     def test_login_and_logout_success(self):
@@ -134,14 +139,16 @@ class UserAPITestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
-        
+
         refresh_token = response.data["refresh"]
         access_token = response.data["access"]
 
         # Logout
         logout_url = reverse("logout")
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
-        response = self.client.post(logout_url, {"refresh": refresh_token}, format="json")
+        response = self.client.post(
+            logout_url, {"refresh": refresh_token}, format="json"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "登出成功")
 
@@ -222,7 +229,7 @@ class UserAPITestCase(TestCase):
 
     def test_get_my_teams_empty(self):
         """测试获取没有队伍的用户的列表 (Test getting teams for a user with no teams)"""
-        refresh = self._get_user_tokens(self.user2) # user2 has no teams
+        refresh = self._get_user_tokens(self.user2)  # user2 has no teams
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
 
         url = reverse("get_user_teams")
@@ -238,7 +245,7 @@ class UserAPITestCase(TestCase):
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, 401)
 
-     # 6. Test Forbid User API
+    # 6. Test Forbid User API
     def test_forbid_user_success_by_superuser(self):
         """测试超级管理员成功封禁普通用户 (Test superuser successfully forbids a regular user)"""
         refresh = self._get_user_tokens(self.superuser)
@@ -251,8 +258,10 @@ class UserAPITestCase(TestCase):
         response = self.client.post(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["message"], "User has been forbidden successfully.")
-        
+        self.assertEqual(
+            response.json()["message"], "User has been forbidden successfully."
+        )
+
         # Verify the user is now inactive
         self.user1.refresh_from_db()
         self.assertFalse(self.user1.is_active)
@@ -300,7 +309,9 @@ class UserAPITestCase(TestCase):
         url = reverse("forbid_user", args=[another_superuser.id])
         response = self.client.post(url)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["message"], "Super administrators cannot be banned.")
+        self.assertEqual(
+            response.json()["message"], "Super administrators cannot be banned."
+        )
 
     def test_forbid_nonexistent_user(self):
         """测试封禁不存在的用户 (Test forbidding a non-existent user)"""

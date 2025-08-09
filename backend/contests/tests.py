@@ -8,7 +8,7 @@ from datetime import timedelta
 import uuid
 
 from .models import Contest
-from teams.models import Team, UserTeam # Assuming teams app structure is available
+from teams.models import Team, UserTeam  # Assuming teams app structure is available
 from .choices import ContestLevel, ContestQuality, ContestKeywords
 
 User = get_user_model()
@@ -19,7 +19,7 @@ User = get_user_model()
 # 1. Get Contest List API (/api/matches/)
 #    - Test successful retrieval of paginated contests
 #    - Test filtering by query, year, level, quality, and keywords
-#    - Test filtering by error option 
+#    - Test filtering by error option
 #    - Test with an out-of-bounds page index
 #    - Test with invalid request data (e.g., missing page_index)
 #
@@ -47,6 +47,7 @@ User = get_user_model()
 #    - Test retrieval by an unauthenticated user
 #    - Test retrieving teams for a non-existent contest
 # ==========================================================================================
+
 
 class ContestAPITestCase(TestCase):
     def setUp(self):
@@ -91,18 +92,20 @@ class ContestAPITestCase(TestCase):
             introduction="A team for AI challenge",
             contest=self.contest1,
             expected_members=5,
-            existing_members=3, # Not full
-            recruitment_deadline=timezone.now() + timedelta(days=15) # Not expired
+            existing_members=3,  # Not full
+            recruitment_deadline=timezone.now() + timedelta(days=15),  # Not expired
         )
-        UserTeam.objects.create(user=self.user, team=self.recruiting_team, is_leader=True)
+        UserTeam.objects.create(
+            user=self.user, team=self.recruiting_team, is_leader=True
+        )
 
         self.full_team = Team.objects.create(
             name="Veterans",
             introduction="A full team",
             contest=self.contest1,
             expected_members=3,
-            existing_members=3, # Full
-            recruitment_deadline=timezone.now() + timedelta(days=15)
+            existing_members=3,  # Full
+            recruitment_deadline=timezone.now() + timedelta(days=15),
         )
 
         # API Client
@@ -120,7 +123,7 @@ class ContestAPITestCase(TestCase):
         response = self.client.post("/api/matches/", data, format="json")
         self.assertEqual(response.status_code, 200)
         json_data = response.json()
-        self.assertEqual(json_data['data']['match_num'], 2)
+        self.assertEqual(json_data["data"]["match_num"], 2)
 
     def test_get_matches_with_filter(self):
         data = {
@@ -137,7 +140,7 @@ class ContestAPITestCase(TestCase):
         response = self.client.post("/api/matches/", data, format="json")
         self.assertEqual(response.status_code, 200)
         json_data = response.json()
-        self.assertEqual(json_data['data']['match_num'], 1)
+        self.assertEqual(json_data["data"]["match_num"], 1)
 
     def test_get_matches_with_invalid_option(self):
         """
@@ -164,18 +167,19 @@ class ContestAPITestCase(TestCase):
                 }
                 response = self.client.post("/api/matches/", data, format="json")
                 self.assertEqual(response.status_code, 400)
-                self.assertEqual(response.json()['message'], "Invalid data")
+                self.assertEqual(response.json()["message"], "Invalid data")
+
     def test_get_matches_pagination_out_of_bounds(self):
         data = {"page_index": 99, "page_size": 10}
         response = self.client.post("/api/matches/", data, format="json")
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json()['message'], "Too large page index")
+        self.assertEqual(response.json()["message"], "Too large page index")
 
     def test_get_matches_invalid_data(self):
-        data = {"page_size": 10} # Missing page_index
+        data = {"page_size": 10}  # Missing page_index
         response = self.client.post("/api/matches/", data, format="json")
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['message'], "Invalid data")
+        self.assertEqual(response.json()["message"], "Invalid data")
 
     # Test: POST /api/matches/create/
     def test_create_match_admin_success(self):
@@ -191,18 +195,30 @@ class ContestAPITestCase(TestCase):
         }
         response = self.client.post("/api/matches/create/", data, format="json")
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json()['message'], "Contest created successfully")
+        self.assertEqual(response.json()["message"], "Contest created successfully")
         self.assertTrue(Contest.objects.filter(name="New Awesome Contest").exists())
 
     def test_create_match_regular_user_forbidden(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.user_access_token}")
-        data = {"name": "Should Fail Contest", "year": 2025, "place": "Anywhere", "level": "local", "quality": "C_level"}
+        data = {
+            "name": "Should Fail Contest",
+            "year": 2025,
+            "place": "Anywhere",
+            "level": "local",
+            "quality": "C_level",
+        }
         response = self.client.post("/api/matches/create/", data, format="json")
         self.assertEqual(response.status_code, 403)
 
     def test_create_match_unauthorized(self):
-        self.client.credentials() # Clear auth
-        data = {"name": "Should Fail Contest", "year": 2025, "place": "Anywhere", "level": "local", "quality": "C_level"}
+        self.client.credentials()  # Clear auth
+        data = {
+            "name": "Should Fail Contest",
+            "year": 2025,
+            "place": "Anywhere",
+            "level": "local",
+            "quality": "C_level",
+        }
         response = self.client.post("/api/matches/create/", data, format="json")
         self.assertEqual(response.status_code, 401)
 
@@ -210,7 +226,7 @@ class ContestAPITestCase(TestCase):
     def test_get_match_by_id_success(self):
         response = self.client.get(f"/api/matches/{self.contest1.id}/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['data']['name'], self.contest1.name)
+        self.assertEqual(response.json()["data"]["name"], self.contest1.name)
 
     def test_get_match_by_id_not_found(self):
         non_existent_uuid = uuid.uuid4()
@@ -236,17 +252,23 @@ class ContestAPITestCase(TestCase):
             "months": [1, 2, 3],
             "keywords": [ContestKeywords.EE, ContestKeywords.MATH],
             "website": "https://updated.example.com",
-            "materials": [{"name": "Updated Material", "url": "https://updated.material.link"}],
+            "materials": [
+                {"name": "Updated Material", "url": "https://updated.material.link"}
+            ],
             "registration_start": timezone.now() + timedelta(days=10),
             "registration_end": timezone.now() + timedelta(days=40),
         }
 
         # The request data needs to have datetime objects serialized to string
         request_data = updated_data.copy()
-        request_data["registration_start"] = request_data["registration_start"].isoformat()
+        request_data["registration_start"] = request_data[
+            "registration_start"
+        ].isoformat()
         request_data["registration_end"] = request_data["registration_end"].isoformat()
 
-        response = self.client.post(f"/api/matches/{self.contest1.id}/update/", request_data, format="json")
+        response = self.client.post(
+            f"/api/matches/{self.contest1.id}/update/", request_data, format="json"
+        )
         self.assertEqual(response.status_code, 200)
 
         # Refresh the object from the database to get the new values
@@ -265,20 +287,30 @@ class ContestAPITestCase(TestCase):
         self.assertEqual(self.contest1.website, updated_data["website"])
         self.assertEqual(self.contest1.materials, updated_data["materials"])
         # For datetime fields, compare dates to avoid microsecond precision issues
-        self.assertEqual(self.contest1.registration_start.date(), updated_data["registration_start"].date())
-        self.assertEqual(self.contest1.registration_end.date(), updated_data["registration_end"].date())
-        
+        self.assertEqual(
+            self.contest1.registration_start.date(),
+            updated_data["registration_start"].date(),
+        )
+        self.assertEqual(
+            self.contest1.registration_end.date(),
+            updated_data["registration_end"].date(),
+        )
+
     def test_update_match_regular_user_forbidden(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.user_access_token}")
         data = {"place": "Should not update"}
-        response = self.client.post(f"/api/matches/{self.contest1.id}/update/", data, format="json")
+        response = self.client.post(
+            f"/api/matches/{self.contest1.id}/update/", data, format="json"
+        )
         self.assertEqual(response.status_code, 403)
 
     def test_update_match_not_found(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.admin_access_token}")
         non_existent_uuid = uuid.uuid4()
         data = {"place": "Should not update"}
-        response = self.client.post(f"/api/matches/{non_existent_uuid}/update/", data, format="json")
+        response = self.client.post(
+            f"/api/matches/{non_existent_uuid}/update/", data, format="json"
+        )
         self.assertEqual(response.status_code, 404)
 
     # Test: DELETE /api/matches/<uuid:match_id>/delete/
@@ -298,22 +330,30 @@ class ContestAPITestCase(TestCase):
     def test_get_match_teams_success(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.user_access_token}")
         data = {"page_index": 1, "page_size": 10}
-        response = self.client.post(f"/api/matches/{self.contest1.id}/teams/", data, format="json")
+        response = self.client.post(
+            f"/api/matches/{self.contest1.id}/teams/", data, format="json"
+        )
         self.assertEqual(response.status_code, 200)
         json_data = response.json()
-        self.assertEqual(json_data['data']['team_num'], 1)
-        self.assertEqual(json_data['data']['teams'][0]['name'], self.recruiting_team.name)
-    
+        self.assertEqual(json_data["data"]["team_num"], 1)
+        self.assertEqual(
+            json_data["data"]["teams"][0]["name"], self.recruiting_team.name
+        )
+
     def test_get_match_teams_unauthorized(self):
         self.client.credentials()
         data = {"page_index": 1, "page_size": 10}
-        response = self.client.post(f"/api/matches/{self.contest1.id}/teams/", data, format="json")
+        response = self.client.post(
+            f"/api/matches/{self.contest1.id}/teams/", data, format="json"
+        )
         self.assertEqual(response.status_code, 401)
-        
+
     def test_get_match_teams_contest_not_found(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.user_access_token}")
         non_existent_uuid = uuid.uuid4()
         data = {"page_index": 1, "page_size": 10}
-        response = self.client.post(f"/api/matches/{non_existent_uuid}/teams/", data, format="json")
+        response = self.client.post(
+            f"/api/matches/{non_existent_uuid}/teams/", data, format="json"
+        )
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json()['message'], "Contest not found")
+        self.assertEqual(response.json()["message"], "Contest not found")

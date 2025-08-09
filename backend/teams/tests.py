@@ -73,10 +73,18 @@ class TeamAPITestCase(TestCase):
         Set up initial data for all tests.
         """
         # Create Users
-        self.leader_user = User.objects.create_user(username="leader", password="password", nick_name="TeamLeader")
-        self.member_user = User.objects.create_user(username="member", password="password", nick_name="TeamMember")
-        self.normal_user = User.objects.create_user(username="normal", password="password", nick_name="NormalUser")
-        self.another_user = User.objects.create_user(username="another", password="password", nick_name="AnotherUser")#用于测试创建队伍是否成功以及队伍已满
+        self.leader_user = User.objects.create_user(
+            username="leader", password="password", nick_name="TeamLeader"
+        )
+        self.member_user = User.objects.create_user(
+            username="member", password="password", nick_name="TeamMember"
+        )
+        self.normal_user = User.objects.create_user(
+            username="normal", password="password", nick_name="NormalUser"
+        )
+        self.another_user = User.objects.create_user(
+            username="another", password="password", nick_name="AnotherUser"
+        )  # 用于测试创建队伍是否成功以及队伍已满
 
         # Create Contests
         self.active_contest = Contest.objects.create(
@@ -111,7 +119,7 @@ class TeamAPITestCase(TestCase):
         UserTeam.objects.create(user=self.another_user, team=self.team, is_leader=False)
         self.team.existing_members = 3
         self.team.save()
-        
+
         # Create a full team for testing join logic
         self.full_team = Team.objects.create(
             name="Full House",
@@ -121,8 +129,12 @@ class TeamAPITestCase(TestCase):
             existing_members=2,
             recruitment_deadline=timezone.now() + timedelta(days=15),
         )
-        UserTeam.objects.create(user=self.normal_user, team=self.full_team, is_leader=True)
-        UserTeam.objects.create(user=self.member_user, team=self.full_team, is_leader=False)
+        UserTeam.objects.create(
+            user=self.normal_user, team=self.full_team, is_leader=True
+        )
+        UserTeam.objects.create(
+            user=self.member_user, team=self.full_team, is_leader=False
+        )
 
         # API Client
         self.client = APIClient()
@@ -134,11 +146,10 @@ class TeamAPITestCase(TestCase):
         """Helper method to authenticate the client for a given user."""
         refresh = RefreshToken.for_user(user)
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-        
+
     def tearDown(self):
         """Clean up after each test."""
         self.client.credentials()
-
 
     # 1. Test Create Team
     def test_create_team_success(self):
@@ -168,20 +179,26 @@ class TeamAPITestCase(TestCase):
         response = self.client.post("/api/teams/create/", data, format="json")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()["message"], "你已经在该比赛中创建过队伍")
-        
+
     def test_create_team_exceed_limit(self):
         self.authenticate_user(self.normal_user)
         # Create 5 teams for the normal_user
         for i in range(5):
             contest = Contest.objects.create(
-                name=f"Contest {i}", registration_end=timezone.now() + timedelta(days=10)
+                name=f"Contest {i}",
+                registration_end=timezone.now() + timedelta(days=10),
             )
             team = Team.objects.create(
-                name=f"Limit Test Team {i}", contest=contest, expected_members=3, recruitment_deadline=timezone.now() + timedelta(days=5)
+                name=f"Limit Test Team {i}",
+                contest=contest,
+                expected_members=3,
+                recruitment_deadline=timezone.now() + timedelta(days=5),
             )
             UserTeam.objects.create(user=self.normal_user, team=team, is_leader=True)
-        
-        new_contest = Contest.objects.create(name="Contest 6", registration_end=timezone.now() + timedelta(days=10))
+
+        new_contest = Contest.objects.create(
+            name="Contest 6", registration_end=timezone.now() + timedelta(days=10)
+        )
         data = {
             "name": "Sixth Team",
             "introduction": "This should fail.",
@@ -191,14 +208,15 @@ class TeamAPITestCase(TestCase):
         }
         response = self.client.post("/api/teams/create/", data, format="json")
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["message"], "你最多只能在5个未截止比赛中创建队伍")
+        self.assertEqual(
+            response.json()["message"], "你最多只能在5个未截止比赛中创建队伍"
+        )
 
     def test_create_team_unauthorized(self):
-        self.client.credentials() # Log out
+        self.client.credentials()  # Log out
         data = {"name": "Unauthorized Team", "contest": str(self.active_contest.id)}
         response = self.client.post("/api/teams/create/", data, format="json")
         self.assertEqual(response.status_code, 401)
-
 
     # 2. Test Get Recruiting Teams
     def test_get_teams_recruiting_success(self):
@@ -206,41 +224,41 @@ class TeamAPITestCase(TestCase):
         data = {"page_index": 1, "page_size": 10}
         response = self.client.post("/api/teams/", data, format="json")
         self.assertEqual(response.status_code, 200)
-        json_data = response.json()['data']
+        json_data = response.json()["data"]
         self.assertEqual(json_data["page_index"], 1)
         # Should find self.team but not self.full_team
         self.assertEqual(json_data["team_num"], 1)
         self.assertEqual(json_data["teams"][0]["name"], "Test Devils")
-        
+
     def test_get_teams_recruiting_unauthorized(self):
         self.client.credentials()
         data = {"page_index": 1, "page_size": 10}
         response = self.client.post("/api/teams/", data, format="json")
         self.assertEqual(response.status_code, 401)
 
-
     # 3. Test Get Team by ID
     def test_get_team_by_id_success(self):
         response = self.client.get(f"/api/teams/{self.team.id}/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["data"]["name"], "Test Devils")
-        
+
     def test_get_team_by_id_not_found(self):
         non_existent_uuid = uuid.uuid4()
         response = self.client.get(f"/api/teams/{non_existent_uuid}/")
         self.assertEqual(response.status_code, 404)
-        
+
     def test_get_team_by_id_unauthorized(self):
         self.client.credentials()
         response = self.client.get(f"/api/teams/{self.team.id}/")
         self.assertEqual(response.status_code, 401)
 
-
     # 4. Test Update Team
     def test_update_team_by_leader_success(self):
         self.authenticate_user(self.leader_user)
         data = {"introduction": "A new intro", "expected_members": 4}
-        response = self.client.post(f"/api/teams/{self.team.id}/update/", data, format="json")
+        response = self.client.post(
+            f"/api/teams/{self.team.id}/update/", data, format="json"
+        )
         self.assertEqual(response.status_code, 200)
         self.team.refresh_from_db()
         self.assertEqual(self.team.introduction, "A new intro")
@@ -249,30 +267,30 @@ class TeamAPITestCase(TestCase):
     def test_update_team_by_member_forbidden(self):
         self.authenticate_user(self.member_user)
         data = {"introduction": "Member trying to update"}
-        response = self.client.post(f"/api/teams/{self.team.id}/update/", data, format="json")
+        response = self.client.post(
+            f"/api/teams/{self.team.id}/update/", data, format="json"
+        )
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()["message"], "只有队长可以更新队伍信息")
-        
-        
+
     # 5. Test Get Invitation Code
     def test_get_invitation_code_by_leader_success(self):
         self.authenticate_user(self.leader_user)
         response = self.client.get(f"/api/teams/{self.team.id}/invitation/")
         self.assertEqual(response.status_code, 200)
         self.assertIn("invitation_code", response.json()["data"])
-        
+
     def test_get_invitation_code_by_member_forbidden(self):
         self.authenticate_user(self.member_user)
         response = self.client.get(f"/api/teams/{self.team.id}/invitation/")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()["message"], "只有队长可以获取邀请码")
-    
+
     def test_get_invitation_code_by_non_member_forbidden(self):
         self.authenticate_user(self.normal_user)
         response = self.client.get(f"/api/teams/{self.team.id}/invitation/")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()["message"], "只有队长可以获取邀请码")
-        
 
     # 6. Test Join Team
     def test_join_team_success(self):
@@ -285,34 +303,43 @@ class TeamAPITestCase(TestCase):
         invitation_code = res.json()["data"]["invitation_code"]
 
         data = {"invitation_code": invitation_code}
-        response = self.client.post(f"/api/teams/{self.team.id}/join/", data, format="json")
+        response = self.client.post(
+            f"/api/teams/{self.team.id}/join/", data, format="json"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "加入队伍成功")
-        self.assertTrue(UserTeam.objects.filter(user=self.normal_user, team=self.team).exists())
+        self.assertTrue(
+            UserTeam.objects.filter(user=self.normal_user, team=self.team).exists()
+        )
         self.team.refresh_from_db()
         self.assertEqual(self.team.existing_members, 4)
 
     def test_join_team_invalid_code(self):
         self.authenticate_user(self.normal_user)
         data = {"invitation_code": "thisisawrongcode"}
-        response = self.client.post(f"/api/teams/{self.team.id}/join/", data, format="json")
+        response = self.client.post(
+            f"/api/teams/{self.team.id}/join/", data, format="json"
+        )
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()["message"], "非法的邀请码")
 
     def test_join_team_full(self):
         self.authenticate_user(self.another_user)
         data = {"invitation_code": self.full_team.invitation_code}
-        response = self.client.post(f"/api/teams/{self.full_team.id}/join/", data, format="json")
-        self.assertEqual(response.status_code, 400) # As per view logic
+        response = self.client.post(
+            f"/api/teams/{self.full_team.id}/join/", data, format="json"
+        )
+        self.assertEqual(response.status_code, 400)  # As per view logic
         self.assertEqual(response.json()["message"], "队伍人数已满，请联系队长扩容")
 
     def test_join_team_already_member(self):
-        self.authenticate_user(self.member_user) # Authenticate as an existing member
+        self.authenticate_user(self.member_user)  # Authenticate as an existing member
         data = {"invitation_code": self.team.invitation_code}
-        response = self.client.post(f"/api/teams/{self.team.id}/join/", data, format="json")
-        self.assertEqual(response.status_code, 400) # As per view logic
+        response = self.client.post(
+            f"/api/teams/{self.team.id}/join/", data, format="json"
+        )
+        self.assertEqual(response.status_code, 400)  # As per view logic
         self.assertEqual(response.json()["message"], "你已经在队伍中")
-
 
     # 7. Test Quit Team
     def test_quit_team_by_member_success(self):
@@ -320,22 +347,23 @@ class TeamAPITestCase(TestCase):
         response = self.client.post(f"/api/teams/{self.team.id}/quit/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "退出队伍成功")
-        self.assertFalse(UserTeam.objects.filter(user=self.member_user, team=self.team).exists())
+        self.assertFalse(
+            UserTeam.objects.filter(user=self.member_user, team=self.team).exists()
+        )
         self.team.refresh_from_db()
         self.assertEqual(self.team.existing_members, 2)
 
     def test_quit_team_by_leader_forbidden(self):
         self.authenticate_user(self.leader_user)
         response = self.client.post(f"/api/teams/{self.team.id}/quit/")
-        self.assertEqual(response.status_code, 400) # As per view logic
+        self.assertEqual(response.status_code, 400)  # As per view logic
         self.assertEqual(response.json()["message"], "队长不能退出队伍")
-        
+
     def test_quit_team_by_non_member_error(self):
         self.authenticate_user(self.normal_user)
         response = self.client.post(f"/api/teams/{self.team.id}/quit/")
-        self.assertEqual(response.status_code, 400) # As per view logic
+        self.assertEqual(response.status_code, 400)  # As per view logic
         self.assertEqual(response.json()["message"], "你不在该队伍中")
-
 
     # 8. Test Delete Team
     def test_delete_team_by_leader_success(self):
@@ -344,7 +372,7 @@ class TeamAPITestCase(TestCase):
         response = self.client.delete(f"/api/teams/{team_id}/delete/")
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Team.objects.filter(id=team_id).exists())
-        
+
     def test_delete_team_by_member_forbidden(self):
         self.authenticate_user(self.member_user)
         response = self.client.delete(f"/api/teams/{self.team.id}/delete/")
