@@ -79,6 +79,7 @@ const MainLayout = () => {
                 onClick={() => navigate(`/users/${user.id}`)}
                 sx={{
                   borderColor: "rgba(255, 255, 255, 0.5)",
+                  textTransform: "none",
                   "&:hover": {
                     borderColor: "white",
                   },
