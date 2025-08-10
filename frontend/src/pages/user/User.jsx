@@ -15,6 +15,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import { userAPI } from "../../services/UserServices";
 import { getCurrentUser } from "../../utils/auth";
+import TeamCard from "../../components/TeamCard";
 
 export default function User() {
   const { user_id } = useParams();
@@ -264,30 +265,7 @@ export default function User() {
                 ) : (
                   userTeams.map((team) => (
                     <Grid key={team.id} size={{ xs: 12, sm: 6, md: 4 }}>
-                      {/* TeamCard 待设计 */}
-                      <Card elevation={2} sx={{ height: "100%" }}>
-                        <CardContent>
-                          <Typography
-                            variant="h6"
-                            noWrap
-                            sx={{
-                              mb: 1,
-                              fontWeight: 600,
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          >
-                            {team.name}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ lineHeight: 1.6 }}
-                          >
-                            {team.introduction}
-                          </Typography>
-                        </CardContent>
-                      </Card>
+                      <TeamCard team={team} />
                     </Grid>
                   ))
                 )}
