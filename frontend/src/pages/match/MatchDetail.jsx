@@ -76,7 +76,7 @@ export default function MatchDetail() {
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
-        <CircularProgress />
+        <CircularProgress size="lg" value={25} />
       </Box>
     );
   }
