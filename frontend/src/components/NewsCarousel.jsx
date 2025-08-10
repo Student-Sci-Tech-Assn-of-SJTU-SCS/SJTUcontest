@@ -4,18 +4,18 @@ import { Box, Card, CardContent, Typography, Slide } from "@mui/material";
 const newsItems = [
   {
     id: 1,
-    title: "新闻 1",
-    summary: "新闻摘要内容 1",
+    title: "素拓条例更新",
+    summary: "自2026年1月1日，《计算机学院素拓条例（2026）》开始实施",
   },
   {
     id: 2,
-    title: "新闻 2",
-    summary: "新闻摘要内容 2",
+    title: "电赛开幕！",
+    summary: "初赛赛程将持续1周",
   },
   {
     id: 3,
-    title: "新闻 3",
-    summary: "新闻摘要内容 3",
+    title: "AI科技论坛顺利举办",
+    summary: "xxxxxxxxxxxxxxxxxxx",
   },
 ];
 

@@ -46,11 +46,14 @@ const Login = () => {
     try {
       // 调用 UserServices 中的 login 方法
       await userAPI.login(formData.username, formData.password);
-      
+
       // 登录成功，跳转到用户原本想要访问的页面
       navigate(from);
     } catch (err) {
-      setError("登录失败，请检查用户名和密码：" + (err.response.data.detail || "未知错误"));
+      setError(
+        "登录失败，请检查用户名和密码：" +
+          (err.response.data.detail || "未知错误"),
+      );
     } finally {
       setLoading(false);
     }
@@ -113,9 +116,9 @@ const Login = () => {
           }}
         >
           <Box sx={{ textAlign: "center", mb: 3 }}>
-            <Typography 
-              variant="h4" 
-              component="h1" 
+            <Typography
+              variant="h4"
+              component="h1"
               gutterBottom
               sx={{
                 fontWeight: "bold",
@@ -172,33 +175,36 @@ const Login = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ 
-                mt: 3, 
+              sx={{
+                mt: 3,
                 mb: 1,
                 py: 1.5,
                 borderRadius: 2,
                 background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                 "&:hover": {
-                  background: "linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)",
+                  background:
+                    "linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)",
                 },
                 fontSize: "1.1rem",
                 fontWeight: "600",
               }}
               disabled={loading}
-              startIcon={loading && <CircularProgress size={20} color="inherit" />}
+              startIcon={
+                loading && <CircularProgress size={20} color="inherit" />
+              }
             >
               {loading ? "登录中..." : "登录"}
             </Button>
 
             {error && (
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: "#d32f2f",
                   fontSize: "0.875rem",
                   textAlign: "center",
                   mt: 1,
-                  mb: 2
+                  mb: 2,
                 }}
               >
                 {error}

@@ -1,10 +1,10 @@
 import {
-    Card,
-    CardContent,
-    Typography,
-    Link,
-    Chip, 
-    Avatar
+  Card,
+  CardContent,
+  Typography,
+  Link,
+  Chip,
+  Avatar,
 } from "@mui/material";
 
 export default function TeamCard({ team }) {
@@ -26,10 +26,7 @@ export default function TeamCard({ team }) {
     `${t.getFullYear()}年${t.getMonth()}月${t.getDate()}日${t.getHours()}:${t.getMinutes()}`;
 
   return (
-    <Link
-      href={`/teams/${id}`}
-      style={{ textDecoration: "none" }}
-    >
+    <Link href={`/teams/${id}`} style={{ textDecoration: "none" }}>
       <Card
         sx={{
           display: "flex",
@@ -90,11 +87,11 @@ export default function TeamCard({ team }) {
 
           {/* 人数 & 队长 */}
           <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-            成员：{existing_members} / {expected_members}  
+            成员：{existing_members} / {expected_members}
             （队长：{leaderName}）
           </Typography>
 
-          {/* 招募截止 */}  
+          {/* 招募截止 */}
           <Typography variant="body2" color="text.secondary">
             招募截止：{getTimeStr(new Date(recruitment_deadline)) || "未设置"}
           </Typography>

@@ -122,7 +122,7 @@ export default function User() {
         const res = await userAPI.updateProfile(
           userNickname,
           userExperience,
-          userSpecialty
+          userSpecialty,
         );
         if (res.success) {
           console.log("User profile successfully updated!");
@@ -137,11 +137,10 @@ export default function User() {
       }
 
       return () => controller.abort();
-    }
+    };
 
     updateProfile();
   };
-
 
   if (loading) {
     return (
@@ -242,7 +241,7 @@ export default function User() {
           </Button>
         )}
 
-        {userIdentity === "me" &&
+        {userIdentity === "me" && (
           <>
             <Divider sx={{ my: 3 }} />
 
@@ -284,7 +283,7 @@ export default function User() {
               </Box>
             )}
           </>
-        }
+        )}
       </CardContent>
     </Card>
   );
