@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Box,
+  Button,
   Card,
   CardContent,
-  Typography,
-  TextField,
-  Grid,
   CircularProgress,
-  Divider
+  Divider,
+  Grid,
+  Pagination,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import { userAPI } from "../../services/UserServices";
@@ -16,22 +18,28 @@ import { getCurrentUser } from "../../utils/auth";
 
 export default function User() {
   const { user_id } = useParams();
-  const [userProfile, setUserProfile] = useState(null);
   const [userIdentity, setUserIdentity] = useState("");
+  const [userProfile, setUserProfile] = useState(null);
+  const [userNickname, setNickname] = useState("");
+  const [userExperience, setExperience] = useState("");
+  const [userSpecialty, setSpecialty] = useState("");
+
   const [userTeams, setUserTeams] = useState([]);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const pageSize = 10;
 
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (user_id == getCurrentUser().user_id) {
+    if (user_id == getCurrentUser().id) {
       setUserIdentity("me");
     } else {
       setUserIdentity("other");
     }
+    console.log(userIdentity);
   }, [user_id]);
 
   useEffect(() => {
@@ -44,7 +52,10 @@ export default function User() {
         const res = await userAPI.getUserProfile(user_id);
 
         if (res.success) {
-          setUserProfile(res.data);
+          // setUserProfile(res.data);
+          setNickname(res.data.nick_name);
+          setExperience(res.data.experience);
+          setSpecialty(res.data.advantage);
         } else {
           setError(res.message || "Unknown error.");
           console.log(error);
@@ -100,24 +111,55 @@ export default function User() {
     fetchUserTeams();
   }, [userIdentity]);
 
+  const handleSave = async () => {
+    const updateProfile = async () => {
+      const controller = new AbortController();
+      setSaving(true);
+      setError("");
+
+      try {
+        const res = await userAPI.updateProfile(
+          userNickname,
+          userExperience,
+          userSpecialty
+        );
+        if (res.success) {
+          console.log("User profile successfully updated!");
+        } else {
+          console.log(res.message || "User profile update failed!");
+        }
+      } catch {
+        console.log("Network error!");
+      } finally {
+        setSaving(false);
+        // location.reload(true);
+      }
+
+      return () => controller.abort();
+    }
+
+    updateProfile();
+  };
+
+
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
-        <CircularProgress />
+        <CircularProgress size="lg" value={25} />
       </Box>
     );
   }
 
-  if (!userProfile) {
-    return (
-      <Typography color="error" align="center" sx={{ mt: 5 }}>
-        未能加载用户信息。
-      </Typography>
-    );
-  }
+  // if (!loading && !userProfile) {
+  //   return (
+  //     <Typography color="error" align="center" sx={{ mt: 5 }}>
+  //       未能加载用户信息。
+  //     </Typography>
+  //   );
+  // }
 
   return (
-    <Card elevation={3} sx={{ p: 2, my: 5, maxWidth: 900, mx: "auto" }}>
+    <Card elevation={3} sx={{ p: 2, my: 5 }}>
       <CardContent>
         <Box
           sx={{
@@ -154,19 +196,22 @@ export default function User() {
             display: "flex",
             flexDirection: "column",
             gap: 2,
-            mb: 4,
+            mt: 4,
+            mb: 2,
           }}
         >
           <TextField
             label="昵称"
-            value={userProfile.nick_name || ""}
+            value={userNickname || ""}
+            placeholder="您的昵称不能为空哦！"
             onChange={(e) => setNickname(e.target.value)}
             variant="outlined"
             fullWidth
           />
           <TextField
-            label="参赛经历/经验（所获奖项）"
-            value={userProfile.experience || ""}
+            label="参赛经历 / 所获奖项"
+            value={userExperience || ""}
+            placeholder="在这里填写您的参赛经历吧！"
             onChange={(e) => setExperience(e.target.value)}
             multiline
             minRows={3}
@@ -175,15 +220,26 @@ export default function User() {
           />
           <TextField
             label="特长"
-            value={userProfile.advantage || ""}
-            onChange={(e) => setSpecialty(e.target.value)}
+            value={userSpecialty || ""}
             placeholder="在这里填写您的特长吧！"
+            onChange={(e) => setSpecialty(e.target.value)}
             multiline
             minRows={2}
             variant="outlined"
             fullWidth
           />
         </Box>
+
+        {userIdentity === "me" && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSave}
+            sx={{ alignSelf: "flex-start", mt: 1 }}
+          >
+            保存修改
+          </Button>
+        )}
 
         {userIdentity === "me" &&
           <>
