@@ -2,6 +2,7 @@ import React from "react";
 import { Typography, Button, Box } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import NewsCarousel from "../components/NewsCarousel";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -47,6 +48,9 @@ const Home = () => {
         >
           个人主页
         </Button>
+      </Box>
+      <Box sx={{ mx: "auto", my: 3, width: "fit-content" }}>
+        <NewsCarousel />
       </Box>
     </Box>
   );
