@@ -53,23 +53,6 @@ const Matches = () => {
       setError("");
 
       try {
-        // const res = await api.post(
-        //   "/matches/",
-        //   {
-        //     page_index: pageIndex,
-        //     page_size: pageSize,
-        //     options: {
-        //       query: search.trim(),
-        //       level: selectedTags[categories.LEVEL].map((tag) => tag.name),
-        //       quality: selectedTags[categories.QUAL].map((tag) => tag.name),
-        //       keywords: selectedTags[categories.KWORD].map((tag) => tag.name),
-        //       years: selectedTags[categories.YEAR].map((tag) => tag.name),
-        //       months: selectedTags[categories.MONTH].map((tag) => tag.name),
-        //     },
-        //   },
-        //   { signal: controller.signal },
-        // );
-
         const res = await contestAPI.getContests(pageIndex, pageSize, {
           query: search.trim(),
           level: selectedTags[categories.LEVEL].map((tag) => tag.name),
@@ -161,12 +144,22 @@ const Matches = () => {
             alignItems="stretch"
           >
             {matches.length === 0 ? (
-              <Grid key={"no_match"} size={12}>
+              <Grid
+                key={"no_matches"}
+                size={12}
+                sx={{
+                  mt: 2,
+                  height: "150px",
+                  justifyItems: "center",
+                  alignContent: "center",
+                  borderRadius: 5,
+                  bgcolor:"#eee"
+                }}
+              >
                 <Typography
-                  key={"no_match"}
+                  key={"no_matches"}
                   color="text.secondary"
                   align="center"
-                  sx={{ mt: 8 }}
                 >
                   暂无符合条件的比赛
                 </Typography>
