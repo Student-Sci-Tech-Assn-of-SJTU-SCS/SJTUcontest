@@ -22,7 +22,6 @@ const Teams = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const fetchTeams = async () => {
       const controller = new AbortController();
@@ -31,8 +30,12 @@ const Teams = () => {
 
       try {
         const res = params.match_id
-         ? await teamAPI.getRecruitingTeamsOfContest(params.match_id, pageIndex, pageSize)
-         : await teamAPI.getRecruitingTeams(pageIndex, pageSize);
+          ? await teamAPI.getRecruitingTeamsOfContest(
+              params.match_id,
+              pageIndex,
+              pageSize,
+            )
+          : await teamAPI.getRecruitingTeams(pageIndex, pageSize);
 
         if (res.success) {
           setTeams(res.data.teams || []);
@@ -70,7 +73,7 @@ const Teams = () => {
   //   },
   // ];
 
-return (
+  return (
     <Box
       sx={{
         px: 5,
@@ -109,7 +112,7 @@ return (
                   justifyItems: "center",
                   alignContent: "center",
                   borderRadius: 5,
-                  bgcolor:"#eee"
+                  bgcolor: "#eee",
                 }}
               >
                 <Typography

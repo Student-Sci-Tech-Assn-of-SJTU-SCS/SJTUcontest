@@ -153,7 +153,7 @@ const Matches = () => {
                   justifyItems: "center",
                   alignContent: "center",
                   borderRadius: 5,
-                  bgcolor:"#eee"
+                  bgcolor: "#eee",
                 }}
               >
                 <Typography
