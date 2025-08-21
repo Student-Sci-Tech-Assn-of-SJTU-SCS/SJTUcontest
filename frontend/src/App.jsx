@@ -12,6 +12,10 @@ import User from "./pages/user/User";
 import Error from "./pages/Error";
 import TeamDetail from "./pages/team/TeamDetail.jsx";
 import PrivateRoute from "./layouts/PrivateRoute.jsx";
+import AdminRoute from "./layouts/AdminRoute.jsx";
+import AdminPanel from "./pages/admin/AdminPanel.jsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
+import CreateContest from "./pages/admin/CreateContest.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -72,6 +76,24 @@ const Router = createBrowserRouter([
             <User />
           </PrivateRoute>
         ),
+      },
+      {
+        path: "admin",
+        element: (
+          <AdminRoute>
+            <AdminPanel />
+          </AdminRoute>
+        ),
+        children: [
+          {
+            index: true,
+            element: <AdminDashboard />,
+          },
+          {
+            path: "create-contest",
+            element: <CreateContest />,
+          },
+        ],
       },
     ],
   },

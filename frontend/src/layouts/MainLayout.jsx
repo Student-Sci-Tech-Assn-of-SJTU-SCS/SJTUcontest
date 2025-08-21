@@ -70,6 +70,11 @@ const MainLayout = () => {
           <Button color="inherit" onClick={() => navigate("/teams")}>
             组队
           </Button>
+          {user && user.is_staff && (
+            <Button color="inherit" onClick={() => navigate("/admin")}>
+              管理员
+            </Button>
+          )}
           <Box sx={{ flexGrow: 1 }} />
           {user ? (
             <>
