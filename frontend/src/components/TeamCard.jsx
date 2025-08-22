@@ -3,8 +3,9 @@ import {
   CardContent,
   Typography,
   Link,
-  Chip,
-  Avatar,
+  Box,
+  Divider,
+  Chip
 } from "@mui/material";
 
 export default function TeamCard({ team }) {
@@ -12,7 +13,6 @@ export default function TeamCard({ team }) {
     id,
     name,
     introduction,
-    contest,
     existing_members,
     expected_members,
     recruitment_deadline,
@@ -21,80 +21,105 @@ export default function TeamCard({ team }) {
 
   const leader = members.find((m) => m.is_leader);
   const leaderName = leader ? leader.nick_name : "无队长";
+  const isFull = existing_members >= expected_members;
 
-  const getTimeStr = (t) =>
-    `${t.getFullYear()}年${t.getMonth()}月${t.getDate()}日${t.getHours()}:${t.getMinutes()}`;
+  const getTimeStr = (t) => {
+    if (!t) return "未设置";
+    const date = new Date(t);
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+  };
 
   return (
     <Link href={`/teams/${id}`} style={{ textDecoration: "none" }}>
       <Card
         sx={{
-          display: "flex",
-          alignItems: "flex-start",
-          p: 2,
-          mb: 2,
-          borderRadius: 3,
-          backgroundColor: "#f9f9ff",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+          width: "100%",
+          height: 240,
+          borderRadius: 4,
+          overflow: "hidden",
+          boxShadow: "0 2px 16px rgba(0,0,0,0.10)",
+          position: "relative",
+          background: "none",
+          cursor: "pointer",
           transition: "transform 0.2s, box-shadow 0.2s",
           "&:hover": {
-            transform: "translateY(-4px)",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
+            transform: "scale(1.045)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
           },
         }}
       >
-        <CardContent sx={{ flex: 1, p: "0 !important" }}>
-          {/* 队伍名 */}
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 700,
-              color: "#222",
-              mb: 0.5,
-              display: "-webkit-box",
-              WebkitLineClamp: 1,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {name}
-          </Typography>
+        {/* 状态背景色 */}
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: isFull ? "rgba(244, 67, 54, 0.1)" : "rgba(76, 175, 80, 0.1)",
+            zIndex: 0,
+          }}
+        />
 
-          {/* 比赛名称 */}
-          {/* <Chip
-            label={contest || "未指定比赛"}
-            size="small"
-            sx={{ mb: 1, backgroundColor: "#e5e9ff", color: "#4a6cf7", fontWeight: 500 }}
-          /> */}
+        <CardContent
+          sx={{
+            position: "relative",
+            zIndex: 1,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            p: 2,
+          }}
+        >
+          {/* 队伍名称和状态标签 */}
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                color: "#222",
+                display: "-webkit-box",
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                flex: 1,
+                mr: 1
+              }}
+            >
+              {name}
+            </Typography>
+            <Chip
+              label={isFull ? "已满员" : "招募中"}
+              size="small"
+              color={isFull ? "error" : "success"}
+              variant="outlined"
+            />
+          </Box>
 
-          {/* 简介 */}
+          <Divider sx={{ my: 1.5 }} />
+
+          {/* 队伍简介 */}
           <Typography
             variant="body2"
             sx={{
+              color: "#555",
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "normal",
-              color: "#555",
-              mb: 1,
+              mb: 1.5,
+              flexGrow: 1
             }}
           >
             {introduction || "暂无简介"}
           </Typography>
 
-          {/* 人数 & 队长 */}
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-            成员：{existing_members} / {expected_members}
-            （队长：{leaderName}）
-          </Typography>
-
-          {/* 招募截止 */}
-          <Typography variant="body2" color="text.secondary">
-            招募截止：{getTimeStr(new Date(recruitment_deadline)) || "未设置"}
-          </Typography>
+          {/* 队伍信息 */}
+          <Box>
+            <Typography variant="body2" sx={{ color: "#555", mb: 0.5 }}>
+              成员: {existing_members}/{expected_members} • 队长: {leaderName}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#555" }}>
+              截止: {getTimeStr(recruitment_deadline)}
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
     </Link>

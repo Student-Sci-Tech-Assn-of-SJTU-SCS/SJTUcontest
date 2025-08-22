@@ -10,8 +10,8 @@ import MatchDetail from "./pages/match/MatchDetail";
 import Teams from "./pages/team/Teams";
 import User from "./pages/user/User";
 import Error from "./pages/Error";
-import TeamDetail from "./pages/team/TeamDetail.jsx";
-import PrivateRoute from "./layouts/PrivateRoute.jsx";
+import TeamDetail from "./pages/team/TeamDetail";
+import PrivateRoute from "./layouts/PrivateRoute";
 
 const Router = createBrowserRouter([
   {
@@ -73,6 +73,7 @@ const Router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      // 注意：已移除 /teams/create 和 /matches/:match_id/teams/create 路由
     ],
   },
 ]);
