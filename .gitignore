@@ -27,6 +27,3 @@ build/
 .env
 
 .venv/
-venv/
-readmyself.txt
-problems.txt
