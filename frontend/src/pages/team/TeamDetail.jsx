@@ -39,7 +39,7 @@ const TeamDetail = () => {
   const [isLeader, setIsLeader] = useState(false);
   const [isMember, setIsMember] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);  
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -71,7 +71,9 @@ const TeamDetail = () => {
         }
 
         const currentUserJSON = localStorage.getItem("user");
-        const currentUser = currentUserJSON ? JSON.parse(currentUserJSON) : null;
+        const currentUser = currentUserJSON
+          ? JSON.parse(currentUserJSON)
+          : null;
         const currentUserId = currentUser?.id;
 
         let memberFlag = false;
@@ -167,7 +169,7 @@ const TeamDetail = () => {
         editForm.name,
         editForm.introduction,
         editForm.expected_members,
-        editForm.recruitment_deadline
+        editForm.recruitment_deadline,
       );
 
       setSnackbar({
@@ -191,8 +193,7 @@ const TeamDetail = () => {
     }
   };
 
-  const handleCloseSnackbar = () =>
-    setSnackbar({ ...snackbar, open: false });
+  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
   const handleCopy = () => {
     navigator.clipboard.writeText(invitationCode);
@@ -276,7 +277,12 @@ const TeamDetail = () => {
           )}
 
           <CardContent>
-            <Typography variant="h4" gutterBottom fontWeight="bold" color="primary">
+            <Typography
+              variant="h4"
+              gutterBottom
+              fontWeight="bold"
+              color="primary"
+            >
               {team.name}
             </Typography>
 
@@ -286,29 +292,46 @@ const TeamDetail = () => {
 
             <Box mt={2}>
               <Box mb={2}>
-                <Typography variant="subtitle2" color="text.secondary">比赛名称</Typography>
+                <Typography variant="subtitle2" color="text.secondary">
+                  比赛名称
+                </Typography>
                 <Typography variant="body1" sx={{ wordBreak: "break-all" }}>
                   {contestName || team.contest}
                 </Typography>
               </Box>
               <Box mb={2}>
-                <Typography variant="subtitle2" color="text.secondary">当前人数</Typography>
+                <Typography variant="subtitle2" color="text.secondary">
+                  当前人数
+                </Typography>
                 <Typography variant="body1">
                   {team.existing_members} / {team.expected_members}
                 </Typography>
               </Box>
               <Box mb={2}>
-                <Typography variant="subtitle2" color="text.secondary">截止日期</Typography>
+                <Typography variant="subtitle2" color="text.secondary">
+                  截止日期
+                </Typography>
                 <Typography variant="body1">
-                  {new Date(team.recruitment_deadline).toLocaleDateString("zh-CN", {
-                    year: "numeric", month: "long", day: "numeric",
-                    hour: "2-digit", minute: "2-digit",
-                  })}
+                  {new Date(team.recruitment_deadline).toLocaleDateString(
+                    "zh-CN",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    },
+                  )}
                 </Typography>
               </Box>
               {isLeader && (
                 <Box mb={2}>
-                  <Button variant="outlined" onClick={() => setDialogOpen(true)}>获取邀请码</Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setDialogOpen(true)}
+                  >
+                    获取邀请码
+                  </Button>
                 </Box>
               )}
             </Box>
@@ -334,7 +357,11 @@ const TeamDetail = () => {
 
             {/* 队伍成员列表 */}
             <Box mt={4}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                gutterBottom
+              >
                 队伍成员
               </Typography>
 
@@ -380,7 +407,6 @@ const TeamDetail = () => {
                 </Typography>
               )}
             </Box>
-
           </CardContent>
         </Card>
       </Paper>
@@ -407,13 +433,18 @@ const TeamDetail = () => {
       </Dialog>
 
       {/* 删除确认弹窗 */}
-      <Dialog open={deleteOpen} onClose={() => !deleting && setDeleteOpen(false)}>
+      <Dialog
+        open={deleteOpen}
+        onClose={() => !deleting && setDeleteOpen(false)}
+      >
         <DialogTitle>确认删除</DialogTitle>
         <DialogContent>
           <Typography>删除后将无法恢复，确定要删除该队伍吗？</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteOpen(false)} disabled={deleting}>取消</Button>
+          <Button onClick={() => setDeleteOpen(false)} disabled={deleting}>
+            取消
+          </Button>
           <Button
             variant="contained"
             color="error"
@@ -441,7 +472,9 @@ const TeamDetail = () => {
               label="队伍名称"
               name="name"
               value={editForm.name}
-              onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+              onChange={(e) =>
+                setEditForm((f) => ({ ...f, name: e.target.value }))
+              }
               required
               fullWidth
             />
@@ -449,7 +482,9 @@ const TeamDetail = () => {
               label="队伍简介"
               name="introduction"
               value={editForm.introduction}
-              onChange={(e) => setEditForm((f) => ({ ...f, introduction: e.target.value }))}
+              onChange={(e) =>
+                setEditForm((f) => ({ ...f, introduction: e.target.value }))
+              }
               fullWidth
               multiline
               minRows={3}
@@ -460,7 +495,10 @@ const TeamDetail = () => {
               type="number"
               value={editForm.expected_members}
               onChange={(e) =>
-                setEditForm((f) => ({ ...f, expected_members: Number(e.target.value) }))
+                setEditForm((f) => ({
+                  ...f,
+                  expected_members: Number(e.target.value),
+                }))
               }
               inputProps={{ min: 1 }}
               required
@@ -472,7 +510,10 @@ const TeamDetail = () => {
               type="date"
               value={editForm.recruitment_deadline}
               onChange={(e) =>
-                setEditForm((f) => ({ ...f, recruitment_deadline: e.target.value }))
+                setEditForm((f) => ({
+                  ...f,
+                  recruitment_deadline: e.target.value,
+                }))
               }
               required
               fullWidth
@@ -481,8 +522,17 @@ const TeamDetail = () => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} disabled={editSubmitting}>取消</Button>
-          <Button variant="contained" onClick={handleSubmitEdit} disabled={editSubmitting}>
+          <Button
+            onClick={() => setEditDialogOpen(false)}
+            disabled={editSubmitting}
+          >
+            取消
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSubmitEdit}
+            disabled={editSubmitting}
+          >
             {editSubmitting ? "提交中..." : "保存"}
           </Button>
         </DialogActions>
@@ -495,7 +545,11 @@ const TeamDetail = () => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: "100%" }}>
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>

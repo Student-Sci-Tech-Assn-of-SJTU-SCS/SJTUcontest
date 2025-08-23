@@ -1,11 +1,11 @@
 import React from "react";
-import { 
-  Typography, 
-  Button, 
-  Box, 
-  Container, 
-  Grid, 
-  Card, 
+import {
+  Typography,
+  Button,
+  Box,
+  Container,
+  Grid,
+  Card,
   CardContent,
   Chip,
   alpha,
@@ -35,26 +35,34 @@ const Home = () => {
 
   const features = [
     {
-      icon: <ContestIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
+      icon: (
+        <ContestIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />
+      ),
       title: "丰富赛事",
-      description: "快速找到加分加素拓加劳动学时的比赛"
+      description: "快速找到加分加素拓加劳动学时的比赛",
     },
     {
-      icon: <TeamsIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />,
+      icon: (
+        <TeamsIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />
+      ),
       title: "团队协作",
-      description: "找到志同道合的队友"
+      description: "找到志同道合的队友",
     },
     {
-      icon: <TrendingIcon sx={{ fontSize: 40, color: theme.palette.success.main }} />,
+      icon: (
+        <TrendingIcon
+          sx={{ fontSize: 40, color: theme.palette.success.main }}
+        />
+      ),
       title: "能力提升",
-      description: "在竞赛中锻炼技能，提升综合素质"
-    }
+      description: "在竞赛中锻炼技能，提升综合素质",
+    },
   ];
 
   return (
     <Box sx={{ minHeight: "100vh", py: 0 }}>
       {/* 英雄区域 */}
-      <Box 
+      <Box
         sx={{
           py: 8,
           position: "relative",
@@ -62,14 +70,37 @@ const Home = () => {
       >
         <Container maxWidth="lg">
           <Box sx={{ textAlign: "center" }}>
-            <Typography variant="h3" gutterBottom fontWeight="bold" sx={{ mb: 2, color: "#424242" }}>
+            <Typography
+              variant="h3"
+              gutterBottom
+              fontWeight="bold"
+              sx={{ mb: 2, color: "#424242" }}
+            >
               上海交通大学计算机学院科创赛事平台
             </Typography>
-            <Typography variant="h5" sx={{ color: "text.secondary", mb: 5, maxWidth: "600px", mx: "auto", mt: 5 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                color: "text.secondary",
+                mb: 5,
+                maxWidth: "600px",
+                mx: "auto",
+                mt: 5,
+              }}
+            >
               寻找比赛、组建团队、劳动学时 All in One
             </Typography>
-            
-            <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap", mb: 4, mt: 4 }}>
+
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                justifyContent: "center",
+                flexWrap: "wrap",
+                mb: 4,
+                mt: 4,
+              }}
+            >
               <Button
                 variant="contained"
                 color="primary"
@@ -131,7 +162,10 @@ const Home = () => {
                       fontWeight: 500,
                       fontSize: "1.1rem",
                       "&:hover": {
-                        backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+                        backgroundColor: alpha(
+                          theme.palette.secondary.main,
+                          0.1,
+                        ),
                         borderColor: theme.palette.secondary.main,
                         transform: "translateY(-2px)",
                       },
@@ -173,19 +207,37 @@ const Home = () => {
       {/* 特色功能区域 */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Box sx={{ textAlign: "center", mb: 6 }}>
-          <Typography variant="h3" gutterBottom fontWeight="bold" color="primary">
+          <Typography
+            variant="h3"
+            gutterBottom
+            fontWeight="bold"
+            color="primary"
+          >
             平台特色
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ maxWidth: "600px", mx: "auto" }}>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{ maxWidth: "600px", mx: "auto" }}
+          >
             提供全方位的竞赛服务体验
           </Typography>
         </Box>
-        
-        <Grid container spacing={4} justifyContent="center" alignItems="stretch">
+
+        <Grid
+          container
+          spacing={4}
+          justifyContent="center"
+          alignItems="stretch"
+        >
           {features.map((feature, index) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index} sx={{ display: 'flex' }}>
-              <Card 
-                sx={{ 
+            <Grid
+              size={{ xs: 12, sm: 6, md: 4 }}
+              key={index}
+              sx={{ display: "flex" }}
+            >
+              <Card
+                sx={{
                   height: "100%",
                   width: "100%",
                   textAlign: "center",
@@ -201,10 +253,15 @@ const Home = () => {
                   flexDirection: "column",
                 }}
               >
-                <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <Box sx={{ mb: 2 }}>
-                    {feature.icon}
-                  </Box>
+                <CardContent
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Box sx={{ mb: 2 }}>{feature.icon}</Box>
                   <Typography variant="h5" gutterBottom fontWeight="bold">
                     {feature.title}
                   </Typography>
@@ -222,7 +279,12 @@ const Home = () => {
       <Box sx={{ backgroundColor: "white", py: 6 }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: "center", mb: 4 }}>
-            <Typography variant="h4" gutterBottom fontWeight="bold" color="primary">
+            <Typography
+              variant="h4"
+              gutterBottom
+              fontWeight="bold"
+              color="primary"
+            >
               最新资讯
             </Typography>
             <Typography variant="body1" color="text.secondary">

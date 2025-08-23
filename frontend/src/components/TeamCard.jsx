@@ -5,7 +5,7 @@ import {
   Link,
   Box,
   Divider,
-  Chip
+  Chip,
 } from "@mui/material";
 
 export default function TeamCard({ team }) {
@@ -53,7 +53,9 @@ export default function TeamCard({ team }) {
           sx={{
             position: "absolute",
             inset: 0,
-            backgroundColor: isFull ? "rgba(244, 67, 54, 0.1)" : "rgba(76, 175, 80, 0.1)",
+            backgroundColor: isFull
+              ? "rgba(244, 67, 54, 0.1)"
+              : "rgba(76, 175, 80, 0.1)",
             zIndex: 0,
           }}
         />
@@ -69,7 +71,13 @@ export default function TeamCard({ team }) {
           }}
         >
           {/* 队伍名称和状态标签 */}
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
+          >
             <Typography
               variant="h6"
               sx={{
@@ -80,7 +88,7 @@ export default function TeamCard({ team }) {
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
                 flex: 1,
-                mr: 1
+                mr: 1,
               }}
             >
               {name}
@@ -105,7 +113,7 @@ export default function TeamCard({ team }) {
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
               mb: 1.5,
-              flexGrow: 1
+              flexGrow: 1,
             }}
           >
             {introduction || "暂无简介"}

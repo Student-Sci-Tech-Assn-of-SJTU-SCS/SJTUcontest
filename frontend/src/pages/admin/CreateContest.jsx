@@ -83,7 +83,11 @@ const CreateContest = () => {
 
   const [materialInput, setMaterialInput] = useState({ name: "", url: "" });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ open: false, text: "", severity: "success" });
+  const [message, setMessage] = useState({
+    open: false,
+    text: "",
+    severity: "success",
+  });
   const [logoPreview, setLogoPreview] = useState("");
 
   const handleInputChange = (field) => (event) => {
@@ -91,9 +95,10 @@ const CreateContest = () => {
   };
 
   const handleMultiSelectChange = (field) => (event) => {
-    const value = typeof event.target.value === "string" 
-      ? event.target.value.split(",") 
-      : event.target.value;
+    const value =
+      typeof event.target.value === "string"
+        ? event.target.value.split(",")
+        : event.target.value;
     setFormData({ ...formData, [field]: value });
   };
 
@@ -116,7 +121,7 @@ const CreateContest = () => {
     const file = event.target.files[0];
     if (file) {
       // 检查文件类型
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         setMessage({
           open: true,
           text: "请选择图片文件",
@@ -124,7 +129,7 @@ const CreateContest = () => {
         });
         return;
       }
-      
+
       // 检查文件大小 (限制为2MB)
       if (file.size > 2 * 1024 * 1024) {
         setMessage({
@@ -158,11 +163,11 @@ const CreateContest = () => {
       // 转换日期格式为 ISO 字符串（后端需要）
       const submitData = {
         ...formData,
-        registration_start: formData.registration_start 
-          ? new Date(formData.registration_start).toISOString() 
+        registration_start: formData.registration_start
+          ? new Date(formData.registration_start).toISOString()
           : null,
-        registration_end: formData.registration_end 
-          ? new Date(formData.registration_end).toISOString() 
+        registration_end: formData.registration_end
+          ? new Date(formData.registration_end).toISOString()
           : null,
       };
 
@@ -172,7 +177,7 @@ const CreateContest = () => {
         text: "比赛创建成功！",
         severity: "success",
       });
-      
+
       // 重置表单
       setFormData({
         name: "",
@@ -267,7 +272,7 @@ const CreateContest = () => {
                       onChange={handleImageUpload}
                     />
                   </Button>
-                  
+
                   {(formData.logo || logoPreview) && (
                     <>
                       <Avatar
@@ -380,7 +385,10 @@ const CreateContest = () => {
                       {selected.map((value) => (
                         <Chip
                           key={value}
-                          label={CONTEST_KEYWORDS.find((k) => k.value === value)?.label}
+                          label={
+                            CONTEST_KEYWORDS.find((k) => k.value === value)
+                              ?.label
+                          }
                           size="small"
                         />
                       ))}

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Typography,
-  CardContent,
-  Grid,
-  Box,
-  Paper,
-} from "@mui/material";
+import { Typography, CardContent, Grid, Box, Paper } from "@mui/material";
 
 const AdminDashboard = () => {
   return (
@@ -13,11 +7,16 @@ const AdminDashboard = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         管理员概览
       </Typography>
-      
-      <Typography variant="body1" color="text.secondary" gutterBottom sx={{ mb: 3 }}>
+
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        gutterBottom
+        sx={{ mb: 3 }}
+      >
         欢迎使用管理员面板，您可以在这里管理系统的各项功能。
       </Typography>
-      
+
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Paper elevation={2}>
@@ -31,7 +30,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Paper>
         </Grid>
-        
+
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Paper elevation={2}>
             <CardContent>

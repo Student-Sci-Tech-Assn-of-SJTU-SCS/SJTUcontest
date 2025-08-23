@@ -40,7 +40,7 @@ const AdminPanel = () => {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <CssBaseline />
-      
+
       {/* 侧边导航栏 */}
       <Drawer
         variant="permanent"
@@ -67,9 +67,9 @@ const AdminPanel = () => {
             管理员面板
           </Typography>
         </Box>
-        
+
         <Divider />
-        
+
         <List sx={{ pt: 1 }}>
           {menuItems.map((item) => (
             <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
@@ -97,7 +97,8 @@ const AdminPanel = () => {
                 <ListItemIcon
                   sx={{
                     minWidth: 40,
-                    color: location.pathname === item.path ? "white" : "inherit",
+                    color:
+                      location.pathname === item.path ? "white" : "inherit",
                   }}
                 >
                   {item.icon}

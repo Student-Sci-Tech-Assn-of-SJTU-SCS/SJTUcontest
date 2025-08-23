@@ -45,7 +45,7 @@ const Teams = () => {
   const [submitting, setSubmitting] = useState(false);
   const [createError, setCreateError] = useState("");
   const navigate = useNavigate();
-  
+
   const theme = createTheme();
   const sm = useMediaQuery(theme.breakpoints.down("md"));
   const pageSize = sm ? 6 : 12;
@@ -75,13 +75,9 @@ const Teams = () => {
               match_id,
               pageIndex,
               pageSize,
-              filters
+              filters,
             )
-          : await teamAPI.getRecruitingTeams(
-              pageIndex,
-              pageSize,
-              filters
-            );
+          : await teamAPI.getRecruitingTeams(pageIndex, pageSize, filters);
 
         if (res.success) {
           setTeams(res.data.teams || []);
@@ -110,9 +106,7 @@ const Teams = () => {
   };
 
   const handleStatusChange = (statusId) => {
-    setSelectedStatus(prev => 
-      prev === statusId ? null : statusId
-    );
+    setSelectedStatus((prev) => (prev === statusId ? null : statusId));
     setPageIndex(1);
   };
 
@@ -125,7 +119,11 @@ const Teams = () => {
     setForm((f) => ({
       ...f,
       [name]:
-        name === "expected_members" ? (value === "" ? "" : Number(value)) : value,
+        name === "expected_members"
+          ? value === ""
+            ? ""
+            : Number(value)
+          : value,
     }));
   };
 
@@ -389,7 +387,10 @@ const Teams = () => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowCreateForm(false)} disabled={submitting}>
+          <Button
+            onClick={() => setShowCreateForm(false)}
+            disabled={submitting}
+          >
             取消
           </Button>
           <Button

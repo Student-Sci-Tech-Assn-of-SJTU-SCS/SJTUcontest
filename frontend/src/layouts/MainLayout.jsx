@@ -88,8 +88,8 @@ const MainLayout = () => {
       <CssBaseline />
 
       {/* 顶部导航栏 */}
-      <AppBar 
-        position="static" 
+      <AppBar
+        position="static"
         elevation={2}
         sx={{
           background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
@@ -100,20 +100,20 @@ const MainLayout = () => {
           <Typography
             variant="h5"
             component="div"
-            sx={{ 
-              mr: 4, 
-              cursor: "pointer", 
+            sx={{
+              mr: 4,
+              cursor: "pointer",
               fontWeight: "bold",
               color: "white",
               "&:hover": {
                 color: alpha(theme.palette.common.white, 0.8),
-              }
+              },
             }}
             onClick={() => navigate("/")}
           >
             🏆 SJTU Contest
           </Typography>
-          
+
           <Box sx={{ display: "flex", gap: 1, mr: 2 }}>
             <Button
               color="inherit"
@@ -125,11 +125,11 @@ const MainLayout = () => {
                 py: 1,
                 textTransform: "none",
                 fontWeight: 500,
-                backgroundColor: isCurrentPage("/matches") 
-                  ? alpha(theme.palette.common.white, 0.2) 
+                backgroundColor: isCurrentPage("/matches")
+                  ? alpha(theme.palette.common.white, 0.2)
                   : "transparent",
-                borderBottom: isCurrentPage("/matches") 
-                  ? `2px solid ${theme.palette.secondary.light}` 
+                borderBottom: isCurrentPage("/matches")
+                  ? `2px solid ${theme.palette.secondary.light}`
                   : "2px solid transparent",
                 "&:hover": {
                   backgroundColor: alpha(theme.palette.common.white, 0.1),
@@ -158,11 +158,11 @@ const MainLayout = () => {
                 py: 1,
                 textTransform: "none",
                 fontWeight: 500,
-                backgroundColor: isCurrentPage("/teams") 
-                  ? alpha(theme.palette.common.white, 0.2) 
+                backgroundColor: isCurrentPage("/teams")
+                  ? alpha(theme.palette.common.white, 0.2)
                   : "transparent",
-                borderBottom: isCurrentPage("/teams") 
-                  ? `2px solid ${theme.palette.secondary.light}` 
+                borderBottom: isCurrentPage("/teams")
+                  ? `2px solid ${theme.palette.secondary.light}`
                   : "2px solid transparent",
                 "&:hover": {
                   backgroundColor: alpha(theme.palette.common.white, 0.1),
@@ -192,11 +192,11 @@ const MainLayout = () => {
                   py: 1,
                   textTransform: "none",
                   fontWeight: 500,
-                  backgroundColor: isCurrentPage("/admin") 
+                  backgroundColor: isCurrentPage("/admin")
                     ? alpha(theme.palette.secondary.main, 0.4)
                     : alpha(theme.palette.secondary.main, 0.2),
-                  borderBottom: isCurrentPage("/admin") 
-                    ? `2px solid ${theme.palette.secondary.light}` 
+                  borderBottom: isCurrentPage("/admin")
+                    ? `2px solid ${theme.palette.secondary.light}`
                     : "2px solid transparent",
                   "&:hover": {
                     backgroundColor: alpha(theme.palette.secondary.main, 0.3),
@@ -213,21 +213,21 @@ const MainLayout = () => {
                   transition: "all 0.2s ease-in-out",
                 }}
               >
-                <Chip 
-                  label="管理员" 
-                  size="small" 
-                  sx={{ 
+                <Chip
+                  label="管理员"
+                  size="small"
+                  sx={{
                     backgroundColor: theme.palette.secondary.main,
                     color: "white",
-                    fontWeight: "bold"
-                  }} 
+                    fontWeight: "bold",
+                  }}
                 />
               </Button>
             )}
           </Box>
-          
+
           <Box sx={{ flexGrow: 1 }} />
-          
+
           {user ? (
             <>
               <Button
@@ -259,7 +259,7 @@ const MainLayout = () => {
               >
                 你好，{user.nick_name}！
               </Button>
-              
+
               <Menu
                 anchorEl={anchorEl}
                 open={open}
@@ -279,7 +279,10 @@ const MainLayout = () => {
                   <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
                   个人主页
                 </MenuItem>
-                <MenuItem onClick={handleLogout} sx={{ py: 1.5, color: "error.main" }}>
+                <MenuItem
+                  onClick={handleLogout}
+                  sx={{ py: 1.5, color: "error.main" }}
+                >
                   <LogoutIcon sx={{ mr: 2, fontSize: 20 }} />
                   退出登录
                 </MenuItem>
@@ -319,9 +322,9 @@ const MainLayout = () => {
       </AppBar>
 
       {/* 主要内容区域 */}
-      <Box 
-        component="main" 
-        sx={{ 
+      <Box
+        component="main"
+        sx={{
           flex: 1,
           backgroundColor: "#fafafa",
           minHeight: "calc(100vh - 120px)",
@@ -346,7 +349,8 @@ const MainLayout = () => {
         <Container maxWidth="lg">
           <Box sx={{ textAlign: "center" }}>
             <Typography variant="caption" color="grey.500">
-              © {new Date().getFullYear()} SJTU Contest Platform. All rights reserved.
+              © {new Date().getFullYear()} SJTU Contest Platform. All rights
+              reserved.
             </Typography>
           </Box>
         </Container>
