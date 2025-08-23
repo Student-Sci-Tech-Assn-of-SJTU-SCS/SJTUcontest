@@ -183,7 +183,7 @@ const Home = () => {
         
         <Grid container spacing={4} justifyContent="center" alignItems="stretch">
           {features.map((feature, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index} sx={{ display: 'flex' }}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index} sx={{ display: 'flex' }}>
               <Card 
                 sx={{ 
                   height: "100%",

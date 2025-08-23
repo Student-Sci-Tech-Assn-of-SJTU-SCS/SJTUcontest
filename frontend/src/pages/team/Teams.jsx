@@ -288,9 +288,9 @@ const Teams = () => {
           >
             {teams.length === 0 ? (
               <Grid
-                item
-                xs={12}
+                size={{ xs: 12 }}
                 sx={{
+                  width: "100%",
                   height: "150px",
                   display: "flex",
                   justifyContent: "center",
@@ -309,11 +309,7 @@ const Teams = () => {
               teams.map((team) => (
                 <Grid
                   key={team.id}
-                  item
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={3}
+                  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
                   display="flex"
                   justifyContent="center"
                 >

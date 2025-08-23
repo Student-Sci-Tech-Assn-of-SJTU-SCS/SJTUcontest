@@ -19,7 +19,7 @@ const AdminDashboard = () => {
       </Typography>
       
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Paper elevation={2}>
             <CardContent>
               <Typography variant="h6" component="h2" color="primary">
@@ -32,7 +32,7 @@ const AdminDashboard = () => {
           </Paper>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Paper elevation={2}>
             <CardContent>
               <Typography variant="h6" component="h2" color="primary">
@@ -45,7 +45,7 @@ const AdminDashboard = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Paper elevation={2}>
             <CardContent>
               <Typography variant="h6" component="h2" color="primary">
