@@ -24,6 +24,7 @@ const JAccount = () => {
         // 重定向到原始请求页面或首页
         const redirectPath = localStorage.getItem("pre_auth_path") || "/";
         localStorage.removeItem("pre_auth_path");
+        localStorage.setItem("login_type", "jAccount");
         navigate(redirectPath);
       } catch (error) {
         console.error("jAccount登录失败:", error);

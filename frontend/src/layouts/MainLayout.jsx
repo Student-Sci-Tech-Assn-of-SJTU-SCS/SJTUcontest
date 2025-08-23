@@ -58,7 +58,10 @@ const MainLayout = () => {
       localStorage.removeItem("user");
       setUser(null);
       const data = await userAPI.logout();
-      window.location.href = data.data.jaccount_logout_url;
+      const loginType = localStorage.getItem("login_type");
+      if (loginType === "jAccount") {
+        window.location.href = data.data.jaccount_logout_url;
+      }
     } catch (error) {
       console.error("登出失败:", error);
       // 即使请求失败，也清除本地状态
@@ -111,7 +114,7 @@ const MainLayout = () => {
             }}
             onClick={() => navigate("/")}
           >
-            🏆 SJTU Contest
+            科创平台
           </Typography>
 
           <Box sx={{ display: "flex", gap: 1, mr: 2 }}>

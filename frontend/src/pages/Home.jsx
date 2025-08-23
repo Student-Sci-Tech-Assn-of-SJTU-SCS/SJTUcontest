@@ -76,7 +76,7 @@ const Home = () => {
               fontWeight="bold"
               sx={{ mb: 2, color: "#424242" }}
             >
-              上海交通大学计算机学院科创赛事平台
+              上海交通大学计算机学院 科创赛事平台
             </Typography>
             <Typography
               variant="h5"
