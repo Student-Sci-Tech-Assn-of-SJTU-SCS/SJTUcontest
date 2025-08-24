@@ -12,6 +12,7 @@ from .serializers import (
     UserRegisterSerializer,
     jAccountLoginRequestSerializer,
     UserTeamsRequestSerializer,
+    UserTotalInfoSerializer,
 )
 from .jaccount import (
     get_jaccount_authorize_url,
@@ -262,6 +263,36 @@ def forbid_user_by_id(request, user_id):
         serializer = UserProfileSerializer(target_user)
         return ApiResponse.success(
             data=serializer.data, message="User has been forbidden successfully."
+        )
+
+    except User.DoesNotExist:
+        return ApiResponse.not_found(message="User not found")
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_user_total_info_by_id(request, user_id):
+    """
+    获取用户的完整信息，包括基本信息和所在队伍信息。
+    只有超级管理员可以访问。
+    """
+    try:
+        if not request.user.is_superuser:
+            return ApiResponse.forbidden(
+                message="Permission denied. Only super administrators can perform this action.",
+            )
+
+        user = User.objects.get(id=user_id)
+        serializer = UserTotalInfoSerializer(user)
+
+        return ApiResponse.success(
+            data=serializer.data,
+            message="User total information retrieved successfully.",
         )
 
     except User.DoesNotExist:

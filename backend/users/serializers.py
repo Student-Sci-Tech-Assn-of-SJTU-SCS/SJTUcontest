@@ -50,3 +50,30 @@ class jAccountLoginRequestSerializer(serializers.Serializer):
 class UserTeamsRequestSerializer(serializers.Serializer):
     page_index = serializers.IntegerField(min_value=1, required=True)
     page_size = serializers.IntegerField(min_value=1, max_value=100, required=True)
+
+
+class UserTotalInfoSerializer(serializers.ModelSerializer):
+    teams = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "email",
+            "nick_name",
+            "experience",
+            "advantage",
+            "is_staff",
+            "is_active",
+            "date_joined",
+            "last_login",
+            "teams",
+        ]
+
+    def get_teams(self, obj):
+        from teams.models import Team
+        from teams.serializers import TeamResponseSerializer
+
+        user_teams = Team.objects.filter(team_users__user=obj)
+        return TeamResponseSerializer(user_teams, many=True).data
