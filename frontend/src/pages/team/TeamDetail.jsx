@@ -1,4 +1,3 @@
-// ...（你已有的 import 保持不变）
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -135,7 +134,8 @@ const TeamDetail = () => {
       setDeleting(true);
       await teamAPI.deleteTeam(team_id);
       setSnackbar({ open: true, message: "队伍已删除", severity: "success" });
-      setTimeout(() => navigate("/teams"), 400);
+      const target = team?.contest ? `/matches/${team.contest}/teams` : "/teams";
+      navigate(target, { replace: true });
     } catch (error) {
       const msg =
         error?.response?.data?.message ||
