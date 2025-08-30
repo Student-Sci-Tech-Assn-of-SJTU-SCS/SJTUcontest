@@ -57,6 +57,12 @@ const TeamDetail = () => {
     severity: "info",
   });
 
+  const formatDatetimeLocal = (isoString) => {
+    const date = new Date(isoString);
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  };
+
   const fetchTeamData = async () => {
     try {
       const teamRes = await teamAPI.getTeamDetail(team_id);
@@ -147,14 +153,16 @@ const TeamDetail = () => {
     }
   };
 
-  const handleSubmitEdit = async () => {
+  const handleSubmitEdit = async (editForm) => {
     try {
+      const isoDeadline = new Date(editForm.recruitment_deadline).toISOString();
+
       await teamAPI.updateTeam(
         team_id,
         editForm.name,
         editForm.introduction,
         editForm.expected_members,
-        editForm.recruitment_deadline,
+        isoDeadline,
       );
 
       setSnackbar({
@@ -238,7 +246,7 @@ const TeamDetail = () => {
                           introduction: team.introduction || "",
                           expected_members: team.expected_members || 0,
                           recruitment_deadline: team.recruitment_deadline
-                            ? team.recruitment_deadline.slice(0, 10)
+                            ? formatDatetimeLocal(team.recruitment_deadline)
                             : "",
                         });
                         setEditDialogOpen(true);
