@@ -50,7 +50,6 @@ const TeamDetail = () => {
     expected_members: 0,
     recruitment_deadline: "",
   });
-  const [editError, setEditError] = useState("");
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -58,52 +57,52 @@ const TeamDetail = () => {
     severity: "info",
   });
 
-  useEffect(() => {
-    const fetchTeamData = async () => {
-      try {
-        const teamRes = await teamAPI.getTeamDetail(team_id);
-        const data = teamRes.data;
-        setTeam(data);
+  const fetchTeamData = async () => {
+    try {
+      const teamRes = await teamAPI.getTeamDetail(team_id);
+      const data = teamRes.data;
+      setTeam(data);
 
-        if (data.contest) {
-          const contestRes = await contestAPI.getContestDetail(data.contest);
-          setContestName(contestRes.data?.name || "");
-        }
-
-        const currentUserJSON = localStorage.getItem("user");
-        const currentUser = currentUserJSON
-          ? JSON.parse(currentUserJSON)
-          : null;
-        const currentUserId = currentUser?.id;
-
-        let memberFlag = false;
-        let leaderFlag = false;
-
-        if (currentUserId && data.members) {
-          data.members.forEach((m) => {
-            if (m.id === currentUserId) {
-              memberFlag = true;
-              if (m.is_leader) {
-                leaderFlag = true;
-              }
-            }
-          });
-        }
-
-        setIsMember(memberFlag);
-        setIsLeader(leaderFlag);
-
-      } catch (error) {
-        setSnackbar({
-          open: true,
-          message: "加载队伍信息失败",
-          severity: "error",
-        });
-      } finally {
-        setLoading(false);
+      if (data.contest) {
+        const contestRes = await contestAPI.getContestDetail(data.contest);
+        setContestName(contestRes.data?.name || "");
       }
-    };
 
+      const currentUserJSON = localStorage.getItem("user");
+      const currentUser = currentUserJSON
+        ? JSON.parse(currentUserJSON)
+        : null;
+      const currentUserId = currentUser?.id;
+
+      let memberFlag = false;
+      let leaderFlag = false;
+
+      if (currentUserId && data.members) {
+        data.members.forEach((m) => {
+          if (m.id === currentUserId) {
+            memberFlag = true;
+            if (m.is_leader) {
+              leaderFlag = true;
+            }
+          }
+        });
+      }
+
+      setIsMember(memberFlag);
+      setIsLeader(leaderFlag);
+
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "加载队伍信息失败",
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchTeamData();
   }, [team_id]);
 
@@ -111,6 +110,7 @@ const TeamDetail = () => {
     try {
       await teamAPI.joinTeam(team_id, inputCode);
       setSnackbar({ open: true, message: "成功加入队伍", severity: "success" });
+      await fetchTeamData();
     } catch (error) {
       setSnackbar({ open: true, message: "加入队伍失败", severity: "error" });
     }
@@ -121,6 +121,7 @@ const TeamDetail = () => {
       await teamAPI.leaveTeam(team_id);
       setSnackbar({ open: true, message: "已退出队伍", severity: "success" });
       setIsMember(false);
+      await fetchTeamData();
     } catch (error) {
       setSnackbar({ open: true, message: "退出失败", severity: "error" });
     }
@@ -240,7 +241,6 @@ const TeamDetail = () => {
                             ? team.recruitment_deadline.slice(0, 10)
                             : "",
                         });
-                        setEditError("");
                         setEditDialogOpen(true);
                       }}
                     >
