@@ -26,6 +26,8 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { teamAPI } from "../../services/TeamServices";
 import { contestAPI } from "../../services/MatchServices";
 
+import EditTeamDialog from "./components/EditTeamDialog";
+
 const TeamDetail = () => {
   const { team_id } = useParams();
   const navigate = useNavigate();
@@ -49,7 +51,6 @@ const TeamDetail = () => {
     recruitment_deadline: "",
   });
   const [editError, setEditError] = useState("");
-  const [editSubmitting, setEditSubmitting] = useState(false);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -147,19 +148,6 @@ const TeamDetail = () => {
 
   const handleSubmitEdit = async () => {
     try {
-      setEditError("");
-
-      if (!editForm.name) {
-        setEditError("请填写队伍名称");
-        return;
-      }
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(editForm.recruitment_deadline)) {
-        setEditError("招募截止日期格式错误");
-        return;
-      }
-
-      setEditSubmitting(true);
-
       await teamAPI.updateTeam(
         team_id,
         editForm.name,
@@ -174,18 +162,17 @@ const TeamDetail = () => {
         severity: "success",
       });
 
-      setEditDialogOpen(false);
       const updated = await teamAPI.getTeamDetail(team_id);
       setTeam(updated.data);
+
+      return null;
     } catch (error) {
       const msg =
         error?.response?.data?.message ||
         error?.response?.data?.detail ||
         error?.message ||
         "更新失败";
-      setEditError(msg);
-    } finally {
-      setEditSubmitting(false);
+      return msg;
     }
   };
 
@@ -466,87 +453,12 @@ const TeamDetail = () => {
         </DialogActions>
       </Dialog>
 
-      {/* 编辑队伍弹窗 */}
-      <Dialog
+      <EditTeamDialog
         open={editDialogOpen}
-        onClose={() => !editSubmitting && setEditDialogOpen(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>编辑队伍</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} sx={{ mt: 1 }}>
-            {editError && <Alert severity="error">{editError}</Alert>}
-
-            <TextField
-              label="队伍名称"
-              name="name"
-              value={editForm.name}
-              onChange={(e) =>
-                setEditForm((f) => ({ ...f, name: e.target.value }))
-              }
-              required
-              fullWidth
-            />
-            <TextField
-              label="队伍简介"
-              name="introduction"
-              value={editForm.introduction}
-              onChange={(e) =>
-                setEditForm((f) => ({ ...f, introduction: e.target.value }))
-              }
-              fullWidth
-              multiline
-              minRows={3}
-            />
-            <TextField
-              label="预期人数"
-              name="expected_members"
-              type="number"
-              value={editForm.expected_members}
-              onChange={(e) =>
-                setEditForm((f) => ({
-                  ...f,
-                  expected_members: Number(e.target.value),
-                }))
-              }
-              inputProps={{ min: 1 }}
-              required
-              fullWidth
-            />
-            <TextField
-              label="招募截止日期 (YYYY-MM-DD)"
-              name="recruitment_deadline"
-              type="date"
-              value={editForm.recruitment_deadline}
-              onChange={(e) =>
-                setEditForm((f) => ({
-                  ...f,
-                  recruitment_deadline: e.target.value,
-                }))
-              }
-              required
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setEditDialogOpen(false)}
-            disabled={editSubmitting}
-          >
-            取消
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleSubmitEdit}
-            disabled={editSubmitting}
-          >
-            {editSubmitting ? "提交中..." : "保存"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        initialValues={editForm}
+        onClose={() => setEditDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+      />
 
       {/* 提示框 */}
       <Snackbar

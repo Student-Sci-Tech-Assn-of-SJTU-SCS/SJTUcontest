@@ -11,11 +11,6 @@ import {
   Stack,
   Chip,
   Collapse,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Alert,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { teamAPI } from "../../services/TeamServices";
@@ -24,6 +19,21 @@ import { useMediaQuery } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+
+import EditTeamDialog from "./components/EditTeamDialog";
+
+function getNowDateTimeString() {
+  const now = new Date();
+  const pad = (n) => n.toString().padStart(2, "0");
+
+  const year = now.getFullYear();
+  const month = pad(now.getMonth() + 1);
+  const day = pad(now.getDate());
+  const hours = pad(now.getHours());
+  const minutes = pad(now.getMinutes());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
 
 // 状态标签定义
 const statusOptions = [
@@ -127,25 +137,9 @@ const Teams = () => {
     }));
   };
 
-  const handleCreateTeam = async () => {
+  const handleCreateTeam = async (form) => {
     try {
       setCreateError("");
-
-      // 基本校验
-      if (!form.name) {
-        setCreateError("请填写队伍名称");
-        return;
-      }
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(form.recruitment_deadline))) {
-        setCreateError("请填写 YYYY-MM-DD 格式的招募截止日期");
-        return;
-      }
-      if (form.expected_members === "" || Number(form.expected_members) < 0) {
-        setCreateError("请填写非负的预期人数");
-        return;
-      }
-
-      setSubmitting(true);
 
       const resp = await teamAPI.createTeam({
         contest: match_id,
@@ -164,23 +158,22 @@ const Teams = () => {
       // 如果后端返回了 id，则跳转详情
       if (data?.id) {
         navigate(`/teams/${data.id}`);
-      } else {
-        // 重新加载队伍列表
-        const res = await teamAPI.getRecruitingTeams(pageIndex, pageSize);
-        if (res.success) {
-          setTeams(res.data.teams || []);
-          setPageCount(res.data.total_pages);
-        }
+      }else {
+      const res = await teamAPI.getRecruitingTeams(pageIndex, pageSize);
+      if (res.success) {
+        setTeams(res.data.teams || []);
+        setPageCount(res.data.total_pages);
       }
+    }
+
+      return null;
     } catch (e) {
       const msg =
         e?.response?.data?.message ||
         e?.response?.data?.detail ||
         e?.message ||
         "创建失败";
-      setCreateError(msg);
-    } finally {
-      setSubmitting(false);
+      return msg
     }
   };
 
@@ -331,77 +324,22 @@ const Teams = () => {
         </>
       )}
 
-      {/* 创建队伍对话框 */}
-      <Dialog
+      <EditTeamDialog
         open={showCreateForm}
-        onClose={() => !submitting && setShowCreateForm(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>创建新队伍</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} sx={{ mt: 1 }}>
-            {createError && <Alert severity="error">{createError}</Alert>}
+        initialValues={{
+          name: "",
+          introduction: "",
+          expected_members: 1, 
+          recruitment_deadline: getNowDateTimeString(),
+        }}
+        // [ADDED] 自定义标题与确认按钮文案（可选）
+        title="创建新队伍"
+        confirmText="创建"
+        cancelText="取消"
+        onClose={() => setShowCreateForm(false)}
+        onSubmit={handleCreateTeam}
+      />
 
-            <TextField
-              label="队伍名称"
-              name="name"
-              value={form.name}
-              onChange={handleFormChange}
-              required
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="队伍简介"
-              name="introduction"
-              value={form.introduction}
-              onChange={handleFormChange}
-              fullWidth
-              multiline
-              minRows={3}
-              margin="normal"
-            />
-            <TextField
-              label="预期人数"
-              name="expected_members"
-              type="number"
-              value={form.expected_members}
-              onChange={handleFormChange}
-              inputProps={{ min: 1 }}
-              required
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="招募截止日期 (YYYY-MM-DD)"
-              name="recruitment_deadline"
-              type="date"
-              value={form.recruitment_deadline}
-              onChange={handleFormChange}
-              required
-              fullWidth
-              margin="normal"
-              InputLabelProps={{ shrink: true }}
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setShowCreateForm(false)}
-            disabled={submitting}
-          >
-            取消
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleCreateTeam}
-            disabled={submitting}
-          >
-            {submitting ? "提交中..." : "创建"}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
