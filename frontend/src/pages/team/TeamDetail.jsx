@@ -92,10 +92,6 @@ const TeamDetail = () => {
         setIsMember(memberFlag);
         setIsLeader(leaderFlag);
 
-        if (leaderFlag) {
-          const codeRes = await teamAPI.getTeamInvitationCode(team_id);
-          setInvitationCode(codeRes.data?.invitation_code || "");
-        }
       } catch (error) {
         setSnackbar({
           open: true,
@@ -194,6 +190,20 @@ const TeamDetail = () => {
   };
 
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
+
+  const handleFetchInvitationCode = async () => {
+    try {
+      const res = await teamAPI.getTeamInvitationCode(team_id);
+      setInvitationCode(res.data?.invitation_code || "");
+      setDialogOpen(true);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "获取邀请码失败",
+        severity: "error",
+      });
+    }
+  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(invitationCode);
@@ -328,7 +338,7 @@ const TeamDetail = () => {
                 <Box mb={2}>
                   <Button
                     variant="outlined"
-                    onClick={() => setDialogOpen(true)}
+                    onClick={handleFetchInvitationCode}
                   >
                     获取邀请码
                   </Button>
