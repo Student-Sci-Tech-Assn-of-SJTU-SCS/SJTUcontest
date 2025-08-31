@@ -64,11 +64,17 @@ const ViewMatches = () => {
   const handleDelete = async () => {
     if (selectedIds.length === 0) return;
     try {
-      for (const match_id in selectedIds) {
-        await contestAPI.deleteContest(match_id);
-      }
+      await Promise.all(
+        selectedIds.map((match_id) => contestAPI.deleteContest(match_id))
+      );
       setMatches((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
       setSelectedIds([]);
+
+      setMessage({
+        open: true,
+        text: "比赛删除成功！",
+        severity: "success",
+      });
     } catch (err) {
       console.error(err);
       setMessage({
@@ -84,7 +90,7 @@ const ViewMatches = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 100 },
+    { field: "id", headerName: "UUID", width: 100 },
     { field: "name", headerName: "比赛名称", flex: 1 },
     { field: "year", headerName: "年份", width: 60 },
     { field: "description", headerName: "描述", width: 300 },
@@ -145,7 +151,10 @@ const ViewMatches = () => {
               columns={columns}
               checkboxSelection
               pageSize={pageSize}
-              onRowSelectionModelChange={(ids) => setSelectedIds(ids)}
+              onRowSelectionModelChange={(model) => {
+                // console.log(`selectedIds of DataGrid: ${Array.from(model.ids)}`);
+                setSelectedIds(Array.from(model.ids));
+              }}
               paginationMode="server"
               rowCount={pageCount * pageSize}
               page={pageIndex - 1}

@@ -33,7 +33,7 @@ export const contestAPI = {
 
   // 删除比赛
   deleteContest: async (match_id) => {
-    const response = await api.post(`matches/${match_id}/delete/`);
+    const response = await api.delete(`matches/${match_id}/delete/`);
     return response;
   },
 };
