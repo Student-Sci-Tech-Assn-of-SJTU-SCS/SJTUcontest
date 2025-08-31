@@ -26,7 +26,7 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { teamAPI } from "../../services/TeamServices";
 import { contestAPI } from "../../services/MatchServices";
 
-import EditTeamDialog from "./components/EditTeamDialog";
+import EditTeamDialog from "../../components/team/EditTeamDialog";
 
 const TeamDetail = () => {
   const { team_id } = useParams();

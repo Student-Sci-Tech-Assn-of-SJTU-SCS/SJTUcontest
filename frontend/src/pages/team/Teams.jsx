@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Typography,
   Box,
-  Grid,
   CircularProgress,
   Pagination,
   Divider,
   Button,
   TextField,
   Stack,
-  Chip,
-  Collapse,
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
-import { teamAPI } from "../../services/TeamServices";
-import TeamCard from "../../components/TeamCard";
+
 import { useMediaQuery } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-import EditTeamDialog from "./components/EditTeamDialog";
+import { teamAPI } from "../../services/TeamServices";
+import EditTeamDialog from "../../components/team/EditTeamDialog";
+import TeamCard from "../../components/team/TeamCard";
+import { getCurrentUser } from "../../utils/auth";
 
 function getNowDateTimeString() {
   const now = new Date();
@@ -54,6 +53,9 @@ const Teams = () => {
   const [expanded, setExpanded] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [createError, setCreateError] = useState("");
+  const currentUser = getCurrentUser();
+  const myId = currentUser?.id;
+
   const navigate = useNavigate();
 
   const theme = createTheme();
@@ -92,6 +94,7 @@ const Teams = () => {
         if (res.success) {
           setTeams(res.data.teams || []);
           setPageCount(res.data.total_pages);
+
         } else {
           setError(res.message || "获取队伍列表失败");
         }
@@ -212,15 +215,7 @@ const Teams = () => {
           sx={{ width: { xs: "100%", sm: 300 } }}
         />
         <Stack direction="row" spacing={1}>
-          <Button
-            variant="outlined"
-            onClick={toggleExpand}
-            size="small"
-            startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            sx={{ width: "110px", height: "40px" }}
-          >
-            {expanded ? "收起筛选" : "展开筛选"}
-          </Button>
+          
           <Button
             variant="contained"
             onClick={() => setShowCreateForm(true)}
@@ -231,34 +226,6 @@ const Teams = () => {
         </Stack>
       </Stack>
 
-      {/* 可展开的筛选区域 */}
-      <Collapse
-        in={expanded}
-        timeout="auto"
-        unmountOnExit
-        sx={{
-          mb: 3,
-          borderRadius: 2,
-          bgcolor: "#f0f0f0",
-          p: 2,
-        }}
-      >
-        <Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>
-          队伍状态:
-        </Typography>
-        <Stack direction="row" spacing={1}>
-          {statusOptions.map((status) => (
-            <Chip
-              key={status.id}
-              label={status.description}
-              variant={selectedStatus === status.id ? "filled" : "outlined"}
-              color="primary"
-              onClick={() => handleStatusChange(status.id)}
-              sx={{ cursor: "pointer" }}
-            />
-          ))}
-        </Stack>
-      </Collapse>
 
       {/* 队伍列表 */}
       {loading ? (
@@ -271,44 +238,29 @@ const Teams = () => {
         </Typography>
       ) : (
         <>
-          <Grid
-            container
-            spacing={3}
-            justifyContent="center"
-            alignItems="stretch"
-          >
+          <Box>
             {teams.length === 0 ? (
-              <Grid
-                size={{ xs: 12 }}
-                sx={{
-                  width: "100%",
-                  height: "150px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: 5,
-                  bgcolor: "#eee",
-                }}
-              >
-                <Typography color="text.secondary" align="center">
-                  {search.trim() || selectedStatus
-                    ? "没有找到匹配的队伍"
-                    : "当前没有正在招募的队伍"}
-                </Typography>
-              </Grid>
+              <Typography align="center" color="text.secondary" sx={{ py: 6 }}>
+                {search.trim() || selectedStatus
+                  ? "没有找到匹配的队伍"
+                  : "当前没有正在招募的队伍"}
+              </Typography>
             ) : (
-              teams.map((team) => (
-                <Grid
-                  key={team.id}
-                  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
-                  display="flex"
-                  justifyContent="center"
-                >
-                  <TeamCard team={team} />
-                </Grid>
-              ))
+              teams.map((team) => {
+                const isMeInTeam = team.members?.some(
+                  (m) => m.id === myId
+                );
+                return (
+                  <TeamCard
+                    key={team.id}
+                    team={team}
+                    highlight={isMeInTeam} 
+                  />
+                );
+              })
             )}
-          </Grid>
+          </Box>
+
 
           {pageCount > 1 && (
             <Box display="flex" justifyContent="center" mt={4}>

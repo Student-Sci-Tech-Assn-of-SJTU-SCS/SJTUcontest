@@ -15,7 +15,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import { userAPI } from "../../services/UserServices";
 import { getCurrentUser } from "../../utils/auth";
-import TeamCard from "../../components/TeamCard";
+import TeamCard from "../../components/team/TeamCard";
 
 export default function User() {
   const { user_id } = useParams();
