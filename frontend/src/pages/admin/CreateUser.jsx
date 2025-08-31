@@ -39,9 +39,18 @@ const CreateUser = () => {
   });
 
   const validations = {
-    username: makeValidator(/^[A-Za-z0-9._@-]+$/, "用户名只能包含字母、数字和符号‘.’‘_’‘-’‘@’！"),
-    email: makeValidator(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "请输入合法的邮箱地址！"),
-    password: makeValidator(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,16}$/, "密码需为8~16位，并包含字母、数字和特殊符号！"),
+    username: makeValidator(
+      /^[A-Za-z0-9._@-]+$/,
+      "用户名只能包含字母、数字和符号‘.’‘_’‘-’‘@’！",
+    ),
+    email: makeValidator(
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      "请输入合法的邮箱地址！",
+    ),
+    password: makeValidator(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,16}$/,
+      "密码需为8~16位，并包含字母、数字和特殊符号！",
+    ),
   };
 
   const handleInputChange = (field) => (event) => {

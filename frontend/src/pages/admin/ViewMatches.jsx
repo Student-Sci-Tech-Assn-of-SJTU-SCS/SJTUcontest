@@ -32,7 +32,7 @@ const ViewMatches = () => {
   useEffect(() => {
     const fetchMatches = async () => {
       setLoading(true);
-      
+
       try {
         const res = await contestAPI.getContests(pageIndex, pageSize, {});
         if (res.success) {
@@ -43,7 +43,7 @@ const ViewMatches = () => {
             open: true,
             text: res.message || "未知错误。",
             severity: "error",
-          })
+          });
         }
       } catch (err) {
         if (!axios.isCancel(err)) {
@@ -51,7 +51,7 @@ const ViewMatches = () => {
             open: true,
             text: "网络错误，请稍后重试。",
             severity: "error",
-          })
+          });
         }
       } finally {
         setLoading(false);
@@ -75,7 +75,7 @@ const ViewMatches = () => {
         open: true,
         text: "删除失败，请稍后再试。",
         severity: "error",
-      })
+      });
     }
   };
 
@@ -155,7 +155,8 @@ const ViewMatches = () => {
                 }
               }}
               localeText={{
-                footerRowSelected: (count) => `${count.toLocaleString()} 行已选择`,
+                footerRowSelected: (count) =>
+                  `${count.toLocaleString()} 行已选择`,
                 footerTotalRows: "总行数：",
                 MuiTablePagination: {
                   labelRowsPerPage: "每页行数：",

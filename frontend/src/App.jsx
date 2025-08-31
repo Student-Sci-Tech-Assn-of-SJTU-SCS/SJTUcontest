@@ -106,7 +106,7 @@ const Router = createBrowserRouter([
           },
           {
             path: "edit-match/:match_id",
-            element: <MatchEdit />
+            element: <MatchEdit />,
           },
         ],
       },
