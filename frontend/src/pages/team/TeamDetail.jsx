@@ -69,9 +69,7 @@ const TeamDetail = () => {
       }
 
       const currentUserJSON = localStorage.getItem("user");
-      const currentUser = currentUserJSON
-        ? JSON.parse(currentUserJSON)
-        : null;
+      const currentUser = currentUserJSON ? JSON.parse(currentUserJSON) : null;
       const currentUserId = currentUser?.id;
 
       let memberFlag = false;
@@ -90,7 +88,6 @@ const TeamDetail = () => {
 
       setIsMember(memberFlag);
       setIsLeader(leaderFlag);
-
     } catch (error) {
       setSnackbar({
         open: true,
@@ -132,7 +129,9 @@ const TeamDetail = () => {
       setDeleting(true);
       await teamAPI.deleteTeam(team_id);
       setSnackbar({ open: true, message: "队伍已删除", severity: "success" });
-      const target = team?.contest ? `/matches/${team.contest}/teams` : "/teams";
+      const target = team?.contest
+        ? `/matches/${team.contest}/teams`
+        : "/teams";
       navigate(target, { replace: true });
     } catch (error) {
       const msg =
