@@ -131,7 +131,7 @@ export default function NewsCarousel() {
                 boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
               },
             }}
-            onClick={() => alert(`点击新闻：${item.title}`)}
+            onClick={() => window.open(item.url, '_blank')}
           >
             <CardContent>
               <Typography variant="h6" gutterBottom noWrap>

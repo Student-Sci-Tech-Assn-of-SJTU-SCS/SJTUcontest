@@ -42,6 +42,11 @@ const AdminPanel = () => {
       path: "/admin/create-user",
     },
     {
+      text: "创建新闻",
+      icon: <AddCircleIcon />,
+      path: "/admin/create-news",
+    },
+    {
       text: "管理比赛",
       icon: <EditIcon />,
       path: "/admin/view-matches",
