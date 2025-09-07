@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "users",
     "contests",
     "teams",
+    "news",
 ]
 
 MIDDLEWARE = [

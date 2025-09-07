@@ -161,13 +161,13 @@ const Teams = () => {
       // 如果后端返回了 id，则跳转详情
       if (data?.id) {
         navigate(`/teams/${data.id}`);
-      }else {
-      const res = await teamAPI.getRecruitingTeams(pageIndex, pageSize);
-      if (res.success) {
-        setTeams(res.data.teams || []);
-        setPageCount(res.data.total_pages);
+      } else {
+        const res = await teamAPI.getRecruitingTeams(pageIndex, pageSize);
+        if (res.success) {
+          setTeams(res.data.teams || []);
+          setPageCount(res.data.total_pages);
+        }
       }
-    }
 
       return null;
     } catch (e) {
@@ -176,7 +176,7 @@ const Teams = () => {
         e?.response?.data?.detail ||
         e?.message ||
         "创建失败";
-      return msg
+      return msg;
     }
   };
 
@@ -281,7 +281,7 @@ const Teams = () => {
         initialValues={{
           name: "",
           introduction: "",
-          expected_members: 1, 
+          expected_members: 1,
           recruitment_deadline: getNowDateTimeString(),
         }}
         // [ADDED] 自定义标题与确认按钮文案（可选）
@@ -291,7 +291,6 @@ const Teams = () => {
         onClose={() => setShowCreateForm(false)}
         onSubmit={handleCreateTeam}
       />
-
     </Box>
   );
 };

@@ -92,14 +92,19 @@ const EditTeamDialog = ({
         e?.response?.data?.message ||
           e?.response?.data?.detail ||
           e?.message ||
-          "提交失败"
+          "提交失败",
       );
       setSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={open} onClose={() => !submitting && onClose?.()} fullWidth maxWidth="sm">
+    <Dialog
+      open={open}
+      onClose={() => !submitting && onClose?.()}
+      fullWidth
+      maxWidth="sm"
+    >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
@@ -145,7 +150,7 @@ const EditTeamDialog = ({
                     ...s,
                     expected_members: Math.max(
                       1,
-                      Number(s.expected_members || 1) - 1
+                      Number(s.expected_members || 1) - 1,
                     ),
                   }))
                 }
@@ -209,7 +214,11 @@ const EditTeamDialog = ({
         <Button onClick={onClose} disabled={submitting}>
           {cancelText}
         </Button>
-        <Button variant="contained" onClick={handleConfirm} disabled={submitting}>
+        <Button
+          variant="contained"
+          onClick={handleConfirm}
+          disabled={submitting}
+        >
           {submitting ? "提交中..." : confirmText}
         </Button>
       </DialogActions>

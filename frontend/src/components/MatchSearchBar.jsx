@@ -50,7 +50,11 @@ export default function MatchSearchBar({
           variant="outlined"
           size="small"
           startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          sx={{ width: "110px", height: "40px" }}
+          sx={{
+            height: "40px",
+            whiteSpace: "nowrap",
+            px: 2,
+          }}
         >
           {expanded ? "收起筛选" : "展开筛选"}
         </Button>
