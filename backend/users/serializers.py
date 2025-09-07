@@ -1,3 +1,5 @@
+import re
+
 # 实现用户数据的序列化和反序列化
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
@@ -7,14 +9,43 @@ User = get_user_model()
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True)
+    email = serializers.EmailField(required=True)
+    username = serializers.CharField(required=True)
+
     class Meta:
         model = User
-        fields = [
-            "username",
-            "password",
-            "email",
-        ]
+        fields = ("username", "email", "password")
 
+    def validate_password(self, value):
+        """
+        自定义密码强度验证
+        """
+        if len(value) < 8:
+            raise serializers.ValidationError("密码长度不能少于8位。")
+        
+        if not re.search(r'[A-Z]', value):
+            raise serializers.ValidationError("密码必须包含至少一个大写字母。")
+            
+        if not re.search(r'[a-z]', value):
+            raise serializers.ValidationError("密码必须包含至少一个小写字母。")
+            
+        if not re.search(r'[0-9]', value):
+            raise serializers.ValidationError("密码必须包含至少一个数字。")
+            
+        if not re.search(r'[\W_]', value): # \W 匹配任何非单词字符，等价于 [^a-zA-Z0-9_]
+            raise serializers.ValidationError("密码必须包含至少一个特殊字符。")
+            
+        return value
+
+    def create(self, validated_data):
+        # 使用 create_user 方法来创建用户，它会自动处理密码哈希
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data["email"],
+            password=validated_data["password"],
+        )
+        return user
 
 class CustomTokenObtainSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):

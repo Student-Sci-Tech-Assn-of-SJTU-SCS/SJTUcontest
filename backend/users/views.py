@@ -83,19 +83,14 @@ def register(request):
 
         if not serializer.is_valid():
             return ApiResponse.error(message="Invalid data", data=serializer.errors)
-
-        User.objects.create_user(
-            username=serializer.validated_data["username"],
-            email=serializer.validated_data["email"],
-            password=serializer.validated_data["password"],
-        )
+    
+        serializer.save() 
         return ApiResponse.success(message="注册成功", status_code=201)
 
     except Exception as e:
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
         )
-
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
