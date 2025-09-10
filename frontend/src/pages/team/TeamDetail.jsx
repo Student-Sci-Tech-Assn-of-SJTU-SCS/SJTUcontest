@@ -42,6 +42,8 @@ const TeamDetail = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [quitOpen, setQuitOpen] = useState(false);
+  const [quitting, setQuitting] = useState(false);
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -271,7 +273,7 @@ const TeamDetail = () => {
                     color="error"
                     size="small"
                     startIcon={<LogoutIcon />}
-                    onClick={handleQuit}
+                    onClick={() => setQuitOpen(true)}
                   >
                     退出
                   </Button>
@@ -457,6 +459,36 @@ const TeamDetail = () => {
           >
             {deleting ? "删除中..." : "删除"}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* 退出确认弹窗 */}
+      <Dialog
+        open={quitOpen}
+        onClose={() => !quitting && setQuitOpen(false)}
+      >
+        <DialogContent>
+          <Typography>确定要退出该队伍吗？</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={async () => {
+              setQuitting(true);
+              await handleQuit();
+              setQuitting(false);
+              setQuitOpen(false);
+            }}
+            disabled={quitting}
+          >
+            {quitting ? "正在退出..." : "退出"}
+          </Button>
+          <Button 
+            variant="contained"
+            color="primary"
+            onClick={() => setQuitOpen(false)} disabled={quitting}>
+            取消
+          </Button>
+          
         </DialogActions>
       </Dialog>
 
