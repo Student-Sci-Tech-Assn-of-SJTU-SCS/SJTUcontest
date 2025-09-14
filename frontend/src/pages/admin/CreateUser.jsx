@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Typography,
   Card,
@@ -6,17 +6,15 @@ import {
   TextField,
   Button,
   Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Chip,
-  OutlinedInput,
   Alert,
   Snackbar,
+  OutlinedInput,
+  InputAdornment,
+  FormControl,
+  InputLabel,
   IconButton,
-  Avatar,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { userAPI } from "../../services/UserServices";
 
 const CreateUser = () => {
@@ -25,6 +23,7 @@ const CreateUser = () => {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({
@@ -55,6 +54,10 @@ const CreateUser = () => {
 
   const handleInputChange = (field) => (event) => {
     setFormData({ ...formData, [field]: event.target.value });
+  };
+
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
   };
 
   const handleSubmit = async (event) => {
@@ -138,14 +141,28 @@ const CreateUser = () => {
                 required
               />
 
-              <TextField
-                fullWidth
-                label="密码"
-                value={formData.password}
-                onChange={handleInputChange("password")}
-                placeholder="请输入密码"
-                required
-              />
+              <FormControl fullWidth variant="outlined" required>
+                <InputLabel htmlFor="password">密码</InputLabel>
+                <OutlinedInput
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleInputChange("password")}
+                  placeholder="请输入密码"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleTogglePassword}
+                        onMouseDown={(event) => event.preventDefault()}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="密码"
+                />
+              </FormControl>
               <Typography variant="caption" color="text.secondary">
                 密码要求8~16位，且必须包含字母、数字和特殊符号！
               </Typography>
