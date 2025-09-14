@@ -4,10 +4,6 @@ import {
   Button,
   Box,
   Container,
-  Grid,
-  Card,
-  CardContent,
-  Chip,
   alpha,
   useTheme,
 } from "@mui/material";
@@ -17,7 +13,6 @@ import {
   EmojiEvents as ContestIcon,
   Groups as TeamsIcon,
   Person as PersonIcon,
-  TrendingUp as TrendingIcon,
 } from "@mui/icons-material";
 import NewsCarousel from "../components/NewsCarousel";
 
@@ -32,32 +27,6 @@ const Home = () => {
       setUser(JSON.parse(storedUser));
     }
   }, []);
-
-  const features = [
-    {
-      icon: (
-        <ContestIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />
-      ),
-      title: "丰富赛事",
-      description: "快速找到加分加素拓加劳动学时的比赛",
-    },
-    {
-      icon: (
-        <TeamsIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />
-      ),
-      title: "团队协作",
-      description: "找到志同道合的队友",
-    },
-    {
-      icon: (
-        <TrendingIcon
-          sx={{ fontSize: 40, color: theme.palette.success.main }}
-        />
-      ),
-      title: "能力提升",
-      description: "在竞赛中锻炼技能，提升综合素质",
-    },
-  ];
 
   return (
     <Box sx={{ minHeight: "100vh", py: 0 }}>
@@ -203,77 +172,6 @@ const Home = () => {
           </Box>
         </Container>
       </Box>
-
-      {/* 特色功能区域 */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Box sx={{ textAlign: "center", mb: 6 }}>
-          <Typography
-            variant="h3"
-            gutterBottom
-            fontWeight="bold"
-            color="primary"
-          >
-            平台特色
-          </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{ maxWidth: "600px", mx: "auto" }}
-          >
-            提供全方位的竞赛服务体验
-          </Typography>
-        </Box>
-
-        <Grid
-          container
-          spacing={4}
-          justifyContent="center"
-          alignItems="stretch"
-        >
-          {features.map((feature, index) => (
-            <Grid
-              size={{ xs: 12, sm: 6, md: 4 }}
-              key={index}
-              sx={{ display: "flex" }}
-            >
-              <Card
-                sx={{
-                  height: "100%",
-                  width: "100%",
-                  textAlign: "center",
-                  p: 3,
-                  borderRadius: 3,
-                  boxShadow: theme.shadows[4],
-                  "&:hover": {
-                    transform: "translateY(-8px)",
-                    boxShadow: theme.shadows[12],
-                  },
-                  transition: "all 0.3s ease-in-out",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <CardContent
-                  sx={{
-                    flexGrow: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Box sx={{ mb: 2 }}>{feature.icon}</Box>
-                  <Typography variant="h5" gutterBottom fontWeight="bold">
-                    {feature.title}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    {feature.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
 
       {/* 新闻轮播区域 */}
       <Box sx={{ backgroundColor: "white", py: 6 }}>
