@@ -1,10 +1,4 @@
-import {
-  Box,
-  Typography,
-  Chip,
-  Link,
-  Stack,
-} from "@mui/material";
+import { Box, Typography, Chip, Link, Stack } from "@mui/material";
 
 // ✅【修改处 #1】：添加 highlight 参数（默认 false）
 export default function TeamCard({ team, highlight = false }) {

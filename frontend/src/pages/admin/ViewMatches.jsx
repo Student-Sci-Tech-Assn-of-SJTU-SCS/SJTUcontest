@@ -65,7 +65,7 @@ const ViewMatches = () => {
     if (selectedIds.length === 0) return;
     try {
       await Promise.all(
-        selectedIds.map((match_id) => contestAPI.deleteContest(match_id))
+        selectedIds.map((match_id) => contestAPI.deleteContest(match_id)),
       );
       setMatches((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
       setSelectedIds([]);

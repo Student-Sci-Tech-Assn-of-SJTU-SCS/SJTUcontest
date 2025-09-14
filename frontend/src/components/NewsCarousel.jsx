@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Box, Card, CardContent, Typography, Slide, CircularProgress, Alert } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Slide,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
 import { newsAPI } from "../services/NewsServices";
 
 const INTERVAL = 4000;
@@ -17,7 +25,7 @@ export default function NewsCarousel() {
       try {
         setLoading(true);
         const response = await newsAPI.getNews();
-        
+
         if (response.success) {
           setNewsItems(response.data || []);
         } else {
@@ -131,7 +139,7 @@ export default function NewsCarousel() {
                 boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
               },
             }}
-            onClick={() => window.open(item.url, '_blank')}
+            onClick={() => window.open(item.url, "_blank")}
           >
             <CardContent>
               <Typography variant="h6" gutterBottom noWrap>
