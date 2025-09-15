@@ -23,19 +23,21 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         """
         if len(value) < 8:
             raise serializers.ValidationError("密码长度不能少于8位。")
-        
-        if not re.search(r'[A-Z]', value):
+
+        if not re.search(r"[A-Z]", value):
             raise serializers.ValidationError("密码必须包含至少一个大写字母。")
-            
-        if not re.search(r'[a-z]', value):
+
+        if not re.search(r"[a-z]", value):
             raise serializers.ValidationError("密码必须包含至少一个小写字母。")
-            
-        if not re.search(r'[0-9]', value):
+
+        if not re.search(r"[0-9]", value):
             raise serializers.ValidationError("密码必须包含至少一个数字。")
-            
-        if not re.search(r'[\W_]', value): # \W 匹配任何非单词字符，等价于 [^a-zA-Z0-9_]
+
+        if not re.search(
+            r"[\W_]", value
+        ):  # \W 匹配任何非单词字符，等价于 [^a-zA-Z0-9_]
             raise serializers.ValidationError("密码必须包含至少一个特殊字符。")
-            
+
         return value
 
     def create(self, validated_data):
@@ -46,6 +48,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
         return user
+
 
 class CustomTokenObtainSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):

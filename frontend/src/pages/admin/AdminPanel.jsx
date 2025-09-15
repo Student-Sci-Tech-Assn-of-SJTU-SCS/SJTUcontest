@@ -16,6 +16,7 @@ import {
   AddCircle as AddCircleIcon,
   Dashboard as DashboardIcon,
   Edit as EditIcon,
+  Slideshow as SlideshowIcon,
 } from "@mui/icons-material";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
@@ -42,14 +43,14 @@ const AdminPanel = () => {
       path: "/admin/create-user",
     },
     {
-      text: "创建新闻",
-      icon: <AddCircleIcon />,
-      path: "/admin/create-news",
-    },
-    {
       text: "管理比赛",
       icon: <EditIcon />,
       path: "/admin/view-matches",
+    },
+    {
+      text: "轮播管理",
+      icon: <SlideshowIcon />,
+      path: "/admin/manage-news",
     },
   ];
 

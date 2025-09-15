@@ -463,10 +463,7 @@ const TeamDetail = () => {
       </Dialog>
 
       {/* 退出确认弹窗 */}
-      <Dialog
-        open={quitOpen}
-        onClose={() => !quitting && setQuitOpen(false)}
-      >
+      <Dialog open={quitOpen} onClose={() => !quitting && setQuitOpen(false)}>
         <DialogContent>
           <Typography>确定要退出该队伍吗？</Typography>
         </DialogContent>
@@ -482,13 +479,14 @@ const TeamDetail = () => {
           >
             {quitting ? "正在退出..." : "退出"}
           </Button>
-          <Button 
+          <Button
             variant="contained"
             color="primary"
-            onClick={() => setQuitOpen(false)} disabled={quitting}>
+            onClick={() => setQuitOpen(false)}
+            disabled={quitting}
+          >
             取消
           </Button>
-          
         </DialogActions>
       </Dialog>
 

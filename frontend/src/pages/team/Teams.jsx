@@ -94,7 +94,6 @@ const Teams = () => {
         if (res.success) {
           setTeams(res.data.teams || []);
           setPageCount(res.data.total_pages);
-
         } else {
           setError(res.message || "获取队伍列表失败");
         }
@@ -215,7 +214,6 @@ const Teams = () => {
           sx={{ width: { xs: "100%", sm: 300 } }}
         />
         <Stack direction="row" spacing={1}>
-          
           <Button
             variant="contained"
             onClick={() => setShowCreateForm(true)}
@@ -225,7 +223,6 @@ const Teams = () => {
           </Button>
         </Stack>
       </Stack>
-
 
       {/* 队伍列表 */}
       {loading ? (
@@ -247,20 +244,13 @@ const Teams = () => {
               </Typography>
             ) : (
               teams.map((team) => {
-                const isMeInTeam = team.members?.some(
-                  (m) => m.id === myId
-                );
+                const isMeInTeam = team.members?.some((m) => m.id === myId);
                 return (
-                  <TeamCard
-                    key={team.id}
-                    team={team}
-                    highlight={isMeInTeam} 
-                  />
+                  <TeamCard key={team.id} team={team} highlight={isMeInTeam} />
                 );
               })
             )}
           </Box>
-
 
           {pageCount > 1 && (
             <Box display="flex" justifyContent="center" mt={4}>
