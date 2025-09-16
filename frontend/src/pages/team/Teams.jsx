@@ -30,7 +30,7 @@ function getNowDateTimeString() {
   const day = pad(now.getDate());
   const hours = pad(now.getHours());
   const minutes = pad(now.getMinutes());
-
+  
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
@@ -55,6 +55,7 @@ const Teams = () => {
   const [createError, setCreateError] = useState("");
   const currentUser = getCurrentUser();
   const myId = currentUser?.id;
+  const [haveCreatedTeam, sethaveCreatedTeam] = useState(null);
 
   const navigate = useNavigate();
 
@@ -69,6 +70,29 @@ const Teams = () => {
     expected_members: 0,
     recruitment_deadline: "",
   });
+
+  const handleSubmitEdit = async (editForm) => {
+    const isoDeadline = new Date(editForm.recruitment_deadline).toISOString();
+
+      await teamAPI.updateTeam(
+        team_id,
+        editForm.name,
+        editForm.introduction,
+        editForm.expected_members,
+        isoDeadline,
+      );
+
+      setSnackbar({
+        open: true,
+        message: "更新成功",
+        severity: "success",
+      });
+
+      const updated = await teamAPI.getTeamDetail(team_id);
+      setTeam(updated.data);
+
+      return null;
+  };
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -94,6 +118,13 @@ const Teams = () => {
         if (res.success) {
           setTeams(res.data.teams || []);
           setPageCount(res.data.total_pages);
+
+          const myTeam = (res.data.teams || []).find((team) =>
+            team.members?.some((m) => m.id === myId && m.is_leader)
+          );
+
+          sethaveCreatedTeam(myTeam || null);
+          
         } else {
           setError(res.message || "获取队伍列表失败");
         }
@@ -214,13 +245,22 @@ const Teams = () => {
           sx={{ width: { xs: "100%", sm: 300 } }}
         />
         <Stack direction="row" spacing={1}>
-          <Button
-            variant="contained"
-            onClick={() => setShowCreateForm(true)}
-            sx={{ width: { xs: "100%", sm: "auto" } }}
-          >
-            创建新队伍
-          </Button>
+          {haveCreatedTeam ? (
+            <Button
+              variant="contained"
+              onClick={() => setShowCreateForm(true)}
+            >
+              编辑已创建的队伍
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={() => setShowCreateForm(true)}
+            >
+              创建新队伍
+            </Button>
+          )}
+
         </Stack>
       </Stack>
 
@@ -268,18 +308,27 @@ const Teams = () => {
 
       <EditTeamDialog
         open={showCreateForm}
-        initialValues={{
-          name: "",
-          introduction: "",
-          expected_members: 1,
-          recruitment_deadline: getNowDateTimeString(),
-        }}
+        initialValues={
+          haveCreatedTeam
+            ? {
+                name: haveCreatedTeam.name,
+                introduction: haveCreatedTeam.introduction,
+                expected_members: haveCreatedTeam.expected_members,
+                recruitment_deadline: haveCreatedTeam.recruitment_deadline,
+              }
+            : {
+                name: "",
+                introduction: "",
+                expected_members: 1,
+                recruitment_deadline: getNowDateTimeString(),
+              }
+        }
         // [ADDED] 自定义标题与确认按钮文案（可选）
-        title="创建新队伍"
-        confirmText="创建"
+        title={haveCreatedTeam ? "编辑已创建的队伍" : "创建新队伍"}
+        confirmText={haveCreatedTeam ? "保存修改" : "创建"}
         cancelText="取消"
         onClose={() => setShowCreateForm(false)}
-        onSubmit={handleCreateTeam}
+        onSubmit={haveCreatedTeam ? handleSubmitEdit : handleCreateTeam}
       />
     </Box>
   );
