@@ -12,7 +12,6 @@ import {
   DialogActions,
   IconButton,
   Button,
-  TextField,
   Stack,
   Tooltip,
 } from "@mui/material";
@@ -93,7 +92,6 @@ const Teams = () => {
 
       try {
         const filters = {
-          query: search.trim(),
           status: selectedStatus ? [selectedStatus] : [],
         };
 
@@ -133,12 +131,6 @@ const Teams = () => {
 
     fetchTeams();
   }, [match_id, pageIndex, pageSize, search, selectedStatus]);
-
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    setPageIndex(1);
-  };
-
 
   const handleCreateTeam = async (form) => {
     try {
@@ -202,17 +194,10 @@ const Teams = () => {
         direction={{ xs: "column", sm: "row" }}
         spacing={2}
         sx={{ mb: 3 }}
-        justifyContent="space-between"
+        justifyContent="flex-end"
         alignItems="center"
       >
-        <TextField
-          label="搜索队伍"
-          variant="outlined"
-          size="small"
-          value={search}
-          onChange={handleSearchChange}
-          sx={{ width: { xs: "100%", sm: 300 } }}
-        />
+      
         <Stack direction="row" spacing={1}>
           {match_id ? (
             // 正常显示创建队伍/编辑队伍逻辑
@@ -258,9 +243,7 @@ const Teams = () => {
           <Box>
             {teams.length === 0 ? (
               <Typography align="center" color="text.secondary" sx={{ py: 6 }}>
-                {search.trim() || selectedStatus
-                  ? "没有找到匹配的队伍"
-                  : "当前没有正在招募的队伍"}
+                "当前没有正在招募的队伍"}
               </Typography>
             ) : (
               teams.map((team) => {
