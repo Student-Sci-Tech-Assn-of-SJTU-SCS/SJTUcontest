@@ -92,51 +92,230 @@ const MainLayout = () => {
 
       {/* 顶部导航栏 */}
       <AppBar
-        position="static"
-        elevation={2}
+        position="sticky"
+        elevation={0}
         sx={{
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          backdropFilter: "blur(10px)",
+          background: `linear-gradient(135deg, 
+            ${alpha(theme.palette.primary.main, 0.92)} 0%, 
+            ${alpha(theme.palette.primary.dark, 0.95)} 50%,
+            ${alpha(theme.palette.primary.main, 0.92)} 100%)`,
+          backdropFilter: "blur(24px) saturate(180%)",
+          WebkitBackdropFilter: "blur(24px) saturate(180%)",
+          borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.08)}`,
+          boxShadow: `
+            0 4px 30px ${alpha(theme.palette.primary.dark, 0.12)},
+            inset 0 1px 0 ${alpha(theme.palette.common.white, 0.1)}
+          `,
+          position: "relative",
+          overflow: "hidden",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: "-100%",
+            right: "-100%",
+            height: "200%",
+            background: `linear-gradient(115deg,
+              transparent 20%,
+              ${alpha(theme.palette.secondary.light, 0.05)} 40%,
+              ${alpha(theme.palette.secondary.light, 0.08)} 50%,
+              ${alpha(theme.palette.secondary.light, 0.05)} 60%,
+              transparent 80%
+            )`,
+            animation: "shimmer 8s ease-in-out infinite",
+            "@keyframes shimmer": {
+              "0%": { transform: "translateX(-100%) rotate(35deg)" },
+              "100%": { transform: "translateX(100%) rotate(35deg)" },
+            },
+          },
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "1px",
+            background: `linear-gradient(90deg,
+              transparent 0%,
+              ${alpha(theme.palette.secondary.light, 0.4)} 20%,
+              ${alpha(theme.palette.secondary.light, 0.6)} 50%,
+              ${alpha(theme.palette.secondary.light, 0.4)} 80%,
+              transparent 100%
+            )`,
+            opacity: 0.5,
+          },
         }}
       >
-        <Toolbar sx={{ py: 1 }}>
+        {/* 装饰性网格背景 */}
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `
+              repeating-linear-gradient(
+                90deg,
+                ${alpha(theme.palette.common.white, 0.01)} 0px,
+                transparent 1px,
+                transparent 20px,
+                ${alpha(theme.palette.common.white, 0.01)} 21px
+              ),
+              repeating-linear-gradient(
+                0deg,
+                ${alpha(theme.palette.common.white, 0.01)} 0px,
+                transparent 1px,
+                transparent 20px,
+                ${alpha(theme.palette.common.white, 0.01)} 21px
+              )
+            `,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* 顶部光晕效果 */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "80%",
+            height: "100%",
+            background: `radial-gradient(ellipse at top center,
+              ${alpha(theme.palette.secondary.light, 0.12)} 0%,
+              transparent 50%
+            )`,
+            pointerEvents: "none",
+            opacity: 0.8,
+          }}
+        />
+
+        {/* 左侧装饰光效 */}
+        <Box
+          sx={{
+            position: "absolute",
+            left: -100,
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: 200,
+            height: 200,
+            borderRadius: "50%",
+            background: `radial-gradient(circle,
+              ${alpha(theme.palette.secondary.main, 0.15)} 0%,
+              transparent 70%
+            )`,
+            filter: "blur(40px)",
+            pointerEvents: "none",
+            animation: "glow 4s ease-in-out infinite alternate",
+            "@keyframes glow": {
+              "0%": { opacity: 0.4 },
+              "100%": { opacity: 0.8 },
+            },
+          }}
+        />
+
+        {/* 右侧装饰光效 */}
+        <Box
+          sx={{
+            position: "absolute",
+            right: -100,
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: 200,
+            height: 200,
+            borderRadius: "50%",
+            background: `radial-gradient(circle,
+              ${alpha(theme.palette.primary.light, 0.15)} 0%,
+              transparent 70%
+            )`,
+            filter: "blur(40px)",
+            pointerEvents: "none",
+            animation: "glow 4s ease-in-out infinite alternate-reverse",
+          }}
+        />
+        <Toolbar
+          sx={{
+            py: 1,
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
           <Typography
             variant="h5"
             component="div"
             sx={{
+              ml: 4,
               mr: 4,
               cursor: "pointer",
               fontWeight: "bold",
               color: "white",
+              textShadow: `0 2px 4px ${alpha(theme.palette.common.black, 0.2)}`,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
               "&:hover": {
-                color: alpha(theme.palette.common.white, 0.8),
+                color: alpha(theme.palette.common.white, 0.9),
+                transform: "scale(1.02)",
               },
+              transition: "all 0.2s ease",
             }}
             onClick={() => navigate("/")}
           >
             科创平台
           </Typography>
 
-          <Box sx={{ display: "flex", gap: 1, mr: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 1.5,
+              mr: 2,
+              px: 2,
+              py: 0.5,
+              borderRadius: 10,
+              background: alpha(theme.palette.common.white, 0.05),
+              backdropFilter: "blur(10px)",
+            }}
+          >
             <Button
               color="inherit"
               onClick={() => navigate("/matches")}
               startIcon={<ContestIcon />}
               sx={{
-                borderRadius: 2,
-                px: 2,
+                borderRadius: 8,
+                px: 2.5,
                 py: 1,
                 textTransform: "none",
                 fontWeight: 500,
+                color: isCurrentPage("/matches")
+                  ? theme.palette.common.white
+                  : alpha(theme.palette.common.white, 0.9),
                 backgroundColor: isCurrentPage("/matches")
-                  ? alpha(theme.palette.common.white, 0.2)
+                  ? alpha(theme.palette.common.white, 0.15)
                   : "transparent",
-                borderBottom: isCurrentPage("/matches")
-                  ? `2px solid ${theme.palette.secondary.light}`
-                  : "2px solid transparent",
+                border: isCurrentPage("/matches")
+                  ? `1px solid ${alpha(theme.palette.common.white, 0.3)}`
+                  : "1px solid transparent",
+                position: "relative",
+                overflow: "hidden",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: isCurrentPage("/matches") ? 0 : "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background: `linear-gradient(90deg, 
+                    transparent, 
+                    ${alpha(theme.palette.common.white, 0.1)}, 
+                    transparent)`,
+                  transition: "left 0.3s ease",
+                },
                 "&:hover": {
                   backgroundColor: alpha(theme.palette.common.white, 0.1),
-                  transform: "translateY(-1px)",
+                  transform: "translateY(-2px)",
+                  boxShadow: `0 4px 8px ${alpha(theme.palette.common.black, 0.2)}`,
+                  "&::before": {
+                    left: 0,
+                  },
                 },
                 "&:focus": {
                   outline: "none",
@@ -146,7 +325,7 @@ const MainLayout = () => {
                   outline: "none",
                   boxShadow: `0 0 0 2px ${alpha(theme.palette.secondary.main, 0.5)}`,
                 },
-                transition: "all 0.2s ease-in-out",
+                transition: "all 0.3s ease",
               }}
             >
               赛事列表
@@ -156,20 +335,42 @@ const MainLayout = () => {
               onClick={() => navigate("/teams")}
               startIcon={<TeamsIcon />}
               sx={{
-                borderRadius: 2,
-                px: 2,
+                borderRadius: 8,
+                px: 2.5,
                 py: 1,
                 textTransform: "none",
                 fontWeight: 500,
+                color: isCurrentPage("/teams")
+                  ? theme.palette.common.white
+                  : alpha(theme.palette.common.white, 0.9),
                 backgroundColor: isCurrentPage("/teams")
-                  ? alpha(theme.palette.common.white, 0.2)
+                  ? alpha(theme.palette.common.white, 0.15)
                   : "transparent",
-                borderBottom: isCurrentPage("/teams")
-                  ? `2px solid ${theme.palette.secondary.light}`
-                  : "2px solid transparent",
+                border: isCurrentPage("/teams")
+                  ? `1px solid ${alpha(theme.palette.common.white, 0.3)}`
+                  : "1px solid transparent",
+                position: "relative",
+                overflow: "hidden",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: isCurrentPage("/teams") ? 0 : "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background: `linear-gradient(90deg, 
+                    transparent, 
+                    ${alpha(theme.palette.common.white, 0.1)}, 
+                    transparent)`,
+                  transition: "left 0.3s ease",
+                },
                 "&:hover": {
                   backgroundColor: alpha(theme.palette.common.white, 0.1),
-                  transform: "translateY(-1px)",
+                  transform: "translateY(-2px)",
+                  boxShadow: `0 4px 8px ${alpha(theme.palette.common.black, 0.2)}`,
+                  "&::before": {
+                    left: 0,
+                  },
                 },
                 "&:focus": {
                   outline: "none",
@@ -179,7 +380,7 @@ const MainLayout = () => {
                   outline: "none",
                   boxShadow: `0 0 0 2px ${alpha(theme.palette.secondary.main, 0.5)}`,
                 },
-                transition: "all 0.2s ease-in-out",
+                transition: "all 0.3s ease",
               }}
             >
               组队
@@ -188,22 +389,42 @@ const MainLayout = () => {
               <Button
                 color="inherit"
                 onClick={() => navigate("/admin")}
-                startIcon={<AdminIcon />}
+                startIcon={
+                  <AdminIcon sx={{ color: theme.palette.warning.light }} />
+                }
                 sx={{
-                  borderRadius: 2,
-                  px: 2,
+                  borderRadius: 8,
+                  px: 2.5,
                   py: 1,
                   textTransform: "none",
-                  fontWeight: 500,
+                  fontWeight: 600,
+                  color: theme.palette.warning.light,
                   backgroundColor: isCurrentPage("/admin")
-                    ? alpha(theme.palette.secondary.main, 0.4)
-                    : alpha(theme.palette.secondary.main, 0.2),
-                  borderBottom: isCurrentPage("/admin")
-                    ? `2px solid ${theme.palette.secondary.light}`
-                    : "2px solid transparent",
+                    ? alpha(theme.palette.warning.light, 0.2)
+                    : alpha(theme.palette.warning.light, 0.1),
+                  border: `1px solid ${alpha(theme.palette.warning.light, 0.3)}`,
+                  position: "relative",
+                  overflow: "hidden",
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: isCurrentPage("/admin") ? 0 : "-100%",
+                    width: "100%",
+                    height: "100%",
+                    background: `linear-gradient(90deg, 
+                      transparent, 
+                      ${alpha(theme.palette.warning.light, 0.15)}, 
+                      transparent)`,
+                    transition: "left 0.3s ease",
+                  },
                   "&:hover": {
-                    backgroundColor: alpha(theme.palette.secondary.main, 0.3),
-                    transform: "translateY(-1px)",
+                    backgroundColor: alpha(theme.palette.warning.light, 0.25),
+                    transform: "translateY(-2px)",
+                    boxShadow: `0 4px 12px ${alpha(theme.palette.warning.main, 0.3)}`,
+                    "&::before": {
+                      left: 0,
+                    },
                   },
                   "&:focus": {
                     outline: "none",
@@ -211,20 +432,12 @@ const MainLayout = () => {
                   },
                   "&:focus-visible": {
                     outline: "none",
-                    boxShadow: `0 0 0 2px ${alpha(theme.palette.secondary.main, 0.7)}`,
+                    boxShadow: `0 0 0 2px ${alpha(theme.palette.warning.main, 0.5)}`,
                   },
-                  transition: "all 0.2s ease-in-out",
+                  transition: "all 0.3s ease",
                 }}
               >
-                <Chip
-                  label="管理员"
-                  size="small"
-                  sx={{
-                    backgroundColor: theme.palette.secondary.main,
-                    color: "white",
-                    fontWeight: "bold",
-                  }}
-                />
+                管理员面板
               </Button>
             )}
           </Box>
@@ -333,7 +546,15 @@ const MainLayout = () => {
           minHeight: "calc(100vh - 120px)",
         }}
       >
-        <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Container
+          maxWidth="lg"
+          sx={{
+            py: 4,
+            background: `radial-gradient(ellipse at center, 
+              ${alpha(theme.palette.primary.light, 0.08)} 0%, 
+              transparent 70%)`,
+          }}
+        >
           <Outlet />
         </Container>
       </Box>

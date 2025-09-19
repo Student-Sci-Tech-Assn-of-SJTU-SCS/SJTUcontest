@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Slide,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
+import { Box, Slide, CircularProgress, Alert, Typography } from "@mui/material";
 import { newsAPI } from "../services/NewsServices";
+import MatchCard from "./MatchCard";
 
 const INTERVAL = 4000;
 
@@ -27,7 +20,10 @@ export default function NewsCarousel() {
         const response = await newsAPI.getNews();
 
         if (response.success) {
-          setNewsItems(response.data || []);
+          // 提取contest数据
+          const contests =
+            response.data?.map((item) => item.contest).filter(Boolean) || [];
+          setNewsItems(contests);
         } else {
           setError(response.message || "获取新闻失败");
         }
@@ -63,8 +59,8 @@ export default function NewsCarousel() {
     return (
       <Box
         sx={{
-          width: 500,
-          height: 300,
+          width: 550,
+          height: 320,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -78,7 +74,7 @@ export default function NewsCarousel() {
   // 错误状态
   if (error) {
     return (
-      <Box sx={{ width: 500, height: 300, p: 2 }}>
+      <Box sx={{ width: 550, height: 320, p: 2 }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
@@ -89,15 +85,19 @@ export default function NewsCarousel() {
     return (
       <Box
         sx={{
-          width: 500,
-          height: 300,
+          width: 550,
+          height: 320,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          border: "2px dashed",
+          borderColor: "divider",
+          borderRadius: 4,
+          backgroundColor: "background.default",
         }}
       >
         <Typography variant="body1" color="text.secondary">
-          暂无新闻
+          暂无推荐比赛
         </Typography>
       </Box>
     );
@@ -106,54 +106,50 @@ export default function NewsCarousel() {
   return (
     <Box
       sx={{
-        width: 500,
-        height: 300,
-        p: 2,
+        width: 550,
+        height: 320,
         position: "relative",
         overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      {newsItems.map((item, i) => (
+      {newsItems.map((contest, i) => (
         <Slide
-          key={item.id}
+          key={contest.id}
           direction="left"
           in={show && i === index}
           mountOnEnter
           unmountOnExit
           timeout={500}
         >
-          {/* NewsCard待设计 */}
-          <Card
+          <Box
             sx={{
+              position: "absolute",
               width: "100%",
               height: "100%",
-              borderRadius: 4,
-              overflow: "hidden",
-              boxShadow: "0 2px 16px rgba(0,0,0,0.10)",
-              position: "relative",
-              background: "none",
-              cursor: "pointer",
-              transition: "transform 0.2s, box-shadow 0.2s",
-              "&:hover": {
-                transform: "scale(1.045)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
-              },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-            onClick={() => window.open(item.url, "_blank")}
           >
-            <CardContent>
-              <Typography variant="h6" gutterBottom noWrap>
-                {item.title}
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ height: 60, overflow: "hidden" }}
-              >
-                {item.summary}
-              </Typography>
-            </CardContent>
-          </Card>
+            <Box
+              sx={{
+                width: 520,
+                height: 300,
+                // 禁用MatchCard的hover效果
+                "& .MuiCard-root": {
+                  "&:hover": {
+                    transform: "none !important",
+                    boxShadow: "0 2px 16px rgba(0,0,0,0.10) !important",
+                  },
+                },
+              }}
+            >
+              <MatchCard match={contest} />
+            </Box>
+          </Box>
         </Slide>
       ))}
     </Box>

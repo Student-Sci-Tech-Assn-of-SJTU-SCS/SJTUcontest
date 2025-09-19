@@ -155,8 +155,7 @@ const TeamDetail = () => {
   };
 
   const handleSubmitEdit = async (editForm) => {
-    try {
-      const isoDeadline = new Date(editForm.recruitment_deadline).toISOString();
+    const isoDeadline = new Date(editForm.recruitment_deadline).toISOString();
 
       await teamAPI.updateTeam(
         team_id,
@@ -176,14 +175,6 @@ const TeamDetail = () => {
       setTeam(updated.data);
 
       return null;
-    } catch (error) {
-      const msg =
-        error?.response?.data?.message ||
-        error?.response?.data?.detail ||
-        error?.message ||
-        "更新失败";
-      return msg;
-    }
   };
 
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });

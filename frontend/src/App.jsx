@@ -17,9 +17,9 @@ import AdminPanel from "./pages/admin/AdminPanel.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import CreateContest from "./pages/admin/CreateContest.jsx";
 import CreateUser from "./pages/admin/CreateUser.jsx";
-import CreateNews from "./pages/admin/CreateNews.jsx";
 import ViewMatches from "./pages/admin/ViewMatches.jsx";
 import MatchEdit from "./pages/admin/EditMatch.jsx";
+import ManageNews from "./pages/admin/ManageNews.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -102,16 +102,16 @@ const Router = createBrowserRouter([
             element: <CreateUser />,
           },
           {
-            path: "create-news",
-            element: <CreateNews />,
-          },
-          {
             path: "view-matches",
             element: <ViewMatches />,
           },
           {
             path: "edit-match/:match_id",
             element: <MatchEdit />,
+          },
+          {
+            path: "manage-news",
+            element: <ManageNews />,
           },
         ],
       },
