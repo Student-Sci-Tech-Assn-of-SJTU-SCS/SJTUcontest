@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -9,6 +10,7 @@ import {
   Divider,
   Grid,
   Pagination,
+  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
@@ -20,7 +22,6 @@ import TeamCard from "../../components/team/TeamCard";
 export default function User() {
   const { user_id } = useParams();
   const [userIdentity, setUserIdentity] = useState("");
-  const [userProfile, setUserProfile] = useState(null);
   const [userNickname, setNickname] = useState("");
   const [userExperience, setExperience] = useState("");
   const [userSpecialty, setSpecialty] = useState("");
@@ -32,7 +33,11 @@ export default function User() {
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState({
+    open: false,
+    text: "",
+    severity: "success",
+  });
 
   useEffect(() => {
     if (user_id == getCurrentUser().id) {
@@ -47,23 +52,30 @@ export default function User() {
     const fetchUserProfile = async () => {
       const controller = new AbortController();
       setLoading(true);
-      setError("");
 
       try {
         const res = await userAPI.getUserProfile(user_id);
 
         if (res.success) {
-          // setUserProfile(res.data);
           setNickname(res.data.nick_name);
           setExperience(res.data.experience);
           setSpecialty(res.data.advantage);
         } else {
-          setError(res.message || "Unknown error.");
-          console.log(error);
+          setMessage({
+            open: true,
+            text: `获取用户信息失败：${res.message || "未知错误。"}`,
+            severity: "error",
+          });
+          console.log(message.text);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        setError("Network error.");
+        setMessage({
+          open: true,
+          text: `网络错误，请稍后再试。`,
+          severity: "error",
+        });
+        console.log(message.text);
       } finally {
         setLoading(false);
       }
@@ -83,12 +95,9 @@ export default function User() {
     const fetchUserTeams = async () => {
       const controller = new AbortController();
       setLoading(true);
-      setError("");
 
       try {
         const res = await userAPI.getUserTeams(pageIndex, pageSize);
-
-        console.log(res.data.teams);
 
         if (res.success) {
           setUserTeams(res.data.teams || []);
@@ -96,12 +105,21 @@ export default function User() {
           setPageCount(res.data.total_pages);
           console.log(pageCount);
         } else {
-          setError(res.message || "Unknown error.");
-          console.log(error);
+          setMessage({
+            open: true,
+            text: `获取用户队伍失败：${res.message || "未知错误。"}`,
+            severity: "error",
+          });
+          console.log(message.text);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        setError("Network error.");
+        setMessage({
+          open: true,
+          text: `网络错误，请稍后再试。`,
+          severity: "error",
+        });
+        console.log(message.text);
       } finally {
         setLoading(false);
       }
@@ -116,7 +134,6 @@ export default function User() {
     const updateProfile = async () => {
       const controller = new AbortController();
       setSaving(true);
-      setError("");
 
       try {
         const res = await userAPI.updateProfile(
@@ -125,21 +142,46 @@ export default function User() {
           userSpecialty,
         );
         if (res.success) {
-          console.log("User profile successfully updated!");
+          const storedUser = localStorage.getItem("user");
+          if (storedUser) {
+            const parsedStoredUser = JSON.parse(storedUser);
+            const updatedUser = { ...parsedStoredUser, "nick_name": userNickname };
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+          }
+          setMessage({
+            open: true,
+            text: `用户信息已更新！`,
+            severity: "success",
+          });
+          console.log(message.text);
         } else {
-          console.log(res.message || "User profile update failed!");
+          setMessage({
+            open: true,
+            text: `获取用户信息失败：${res.message || "未知错误。"}`,
+            severity: "error",
+          });
+          console.log(message.text);
         }
       } catch {
-        console.log("Network error!");
+        setMessage({
+          open: true,
+          text: `网络错误，请稍后再试。`,
+          severity: "error",
+        });
+        console.log(message.text);
       } finally {
         setSaving(false);
-        // location.reload(true);
+        location.reload(true);
       }
 
       return () => controller.abort();
     };
 
     updateProfile();
+  };
+
+  const handleCloseMessage = () => {
+    setMessage({ ...message, open: false });
   };
 
   if (loading) {
@@ -150,141 +192,151 @@ export default function User() {
     );
   }
 
-  // if (!loading && !userProfile) {
-  //   return (
-  //     <Typography color="error" align="center" sx={{ mt: 5 }}>
-  //       未能加载用户信息。
-  //     </Typography>
-  //   );
-  // }
-
   return (
-    <Card elevation={3} sx={{ p: 2, my: 5 }}>
-      <CardContent>
-        <Box
-          sx={{
-            mb: 2,
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: {
-              xs: "wrap",
-              sm: "nowrap",
-            },
-            rowGap: 1,
-          }}
-        >
-          <Typography
-            variant="h4"
+    <>
+      <Card elevation={3} sx={{ p: 2, my: 5 }}>
+        <CardContent>
+          <Box
             sx={{
-              mr: 2,
-              width: "fit-content",
-              fontWeight: 700,
-              whiteSpace: "nowrap",
-              textOverflow: "ellipsis",
-              overflow: "hidden",
+              mb: 2,
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: {
+                xs: "wrap",
+                sm: "nowrap",
+              },
+              rowGap: 1,
             }}
           >
-            个人主页
-          </Typography>
+            <Typography
+              variant="h4"
+              sx={{
+                mr: 2,
+                width: "fit-content",
+                fontWeight: 700,
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+              }}
+            >
+              个人主页
+            </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }} />
-        </Box>
+            <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }} />
+          </Box>
 
-        <Box
-          component="form"
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            mt: 4,
-            mb: 2,
-          }}
-        >
-          <TextField
-            label="昵称"
-            value={userNickname || ""}
-            placeholder="您的昵称不能为空哦！"
-            onChange={(e) => setNickname(e.target.value)}
-            variant="outlined"
-            fullWidth
-          />
-          <TextField
-            label="参赛经历 / 所获奖项"
-            value={userExperience || ""}
-            placeholder="在这里填写您的参赛经历吧！"
-            onChange={(e) => setExperience(e.target.value)}
-            multiline
-            minRows={3}
-            variant="outlined"
-            fullWidth
-          />
-          <TextField
-            label="特长"
-            value={userSpecialty || ""}
-            placeholder="在这里填写您的特长吧！"
-            onChange={(e) => setSpecialty(e.target.value)}
-            multiline
-            minRows={2}
-            variant="outlined"
-            fullWidth
-          />
-        </Box>
-
-        {userIdentity === "me" && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSave}
-            sx={{ alignSelf: "flex-start", mt: 1 }}
+          <Box
+            component="form"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              mt: 4,
+              mb: 2,
+            }}
           >
-            保存修改
-          </Button>
-        )}
+            <TextField
+              label="昵称"
+              value={userNickname || ""}
+              placeholder="您的昵称不能为空哦！"
+              onChange={(e) => setNickname(e.target.value)}
+              variant="outlined"
+              fullWidth
+              contentEditable={userIdentity === "me"}
+            />
+            <TextField
+              label="参赛经历 / 所获奖项"
+              value={userExperience || ""}
+              placeholder={userIdentity === "me" ? "在这里填写您的参赛经历吧！" : "空空如也……"}
+              onChange={(e) => setExperience(e.target.value)}
+              multiline
+              minRows={3}
+              variant="outlined"
+              fullWidth
+              contentEditable={userIdentity === "me"}
+            />
+            <TextField
+              label="特长"
+              value={userSpecialty || ""}
+              placeholder={userIdentity === "me" ? "在这里填写您的特长吧！" : "空空如也……"}
+              onChange={(e) => setSpecialty(e.target.value)}
+              multiline
+              minRows={2}
+              variant="outlined"
+              fullWidth
+              contentEditable={userIdentity === "me"}
+            />
+          </Box>
 
-        {userIdentity === "me" && (
-          <>
-            <Divider sx={{ my: 3 }} />
+          {userIdentity === "me" && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSave}
+              sx={{ alignSelf: "flex-start", mt: 1 }}
+            >
+              保存修改
+            </Button>
+          )}
 
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
-                我参加的队伍
-              </Typography>
-              <Grid container spacing={2}>
-                {userTeams.length === 0 ? (
-                  <Grid key={"no_team"} size={12}>
-                    <Typography
-                      key={"no_team"}
-                      color="text.secondary"
-                      align="center"
-                      sx={{ mt: 8 }}
-                    >
-                      没有参加的队伍
-                    </Typography>
-                  </Grid>
-                ) : (
-                  userTeams.map((team) => (
-                    <Grid key={team.id} size={{ xs: 12, sm: 6, md: 4 }}>
-                      <TeamCard team={team} />
+          {userIdentity === "me" && (
+            <>
+              <Divider sx={{ my: 3 }} />
+
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
+                  我参加的队伍
+                </Typography>
+                <Grid container spacing={2}>
+                  {userTeams.length === 0 ? (
+                    <Grid key={"no_team"} size={12}>
+                      <Typography
+                        key={"no_team"}
+                        color="text.secondary"
+                        align="center"
+                        sx={{ mt: 8 }}
+                      >
+                        没有参加的队伍
+                      </Typography>
                     </Grid>
-                  ))
-                )}
-              </Grid>
-            </Box>
-
-            {pageCount > 1 && (
-              <Box display="flex" justifyContent="center" mt={4}>
-                <Pagination
-                  count={pageCount}
-                  page={pageIndex}
-                  onChange={(_, value) => setPageIndex(value)}
-                  color="primary"
-                  shape="rounded"
-                />
+                  ) : (
+                    userTeams.map((team) => (
+                      <Grid key={team.id} size={{ xs: 12, sm: 6, md: 4 }}>
+                        <TeamCard team={team} />
+                      </Grid>
+                    ))
+                  )}
+                </Grid>
               </Box>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+
+              {pageCount > 1 && (
+                <Box display="flex" justifyContent="center" mt={4}>
+                  <Pagination
+                    count={pageCount}
+                    page={pageIndex}
+                    onChange={(_, value) => setPageIndex(value)}
+                    color="primary"
+                    shape="rounded"
+                  />
+                </Box>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+      <Snackbar
+        open={message.open}
+        autoHideDuration={6000}
+        onClose={handleCloseMessage}
+      >
+        <Alert
+          onClose={handleCloseMessage}
+          severity={message.severity}
+          sx={{ width: "100%" }}
+        >
+          {message.text}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
