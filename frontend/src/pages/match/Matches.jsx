@@ -5,6 +5,8 @@ import {
   Divider,
   Pagination,
   CircularProgress,
+  useTheme,
+  alpha,
 } from "@mui/material";
 import MatchSearchBar from "../../components/MatchSearchBar";
 import MatchCard from "../../components/MatchCard";
@@ -20,6 +22,7 @@ import axios from "axios";
 import { contestAPI } from "../../services/MatchServices";
 
 const Matches = () => {
+  const theme = useTheme();
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState({
     [categories.LEVEL]: [],
@@ -33,7 +36,6 @@ const Matches = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const theme = createTheme();
   const sm = useMediaQuery(theme.breakpoints.down("md"));
   const md = useMediaQuery(theme.breakpoints.between("md", "lg"));
   const lg = useMediaQuery(theme.breakpoints.between("lg", "xl"));
@@ -105,6 +107,124 @@ const Matches = () => {
   useEffect(() => {
     setPageIndex(1);
   }, [pageSize]);
+
+  return (
+    <Box
+      sx={{
+        minHeight: "100vh",
+        py: 6,
+        px: { xs: 2, sm: 5 },
+        background: `linear-gradient(180deg,
+          ${theme.palette.background.paper} 0%,
+          ${alpha(theme.palette.primary.main, 0.03)} 50%,
+          ${theme.palette.background.paper} 100%)`,
+        transition: "width 0.5s ease",
+      }}
+    >
+      <Typography
+        variant="h4"
+        fontWeight={700}
+        gutterBottom
+        sx={{
+          letterSpacing: 2,
+          textAlign: "center",
+          background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          mb: 1,
+          textShadow: `0 2px 10px ${alpha(theme.palette.primary.main, 0.12)}`,
+        }}
+      >
+        比赛
+      </Typography>
+      <Divider
+        sx={{
+          mb: 4,
+          mx: "auto",
+          width: 120,
+          height: 4,
+          borderRadius: 2,
+          background: `linear-gradient(90deg, ${theme.palette.primary.light}, ${theme.palette.secondary.main})`,
+        }}
+      />
+
+      <MatchSearchBar
+        search={search}
+        onSearchChange={handleSearchChange}
+        selectedTags={selectedTags}
+        onTagClick={handleTagClick}
+      />
+
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <>
+          <Grid
+            container
+            spacing={3}
+            justifyContent="center"
+            alignItems="stretch"
+          >
+            {matches.length === 0 ? (
+              <Grid size={{ xs: 12 }}>
+                <Box
+                  sx={{
+                    mt: 2,
+                    height: 150,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 5,
+                    bgcolor: alpha(theme.palette.primary.light, 0.08),
+                    boxShadow: `0 2px 12px ${alpha(theme.palette.primary.main, 0.08)}`,
+                  }}
+                >
+                  <Typography
+                    color="text.secondary"
+                    align="center"
+                    sx={{ fontSize: "1.1rem" }}
+                  >
+                    暂无符合条件的比赛
+                  </Typography>
+                </Box>
+              </Grid>
+            ) : (
+              matches.map((match) => (
+                <Grid
+                  key={match.id}
+                  size={{ sm: 12, md: 6 }}
+                  display="flex"
+                  justifyContent="center"
+                >
+                  <MatchCard match={match} />
+                </Grid>
+              ))
+            )}
+          </Grid>
+
+          {pageCount > 1 && (
+            <Box display="flex" justifyContent="center" mt={4}>
+              <Pagination
+                count={pageCount}
+                page={pageIndex}
+                onChange={(_, value) => setPageIndex(value)}
+                color="primary"
+                shape="rounded"
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    borderRadius: 3,
+                  },
+                }}
+              />
+            </Box>
+          )}
+        </>
+      )}
+    </Box>
+  );
 
   return (
     <Box
