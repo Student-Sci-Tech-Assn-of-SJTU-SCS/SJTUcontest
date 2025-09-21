@@ -35,7 +35,7 @@ function getNowDateTimeString() {
   const day = pad(now.getDate());
   const hours = pad(now.getHours());
   const minutes = pad(now.getMinutes());
-  
+
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
@@ -64,24 +64,24 @@ const Teams = () => {
   const handleSubmitEdit = async (editForm) => {
     const isoDeadline = new Date(editForm.recruitment_deadline).toISOString();
 
-      await teamAPI.updateTeam(
-        team_id,
-        editForm.name,
-        editForm.introduction,
-        editForm.expected_members,
-        isoDeadline,
-      );
+    await teamAPI.updateTeam(
+      team_id,
+      editForm.name,
+      editForm.introduction,
+      editForm.expected_members,
+      isoDeadline,
+    );
 
-      setSnackbar({
-        open: true,
-        message: "更新成功",
-        severity: "success",
-      });
+    setSnackbar({
+      open: true,
+      message: "更新成功",
+      severity: "success",
+    });
 
-      const updated = await teamAPI.getTeamDetail(team_id);
-      setTeam(updated.data);
+    const updated = await teamAPI.getTeamDetail(team_id);
+    setTeam(updated.data);
 
-      return null;
+    return null;
   };
 
   useEffect(() => {
@@ -109,11 +109,10 @@ const Teams = () => {
           setPageCount(res.data.total_pages);
 
           const myTeam = (res.data.teams || []).find((team) =>
-            team.members?.some((m) => m.id === myId && m.is_leader)
+            team.members?.some((m) => m.id === myId && m.is_leader),
           );
 
           sethaveCreatedTeam(myTeam || null);
-          
         } else {
           setError(res.message || "获取队伍列表失败");
         }
@@ -134,7 +133,6 @@ const Teams = () => {
 
   const handleCreateTeam = async (form) => {
     try {
-
       const resp = await teamAPI.createTeam({
         contest: match_id,
         name: form.name,
@@ -197,7 +195,6 @@ const Teams = () => {
         justifyContent="flex-end"
         alignItems="center"
       >
-      
         <Stack direction="row" spacing={1}>
           {match_id ? (
             // 正常显示创建队伍/编辑队伍逻辑
@@ -224,8 +221,6 @@ const Teams = () => {
               </IconButton>
             </Tooltip>
           )}
-
-
         </Stack>
       </Stack>
 
@@ -298,14 +293,14 @@ const Teams = () => {
         <DialogTitle>提示</DialogTitle>
         <DialogContent>
           <Typography>
-            队伍列表无法创建队伍，请在「赛事列表 → 寻找参赛团队」中创建您的队伍。
+            队伍列表无法创建队伍，请在「赛事列表 →
+            寻找参赛团队」中创建您的队伍。
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setHelpOpen(false)}>关闭</Button>
         </DialogActions>
       </Dialog>
-
     </Box>
   );
 };

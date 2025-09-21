@@ -157,24 +157,24 @@ const TeamDetail = () => {
   const handleSubmitEdit = async (editForm) => {
     const isoDeadline = new Date(editForm.recruitment_deadline).toISOString();
 
-      await teamAPI.updateTeam(
-        team_id,
-        editForm.name,
-        editForm.introduction,
-        editForm.expected_members,
-        isoDeadline,
-      );
+    await teamAPI.updateTeam(
+      team_id,
+      editForm.name,
+      editForm.introduction,
+      editForm.expected_members,
+      isoDeadline,
+    );
 
-      setSnackbar({
-        open: true,
-        message: "更新成功",
-        severity: "success",
-      });
+    setSnackbar({
+      open: true,
+      message: "更新成功",
+      severity: "success",
+    });
 
-      const updated = await teamAPI.getTeamDetail(team_id);
-      setTeam(updated.data);
+    const updated = await teamAPI.getTeamDetail(team_id);
+    setTeam(updated.data);
 
-      return null;
+    return null;
   };
 
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });

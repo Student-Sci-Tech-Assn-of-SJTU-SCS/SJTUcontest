@@ -145,7 +145,10 @@ export default function User() {
           const storedUser = localStorage.getItem("user");
           if (storedUser) {
             const parsedStoredUser = JSON.parse(storedUser);
-            const updatedUser = { ...parsedStoredUser, "nick_name": userNickname };
+            const updatedUser = {
+              ...parsedStoredUser,
+              nick_name: userNickname,
+            };
             localStorage.setItem("user", JSON.stringify(updatedUser));
           }
           setMessage({
@@ -247,7 +250,11 @@ export default function User() {
             <TextField
               label="参赛经历 / 所获奖项"
               value={userExperience || ""}
-              placeholder={userIdentity === "me" ? "在这里填写您的参赛经历吧！" : "空空如也……"}
+              placeholder={
+                userIdentity === "me"
+                  ? "在这里填写您的参赛经历吧！"
+                  : "空空如也……"
+              }
               onChange={(e) => setExperience(e.target.value)}
               multiline
               minRows={3}
@@ -258,7 +265,9 @@ export default function User() {
             <TextField
               label="特长"
               value={userSpecialty || ""}
-              placeholder={userIdentity === "me" ? "在这里填写您的特长吧！" : "空空如也……"}
+              placeholder={
+                userIdentity === "me" ? "在这里填写您的特长吧！" : "空空如也……"
+              }
               onChange={(e) => setSpecialty(e.target.value)}
               multiline
               minRows={2}

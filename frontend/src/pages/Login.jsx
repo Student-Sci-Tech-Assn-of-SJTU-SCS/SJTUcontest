@@ -212,8 +212,34 @@ const Login = () => {
               "0 4px 20px rgba(255, 240, 220, 0.3), inset 0 -2px 5px rgba(255, 240, 220, 0.4)",
               "0 4px 15px rgba(255, 205, 165, 0.3), inset 0 -2px 5px rgba(255, 205, 165, 0.4)",
             ][i],
-            left: ["5%", "85%", "75%", "15%", "90%", "10%", "50%", "65%", "25%", "45%", "70%", "30%"][i],
-            top: ["10%", "70%", "20%", "80%", "40%", "50%", "90%", "5%", "60%", "30%", "85%", "15%"][i],
+            left: [
+              "5%",
+              "85%",
+              "75%",
+              "15%",
+              "90%",
+              "10%",
+              "50%",
+              "65%",
+              "25%",
+              "45%",
+              "70%",
+              "30%",
+            ][i],
+            top: [
+              "10%",
+              "70%",
+              "20%",
+              "80%",
+              "40%",
+              "50%",
+              "90%",
+              "5%",
+              "60%",
+              "30%",
+              "85%",
+              "15%",
+            ][i],
             animation: [
               "float 15s ease-in-out infinite",
               "floatReverse 18s ease-in-out infinite",
@@ -230,7 +256,9 @@ const Login = () => {
             ][i],
             zIndex: 1,
             filter: "blur(0.5px)",
-            opacity: [0.9, 0.7, 0.6, 0.8, 0.5, 0.9, 0.4, 0.95, 0.6, 0.7, 0.5, 0.8][i],
+            opacity: [
+              0.9, 0.7, 0.6, 0.8, 0.5, 0.9, 0.4, 0.95, 0.6, 0.7, 0.5, 0.8,
+            ][i],
             "&::after": {
               content: '""',
               position: "absolute",
@@ -287,12 +315,14 @@ const Login = () => {
             borderRadius: 4,
             background: "rgba(255, 255, 255, 0.98)",
             backdropFilter: "blur(20px)",
-            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 182, 193, 0.1)",
+            boxShadow:
+              "0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 182, 193, 0.1)",
             border: "1px solid rgba(255, 255, 255, 0.8)",
             transition: "transform 0.3s ease, box-shadow 0.3s ease",
             "&:hover": {
               transform: "translateY(-5px)",
-              boxShadow: "0 25px 70px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 182, 193, 0.2)",
+              boxShadow:
+                "0 25px 70px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 182, 193, 0.2)",
             },
           }}
         >
@@ -314,8 +344,8 @@ const Login = () => {
             >
               欢迎回来
             </Typography>
-            <Typography 
-              variant="body1" 
+            <Typography
+              variant="body1"
               sx={{
                 color: "#6c757d",
                 fontSize: "1.05rem",
@@ -426,7 +456,8 @@ const Login = () => {
                 background: "linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%)",
                 boxShadow: "0 4px 15px rgba(255, 107, 107, 0.2)",
                 "&:hover": {
-                  background: "linear-gradient(135deg, #ff5252 0%, #ff6b6b 100%)",
+                  background:
+                    "linear-gradient(135deg, #ff5252 0%, #ff6b6b 100%)",
                   boxShadow: "0 6px 20px rgba(255, 107, 107, 0.3)",
                   transform: "translateY(-2px)",
                 },
@@ -445,8 +476,8 @@ const Login = () => {
             </Button>
 
             {error && (
-              <Alert 
-                severity="error" 
+              <Alert
+                severity="error"
                 sx={{
                   mt: 2,
                   borderRadius: 2,
@@ -463,15 +494,17 @@ const Login = () => {
             )}
           </Box>
 
-          <Divider sx={{ 
-            mb: 3, 
-            mt: 2,
-            "&::before, &::after": {
-              borderColor: "rgba(0, 0, 0, 0.08)",
-            },
-          }}>
-            <Typography 
-              variant="body2" 
+          <Divider
+            sx={{
+              mb: 3,
+              mt: 2,
+              "&::before, &::after": {
+                borderColor: "rgba(0, 0, 0, 0.08)",
+              },
+            }}
+          >
+            <Typography
+              variant="body2"
               sx={{
                 color: "#9ca3af",
                 fontSize: "0.875rem",
