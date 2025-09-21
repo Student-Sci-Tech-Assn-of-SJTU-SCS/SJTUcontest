@@ -238,7 +238,7 @@ const Teams = () => {
           <Box>
             {teams.length === 0 ? (
               <Typography align="center" color="text.secondary" sx={{ py: 6 }}>
-                "当前没有正在招募的队伍"}
+                "当前没有正在招募的队伍"
               </Typography>
             ) : (
               teams.map((team) => {
