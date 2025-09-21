@@ -10,11 +10,13 @@ from .views import (
     quit_team_by_id,
     update_team_by_id,
     delete_team_by_id,
+    search_teams_by_name,
 )
 
 urlpatterns = [
     path("", get_teams_recruiting, name="get_teams_recruiting"),
     path("create/", create_team, name="create_team"),
+    path("search/", search_teams_by_name, name="search_teams_by_name"),
     path("<uuid:team_id>/", get_team_by_id, name="get_team_by_id"),
     path("<uuid:team_id>/join/", join_team_by_id, name="join_team_by_id"),
     path(

@@ -8,6 +8,12 @@ class RecruitingTeamRequestSerializer(serializers.Serializer):
     page_size = serializers.IntegerField(min_value=1, max_value=100, required=True)
 
 
+class TeamSearchRequestSerializer(serializers.Serializer):
+    team_name = serializers.CharField(max_length=50, required=True, help_text="要搜索的队伍名称")
+    page_index = serializers.IntegerField(min_value=1, required=True)
+    page_size = serializers.IntegerField(min_value=1, max_value=100, required=True)
+
+
 # 序列化成员信息
 class TeamMemberSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(source="user.id")

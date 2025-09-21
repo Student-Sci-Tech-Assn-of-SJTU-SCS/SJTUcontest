@@ -13,6 +13,7 @@ from .serializers import (
     TeamInvitationCodeResponseSerializer,
     JoinTeamRequestSerializer,
     TeamUpdateRequestSerializer,
+    TeamSearchRequestSerializer,
 )
 from SJTUcontest.utils import ApiResponse, generate_random_string
 
@@ -320,6 +321,60 @@ def delete_team_by_id(request, team_id):
 
     except Team.DoesNotExist:
         return ApiResponse.not_found(message="队伍不存在")
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def search_teams_by_name(request):
+    """
+    根据队伍名称搜索队伍。
+    支持模糊查询，返回包含搜索关键词的所有队伍。
+    """
+    try:
+        serializer = TeamSearchRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return ApiResponse.error(message="Invalid data", data=serializer.errors)
+
+        team_name = serializer.validated_data["team_name"]
+        page_index = serializer.validated_data["page_index"]
+        page_size = serializer.validated_data["page_size"]
+
+        # 根据队伍名称进行模糊查询，按更新时间倒序排列
+        teams = Team.objects.filter(
+            name__icontains=team_name
+        ).order_by("-updated_at")
+
+        # 分页处理
+        paginator = Paginator(teams, page_size)
+
+        if page_index > paginator.num_pages:
+            return ApiResponse.not_found(
+                message="Too large page index",
+                data={
+                    "total_pages": paginator.num_pages,
+                    "page_index": page_index,
+                },
+            )
+
+        page_teams = paginator.page(page_index)
+        teams_serializer = TeamResponseSerializer(page_teams, many=True)
+
+        response_data = {
+            "total_pages": paginator.num_pages,
+            "page_index": page_index,
+            "team_num": len(teams_serializer.data),
+            "teams": teams_serializer.data,
+        }
+
+        return ApiResponse.success(
+            data=response_data,
+            message=f"找到 {paginator.count} 支包含 '{team_name}' 的队伍",
+        )
 
     except Exception as e:
         return ApiResponse.error(
