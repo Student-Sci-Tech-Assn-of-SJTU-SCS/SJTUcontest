@@ -87,7 +87,7 @@ export default function MatchSearchBar({
           minWidth: { xs: "90vw", sm: "710px" },
           borderRadius: 4,
           bgcolor: alpha(theme.palette.primary.light, 0.08),
-          boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.10)}`,
+          boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.1)}`,
           p: 2,
         }}
       >

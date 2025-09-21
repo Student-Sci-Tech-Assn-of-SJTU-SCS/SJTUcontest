@@ -1,4 +1,13 @@
-import { Box, Typography, Chip, Link, Stack, useTheme, alpha, Divider} from "@mui/material";
+import {
+  Box,
+  Typography,
+  Chip,
+  Link,
+  Stack,
+  useTheme,
+  alpha,
+  Divider,
+} from "@mui/material";
 
 // ✅【修改处 #1】：添加 highlight 参数（默认 false）
 export default function TeamCard({ team, highlight = false }) {
@@ -24,7 +33,11 @@ export default function TeamCard({ team, highlight = false }) {
   };
 
   return (
-    <Link href={`/teams/${id}`} underline="none" sx={{ textDecoration: "none" }}>
+    <Link
+      href={`/teams/${id}`}
+      underline="none"
+      sx={{ textDecoration: "none" }}
+    >
       <Box
         sx={{
           p: { xs: 2, sm: 3 },
@@ -33,9 +46,11 @@ export default function TeamCard({ team, highlight = false }) {
           boxShadow: highlight
             ? `0 6px 24px ${alpha(theme.palette.primary.main, 0.18)}`
             : `0 2px 12px ${alpha(theme.palette.primary.main, 0.08)}`,
-          border: `2px solid ${highlight
-            ? theme.palette.primary.main
-            : alpha(theme.palette.primary.main, 0.12)}`,
+          border: `2px solid ${
+            highlight
+              ? theme.palette.primary.main
+              : alpha(theme.palette.primary.main, 0.12)
+          }`,
           background: highlight
             ? `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.25)}, ${alpha(theme.palette.secondary.light, 0.18)})`
             : theme.palette.background.paper,
@@ -124,7 +139,12 @@ export default function TeamCard({ team, highlight = false }) {
             variant="outlined"
             sx={{
               fontWeight: 500,
-              bgcolor: alpha(isFull ? theme.palette.error.light : theme.palette.success.light, 0.12),
+              bgcolor: alpha(
+                isFull
+                  ? theme.palette.error.light
+                  : theme.palette.success.light,
+                0.12,
+              ),
             }}
           />
         </Stack>

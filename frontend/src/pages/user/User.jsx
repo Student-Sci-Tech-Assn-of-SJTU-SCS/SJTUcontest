@@ -24,7 +24,7 @@ import { styleInnerScrollBar } from "../../styles/styles";
 export default function User() {
   const { user_id } = useParams();
   const theme = useTheme();
-  
+
   const [userIdentity, setUserIdentity] = useState("");
   const [userNickname, setNickname] = useState("");
   const [userExperience, setExperience] = useState("");
@@ -314,7 +314,9 @@ export default function User() {
                 label="特长"
                 value={userSpecialty || ""}
                 placeholder={
-                  userIdentity === "me" ? "在这里填写您的特长吧！" : "空空如也……"
+                  userIdentity === "me"
+                    ? "在这里填写您的特长吧！"
+                    : "空空如也……"
                 }
                 onChange={(e) => setSpecialty(e.target.value)}
                 multiline
