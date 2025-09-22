@@ -104,7 +104,7 @@ export default function MatchSearchBar({
               <Box
                 key={cat.description}
                 sx={{
-                  m: "8px 0",
+                  // m: "8px 0",
                   padding: "6px 0",
                   display: "flex",
                   flexDirection: "row",
@@ -138,7 +138,7 @@ export default function MatchSearchBar({
                     background: `linear-gradient(180deg, ${theme.palette.primary.light}, ${theme.palette.secondary.light})`,
                   }}
                 />
-                <Box sx={{ ml: 1, mr: 2 }}>
+                <Box sx={{ ml: 1, mr: 2, width: "fit-content" }}>
                   <TagGroup
                     tags={Object.values(categoryTags[cat])}
                     clickable={true}

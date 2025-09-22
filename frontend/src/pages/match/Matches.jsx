@@ -18,7 +18,6 @@ import { createFadeInAnim } from "../../styles/animations";
 import axios from "axios";
 import { contestAPI } from "../../services/MatchServices";
 
-
 const Matches = () => {
   const theme = useTheme();
   const [search, setSearch] = useState("");
@@ -214,21 +213,23 @@ const Matches = () => {
                   justifyContent="center"
                   sx={{
                     animation: `${
-                      idx % pageColumns === 0 ? "cardFadeInLeft" :
-                      idx % pageColumns === pageColumns - 1 ? "cardFadeInRight" :
-                        "cardFadeInUp"
+                      idx % pageColumns === 0
+                        ? "cardFadeInLeft"
+                        : idx % pageColumns === pageColumns - 1
+                          ? "cardFadeInRight"
+                          : "cardFadeInUp"
                     } 0.7s ease-out forwards`,
                     animationDelay: `${idx * 0.08 + 0.2}s`,
                     opacity: 0,
                     ...createFadeInAnim({
                       name: "cardFadeInLeft",
                       direction: "left",
-                      distance: 30,
+                      distance: 60,
                     }),
                     ...createFadeInAnim({
                       name: "cardFadeInRight",
                       direction: "right",
-                      distance: 30,
+                      distance: 60,
                     }),
                     ...createFadeInAnim({
                       name: "cardFadeInUp",
