@@ -18,6 +18,7 @@ import {
   TrendingUp as TrendingIcon,
 } from "@mui/icons-material";
 import NewsCarousel from "../components/NewsCarousel";
+import { createFadeInAnim } from "../styles/animations";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -78,16 +79,20 @@ const Home = () => {
                 letterSpacing: 2,
                 textShadow: `0 2px 10px ${alpha(theme.palette.primary.main, 0.15)}`,
                 animation: "fadeInDown 1s ease-out",
-                "@keyframes fadeInDown": {
-                  "0%": {
-                    opacity: 0,
-                    transform: "translateY(-20px)",
-                  },
-                  "100%": {
-                    opacity: 1,
-                    transform: "translateY(0)",
-                  },
-                },
+                ...createFadeInAnim({
+                  name: "fadeInDown",
+                  direction: "down",
+                }),
+                // "@keyframes fadeInDown": {
+                //   "0%": {
+                //     opacity: 0,
+                //     transform: "translateY(-20px)",
+                //   },
+                //   "100%": {
+                //     opacity: 1,
+                //     transform: "translateY(0)",
+                //   },
+                // },
               }}
             >
               上海交通大学计算机学院
@@ -107,16 +112,20 @@ const Home = () => {
                 textShadow: `0 4px 20px ${alpha(theme.palette.primary.main, 0.2)}`,
                 letterSpacing: 3,
                 animation: "fadeInUp 1s ease-out 0.3s backwards",
-                "@keyframes fadeInUp": {
-                  "0%": {
-                    opacity: 0,
-                    transform: "translateY(20px)",
-                  },
-                  "100%": {
-                    opacity: 1,
-                    transform: "translateY(0)",
-                  },
-                },
+                ...createFadeInAnim({
+                  name: "fadeInUp",
+                  direction: "up",
+                }),
+                // "@keyframes fadeInUp": {
+                //   "0%": {
+                //     opacity: 0,
+                //     transform: "translateY(20px)",
+                //   },
+                //   "100%": {
+                //     opacity: 1,
+                //     transform: "translateY(0)",
+                //   },
+                // },
               }}
             >
               科创赛事平台
@@ -133,10 +142,13 @@ const Home = () => {
                 fontWeight: 400,
                 position: "relative",
                 animation: "fadeIn 1s ease-out 0.6s backwards",
-                "@keyframes fadeIn": {
-                  "0%": { opacity: 0 },
-                  "100%": { opacity: 1 },
-                },
+                ...createFadeInAnim({
+                  name: "fadeIn",
+                }),
+                // "@keyframes fadeIn": {
+                //   "0%": { opacity: 0 },
+                //   "100%": { opacity: 1 },
+                // },
                 "&::before, &::after": {
                   content: '""',
                   position: "absolute",
