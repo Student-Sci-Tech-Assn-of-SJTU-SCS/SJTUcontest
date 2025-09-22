@@ -44,9 +44,11 @@ def detect_content(content, user_id, type):
     serviceParameters = {"content": content}
     textModerationPlusRequest = models.TextModerationPlusRequest(
         # 检测类型
-        service="nickname_detection_pro"
-        if type in ["user.nick_name", "team.name"]
-        else "comment_detection_pro",
+        service=(
+            "nickname_detection_pro"
+            if type in ["user.nick_name", "team.name"]
+            else "comment_detection_pro"
+        ),
         service_parameters=json.dumps(serviceParameters),
     )
 

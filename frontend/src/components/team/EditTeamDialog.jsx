@@ -226,7 +226,7 @@ const EditTeamDialog = ({
             fullWidth
             InputLabelProps={{ shrink: true }}
             // inputProps={{
-            //   onKeyDown: (e) => e.preventDefault(), 
+            //   onKeyDown: (e) => e.preventDefault(),
             // }}
           />
         </Stack>
