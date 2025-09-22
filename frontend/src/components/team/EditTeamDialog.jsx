@@ -119,14 +119,36 @@ const EditTeamDialog = ({
           />
 
           <TextField
-            label="队伍简介"
+            label="队伍简介（建议填写联系方式+招募需求）"
             value={values.introduction}
             onChange={(e) =>
               setValues((s) => ({ ...s, introduction: e.target.value }))
             }
             fullWidth
             multiline
-            minRows={3}
+            minRows={4}
+            placeholder={`按Tab键确认：
+          - 联系方式：微信/邮箱/QQ/电话 
+          - 希望招募：前端、视觉设计、网络安全
+          - 项目方向：XXX`}
+            InputProps={{
+              style: {
+                fontStyle: values.introduction ? "normal" : "italic",
+                color: values.introduction ? "inherit" : "#888",
+                whiteSpace: "pre-line", // 保持多行 placeholder 格式
+              },
+              onKeyDown: (e) => {
+                if (e.key === "Tab" && !values.introduction) {
+                  e.preventDefault();
+                  setValues((s) => ({
+                    ...s,
+                    introduction: `联系方式：
+希望招募：
+项目方向：`,
+                  }));
+                }
+              },
+            }}
           />
 
           <Box>
@@ -204,7 +226,7 @@ const EditTeamDialog = ({
             fullWidth
             InputLabelProps={{ shrink: true }}
             // inputProps={{
-            //     onKeyDown: (e) => e.preventDefault(), // ✅ 禁止键盘输入
+            //   onKeyDown: (e) => e.preventDefault(), 
             // }}
           />
         </Stack>
