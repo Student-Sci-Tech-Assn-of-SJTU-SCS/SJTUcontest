@@ -60,11 +60,11 @@ const Home = () => {
             // background: `radial-gradient(ellipse at center,
             //   ${alpha(theme.palette.primary.light, 0.08)} 0%,
             //   transparent 70%)`,
-            animation: "float 20s ease-in-out infinite",
-            "@keyframes float": {
-              "0%, 100%": { transform: "rotate(0deg) scale(1)" },
-              "50%": { transform: "rotate(180deg) scale(1.1)" },
-            },
+            // animation: "float 20s ease-in-out infinite",
+            // "@keyframes float": {
+            //   "0%, 100%": { transform: "rotate(0deg) scale(1)" },
+            //   "50%": { transform: "rotate(180deg) scale(1.1)" },
+            // },
           },
         }}
       >
@@ -83,16 +83,6 @@ const Home = () => {
                   name: "fadeInDown",
                   direction: "down",
                 }),
-                // "@keyframes fadeInDown": {
-                //   "0%": {
-                //     opacity: 0,
-                //     transform: "translateY(-20px)",
-                //   },
-                //   "100%": {
-                //     opacity: 1,
-                //     transform: "translateY(0)",
-                //   },
-                // },
               }}
             >
               上海交通大学计算机学院
@@ -116,16 +106,6 @@ const Home = () => {
                   name: "fadeInUp",
                   direction: "up",
                 }),
-                // "@keyframes fadeInUp": {
-                //   "0%": {
-                //     opacity: 0,
-                //     transform: "translateY(20px)",
-                //   },
-                //   "100%": {
-                //     opacity: 1,
-                //     transform: "translateY(0)",
-                //   },
-                // },
               }}
             >
               科创赛事平台
@@ -145,10 +125,6 @@ const Home = () => {
                 ...createFadeInAnim({
                   name: "fadeIn",
                 }),
-                // "@keyframes fadeIn": {
-                //   "0%": { opacity: 0 },
-                //   "100%": { opacity: 1 },
-                // },
                 "&::before, &::after": {
                   content: '""',
                   position: "absolute",
