@@ -150,10 +150,11 @@ const Matches = () => {
           height: 4,
           borderRadius: 2,
           background: `linear-gradient(90deg, ${theme.palette.primary.light}, ${theme.palette.secondary.main})`,
-          animation: "fadeInDown 1s ease-out",
+          animation: "fadeInLeft 1s ease-out",
           ...createFadeInAnim({
             name: "fadeInLeft",
             direction: "left",
+            distance: 60,
           }),
         }}
       />
