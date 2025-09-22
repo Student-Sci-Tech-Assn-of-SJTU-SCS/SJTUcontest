@@ -13,13 +13,11 @@ import MatchCard from "../../components/MatchCard";
 import { useState, useEffect } from "react";
 import { categories } from "../../components/Tag";
 import { useMediaQuery } from "@mui/material";
-
-// theme需要重写，这里先用mui默认的
-import { createTheme } from "@mui/material/styles";
+import { createFadeInAnim } from "../../styles/animations";
 
 import axios from "axios";
-// import api from "../../utils/api";
 import { contestAPI } from "../../services/MatchServices";
+
 
 const Matches = () => {
   const theme = useTheme();
@@ -41,7 +39,9 @@ const Matches = () => {
   const lg = useMediaQuery(theme.breakpoints.between("lg", "xl"));
   const xl = useMediaQuery(theme.breakpoints.up("xl"));
 
-  const pageSize = sm ? 5 : 10;
+  const pageColumns = sm ? 1 : 2;
+  const pageRows = 5;
+  const pageSize = pageColumns * pageRows;
   // const pageSize = sm ? 3 : md ? 6 : lg ? 9 : 12;
   // const pageSize = 1; // 调试用
 
@@ -114,10 +114,10 @@ const Matches = () => {
         minHeight: "100vh",
         py: 6,
         px: { xs: 2, sm: 5 },
-        background: `linear-gradient(180deg,
-          ${theme.palette.background.paper} 0%,
-          ${alpha(theme.palette.primary.main, 0.03)} 50%,
-          ${theme.palette.background.paper} 100%)`,
+        // background: `linear-gradient(180deg,
+        //   ${theme.palette.background.paper} 0%,
+        //   ${alpha(theme.palette.primary.main, 0.03)} 50%,
+        //   ${theme.palette.background.paper} 100%)`,
         transition: "width 0.5s ease",
       }}
     >
@@ -134,6 +134,11 @@ const Matches = () => {
           WebkitTextFillColor: "transparent",
           mb: 1,
           textShadow: `0 2px 10px ${alpha(theme.palette.primary.main, 0.12)}`,
+          animation: "fadeInDown 1s ease-out",
+          ...createFadeInAnim({
+            name: "fadeInDown",
+            direction: "down",
+          }),
         }}
       >
         比赛
@@ -146,6 +151,11 @@ const Matches = () => {
           height: 4,
           borderRadius: 2,
           background: `linear-gradient(90deg, ${theme.palette.primary.light}, ${theme.palette.secondary.main})`,
+          animation: "fadeInDown 1s ease-out",
+          ...createFadeInAnim({
+            name: "fadeInLeft",
+            direction: "left",
+          }),
         }}
       />
 
@@ -185,19 +195,47 @@ const Matches = () => {
                   <Typography
                     color="text.secondary"
                     align="center"
-                    sx={{ fontSize: "1.1rem" }}
+                    sx={{
+                      fontSize: "1.1rem",
+                      animation: "fadeIn 0.8s ease-out",
+                      ...createFadeInAnim({ name: "fadeIn" }),
+                    }}
                   >
                     暂无符合条件的比赛
                   </Typography>
                 </Box>
               </Grid>
             ) : (
-              matches.map((match) => (
+              matches.map((match, idx) => (
                 <Grid
                   key={match.id}
                   size={{ sm: 12, md: 6 }}
                   display="flex"
                   justifyContent="center"
+                  sx={{
+                    animation: `${
+                      idx % pageColumns === 0 ? "cardFadeInLeft" :
+                      idx % pageColumns === pageColumns - 1 ? "cardFadeInRight" :
+                        "cardFadeInUp"
+                    } 0.7s ease-out forwards`,
+                    animationDelay: `${idx * 0.08 + 0.2}s`,
+                    opacity: 0,
+                    ...createFadeInAnim({
+                      name: "cardFadeInLeft",
+                      direction: "left",
+                      distance: 30,
+                    }),
+                    ...createFadeInAnim({
+                      name: "cardFadeInRight",
+                      direction: "right",
+                      distance: 30,
+                    }),
+                    ...createFadeInAnim({
+                      name: "cardFadeInUp",
+                      direction: "up",
+                      distance: 30,
+                    }),
+                  }}
                 >
                   <MatchCard match={match} />
                 </Grid>
@@ -218,95 +256,6 @@ const Matches = () => {
                     borderRadius: 3,
                   },
                 }}
-              />
-            </Box>
-          )}
-        </>
-      )}
-    </Box>
-  );
-
-  return (
-    <Box
-      sx={{
-        px: 5,
-        py: 5,
-        transition: "width 0.5s ease",
-      }}
-    >
-      <Typography
-        variant="h4"
-        fontWeight={700}
-        gutterBottom
-        sx={{ letterSpacing: 1, color: "#222", textAlign: "center" }}
-      >
-        比赛
-      </Typography>
-      <Divider sx={{ mb: 4, mx: "auto", width: 120, borderColor: "#1976d2" }} />
-
-      <MatchSearchBar
-        search={search}
-        onSearchChange={handleSearchChange}
-        selectedTags={selectedTags}
-        onTagClick={handleTagClick}
-      />
-
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <>
-          <Grid
-            container
-            spacing={1}
-            justifyContent="center"
-            alignItems="stretch"
-          >
-            {matches.length === 0 ? (
-              <Grid
-                key={"no_matches"}
-                size={12}
-                sx={{
-                  mt: 2,
-                  height: "150px",
-                  justifyItems: "center",
-                  alignContent: "center",
-                  borderRadius: 5,
-                  bgcolor: "#eee",
-                }}
-              >
-                <Typography
-                  key={"no_matches"}
-                  color="text.secondary"
-                  align="center"
-                >
-                  暂无符合条件的比赛
-                </Typography>
-              </Grid>
-            ) : (
-              matches.map((match) => (
-                <Grid
-                  key={match.id}
-                  // size={{ xs: 12, sm: 12, md: 6, lg: 4, xl: 3 }}
-                  size={{ sm: 12, md: 6 }}
-                  display="flex"
-                  justifyContent="center"
-                >
-                  <MatchCard match={match} />
-                </Grid>
-              ))
-            )}
-          </Grid>
-
-          {pageCount > 1 && (
-            <Box display="flex" justifyContent="center" mt={4}>
-              <Pagination
-                count={pageCount}
-                page={pageIndex}
-                onChange={(_, value) => setPageIndex(value)}
-                color="primary"
-                shape="rounded"
               />
             </Box>
           )}
