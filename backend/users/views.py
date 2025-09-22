@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.core.paginator import Paginator
+from datetime import timedelta
 
 from .serializers import (
     UserProfileSerializer,
@@ -50,8 +51,26 @@ def get_user_profile_by_id(request, user_id):
 @permission_classes([IsAuthenticated])
 def update_user_profile(request):
     try:
+        user = request.user
+
+        # 检查更新频率限制（1周）
+        if user.updated_at:
+            time_since_last_update = timezone.now() - user.updated_at
+            minimum_interval = timedelta(weeks=1)
+
+            if time_since_last_update < minimum_interval:
+                remaining_time = minimum_interval - time_since_last_update
+                remain_days = int(remaining_time.total_seconds() / 86400)
+                remain_hours = int(remaining_time.total_seconds() / 3600)
+                remaining_minutes = int(remaining_time.total_seconds() / 60)
+
+                return ApiResponse.error(
+                    message=f"更新频率过快，请在{remain_days}天{remain_hours}小时{remaining_minutes}分后再试",
+                    status_code=429,
+                )
+
         serializer = UserProfileSerializer(
-            request.user, data=request.data, partial=True
+            user, data=request.data, partial=True, context={"request": request}
         )
 
         if not serializer.is_valid():
@@ -191,7 +210,9 @@ def get_user_teams(request):
         if not serializer.is_valid():
             return ApiResponse.error(message="无效的分页参数", data=serializer.errors)
 
-        teams = Team.objects.filter(team_users__user=request.user)
+        teams = Team.objects.filter(team_users__user=request.user).order_by(
+            "-updated_at"
+        )
 
         page_index = serializer.validated_data["page_index"]
         page_size = serializer.validated_data["page_size"]

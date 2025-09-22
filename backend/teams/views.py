@@ -81,7 +81,9 @@ def create_team(request):
     每个用户最多在3个尚未报名截止的比赛中创建队伍。
     """
     try:
-        serializer = TeamCreateRequestSerializer(data=request.data)
+        serializer = TeamCreateRequestSerializer(
+            data=request.data, context={"request": request}
+        )
 
         if not serializer.is_valid():
             return ApiResponse.error(message="Invalid data", data=serializer.errors)
@@ -280,7 +282,24 @@ def update_team_by_id(request, team_id):
         ).exists():
             return ApiResponse.forbidden(message="只有队长可以更新队伍信息")
 
-        serializer = TeamUpdateRequestSerializer(team, data=request.data, partial=True)
+        # 检查更新频率限制（10分钟）
+        if team.updated_at:
+            time_since_last_update = timezone.now() - team.updated_at
+            minimum_interval = timedelta(minutes=10)
+
+            if time_since_last_update < minimum_interval:
+                remaining_time = minimum_interval - time_since_last_update
+                remaining_minutes = int(remaining_time.total_seconds() / 60)
+                remaining_seconds = int(remaining_time.total_seconds() % 60)
+
+                return ApiResponse.error(
+                    message=f"更新频率过快，请在{remaining_minutes}分{remaining_seconds}秒后再试",
+                    status_code=429,
+                )
+
+        serializer = TeamUpdateRequestSerializer(
+            team, data=request.data, partial=True, context={"request": request}
+        )
 
         if not serializer.is_valid():
             return ApiResponse.error(message="Invalid data", data=serializer.errors)
@@ -345,9 +364,7 @@ def search_teams_by_name(request):
         page_size = serializer.validated_data["page_size"]
 
         # 根据队伍名称进行模糊查询，按更新时间倒序排列
-        teams = Team.objects.filter(
-            name__icontains=team_name
-        ).order_by("-updated_at")
+        teams = Team.objects.filter(name__icontains=team_name).order_by("-updated_at")
 
         # 分页处理
         paginator = Paginator(teams, page_size)

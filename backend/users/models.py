@@ -21,10 +21,23 @@ class User(AbstractUser):
     )
 
     # 参赛经历
-    experience = models.TextField(blank=True, null=True, verbose_name="参赛经历")
+    experience = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name="参赛经历",
+    )
 
     # 特长
-    advantage = models.TextField(blank=True, null=True, verbose_name="特长")
+    advantage = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name="特长",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = "users_user"

@@ -12,7 +12,9 @@ class Team(models.Model):
     # 队伍名称
     name = models.CharField(max_length=50, help_text="队伍名称")
     # 队伍简介（请队长同时写上自己的联系方式）
-    introduction = models.TextField(blank=True, null=True, help_text="队伍简介")
+    introduction = models.CharField(
+        max_length=500, blank=True, null=True, help_text="队伍简介"
+    )
     # 队伍要参加的比赛
     contest = models.ForeignKey(
         "contests.Contest",

@@ -1,9 +1,9 @@
-import re
-
-# 实现用户数据的序列化和反序列化
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+import re
+
+from SJTUcontest.green import detect_content
 
 User = get_user_model()
 
@@ -76,6 +76,40 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "advantage",
         ]
 
+    def validate(self, attrs):
+        # 获取当前用户
+        user = self.context.get("request").user if self.context.get("request") else None
+        user_id = str(user.id) if user else "unknown"
+
+        # 审核昵称（仅当内容发生变化时）
+        if "nick_name" in attrs and attrs["nick_name"]:
+            # 检查内容是否发生变化
+            if not self.instance or attrs["nick_name"] != self.instance.nick_name:
+                if not detect_content(attrs["nick_name"], user_id, "user.nick_name"):
+                    raise serializers.ValidationError(
+                        {"nick_name": "昵称审核不通过，请修改"}
+                    )
+
+        # 审核经历（仅当内容发生变化时）
+        if "experience" in attrs and attrs["experience"]:
+            # 检查内容是否发生变化
+            if not self.instance or attrs["experience"] != self.instance.experience:
+                if not detect_content(attrs["experience"], user_id, "user.experience"):
+                    raise serializers.ValidationError(
+                        {"experience": "参赛经历审核不通过，请修改"}
+                    )
+
+        # 审核特长（仅当内容发生变化时）
+        if "advantage" in attrs and attrs["advantage"]:
+            # 检查内容是否发生变化
+            if not self.instance or attrs["advantage"] != self.instance.advantage:
+                if not detect_content(attrs["advantage"], user_id, "user.advantage"):
+                    raise serializers.ValidationError(
+                        {"advantage": "特长审核不通过，请修改"}
+                    )
+
+        return attrs
+
 
 class jAccountLoginRequestSerializer(serializers.Serializer):
     code = serializers.CharField(required=True)
@@ -102,6 +136,8 @@ class UserTotalInfoSerializer(serializers.ModelSerializer):
             "is_active",
             "date_joined",
             "last_login",
+            "updated_at",
+            "created_at",
             "teams",
         ]
 

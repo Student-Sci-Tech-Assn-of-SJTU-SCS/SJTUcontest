@@ -237,3 +237,9 @@ JACCOUNT_LOGOUT_URL = "https://jaccount.sjtu.edu.cn/oauth2/logout"
 JACCOUNT_PROFILE_URL = "https://api.sjtu.edu.cn/v1/me/profile"
 JACCOUNT_REDIRECT_URI = "http://localhost:5173/auth/jaccount/callback"
 JACCOUNT_LOGOUT_REDIRECT_URI = "http://localhost:5173/"
+
+# 阿里云内容机审配置
+ALIBABA_CLOUD_ACCESS_KEY_ID = os.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")
+ALIBABA_CLOUD_ACCESS_KEY_SECRET = os.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")
+ALIBABA_CLOUD_REGION_ID = "cn-shanghai"
+ALIBABA_CLOUD_ENDPOINT = "green-cip.cn-shanghai.aliyuncs.com"
