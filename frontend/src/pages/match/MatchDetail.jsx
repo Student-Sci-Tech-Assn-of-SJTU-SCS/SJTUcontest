@@ -7,10 +7,14 @@ import {
   Stack,
   Link,
   CircularProgress,
-  Card,
-  CardContent,
   Divider,
   Grid,
+  Paper,
+  alpha,
+  useTheme,
+  Container,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
@@ -19,20 +23,30 @@ import TagGroup from "../../components/TagGroup";
 import { nameToTag } from "../../components/Tag";
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-  fontWeight: 600,
-  color: theme.palette.primary.main,
+  marginBottom: theme.spacing(1.5),
+  fontWeight: 700,
+  fontSize: "1.15rem",
+  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  letterSpacing: 1,
 }));
 
 export default function MatchDetail() {
   const { match_id } = useParams();
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState({
+    open: false,
+    text: "",
+    severity: "success",
+  });
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const getTimeStr = (t) =>
-    `${t.getFullYear()}年${t.getMonth()}月${t.getDate()}日${t.getHours()}:${t.getMinutes()}`;
+    `${t.getFullYear()}年${t.getMonth() + 1}月${t.getDate()}日${t.getHours().toString().padStart(2, "0")}:${t.getMinutes().toString().padStart(2, "0")}`;
 
   const getRegTime = (reg_start, reg_end) => {
     const start = new Date(reg_start);
@@ -49,7 +63,6 @@ export default function MatchDetail() {
     const fetchMatchDetail = async () => {
       const controller = new AbortController();
       setLoading(true);
-      setError("");
 
       try {
         const res = await contestAPI.getContestDetail(match_id);
@@ -57,12 +70,21 @@ export default function MatchDetail() {
         if (res.success) {
           setMatch(res.data);
         } else {
-          setError(res.message || "Unknown error.");
-          console.log(error);
+          setMessage({
+            open: true,
+            text: `获取比赛信息失败：${res.message || "未知错误。"}`,
+            severity: "error",
+          });
+          console.log(`${message.severity}: ${message.text}`);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        setError("Network error.");
+        setMessage({
+          open: true,
+          text: "网络错误，请稍后再试。",
+          severity: "error",
+        });
+        console.log(`${message.severity}: ${message.text}`);
       } finally {
         setLoading(false);
       }
@@ -72,6 +94,10 @@ export default function MatchDetail() {
 
     fetchMatchDetail();
   }, [match_id]);
+
+  const handleCloseMessage = () => {
+    setMessage({ ...message, open: false });
+  };
 
   if (loading) {
     return (
@@ -83,151 +109,192 @@ export default function MatchDetail() {
 
   if (!match) {
     return (
-      <Typography color="error" align="center" sx={{ mt: 5 }}>
-        未能加载比赛信息。
-      </Typography>
+      <>
+        <Typography color="error" align="center" sx={{ mt: 5 }}>
+          未能加载比赛信息。
+        </Typography>
+        <Snackbar
+          open={message.open}
+          autoHideDuration={6000}
+          onClose={handleCloseMessage}
+        >
+          <Alert
+            onClose={handleCloseMessage}
+            severity={message.severity}
+            sx={{ width: "100%" }}
+          >
+            {message.text}
+          </Alert>
+        </Snackbar>
+      </>
     );
   }
 
   return (
-    <Card elevation={3} sx={{ p: 2, my: 5 }}>
-      <CardContent>
-        <Box
-          sx={{
-            mb: 2,
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: {
-              xs: "wrap",
-              sm: "nowrap",
-            },
-            rowGap: 1,
-          }}
-        >
-          <Typography
-            variant="h4"
+    <>
+      <Box sx={{ minHeight: "100vh", py: 0, /*background: alpha(theme.palette.background.paper, 0.98)*/ }}>
+        <Container maxWidth="md">
+          <Paper
+            elevation={8}
             sx={{
-              mr: 2,
-              width: "fit-content",
-              fontWeight: 700,
-              whiteSpace: "nowrap",
-              textOverflow: "ellipsis",
-              overflow: "hidden",
+              borderRadius: 6,
+              p: { xs: 2, sm: 4 },
+              mt: 8,
+              mb: 6,
+              boxShadow: `
+                0 10px 40px ${alpha(theme.palette.primary.main, 0.10)},
+                inset 0 1px 0 ${alpha(theme.palette.common.white, 0.5)}
+              `,
+              backdropFilter: "blur(10px)",
+              position: "relative",
             }}
           >
-            {match.name}
-          </Typography>
+            {/* 标题区 */}
+            <Box sx={{ textAlign: "center", mb: 4 }}>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 800,
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  letterSpacing: 2,
+                  textShadow: `0 4px 20px ${alpha(theme.palette.primary.main, 0.15)}`,
+                  mb: 2,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {match.name}
+              </Typography>
+              <Button
+                variant="contained"
+                size="large"
+                sx={{
+                  borderRadius: 20,
+                  px: 5,
+                  py: 1.5,
+                  fontWeight: 600,
+                  fontSize: "1.05rem",
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                  boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.18)}`,
+                  transition: "all 0.3s",
+                  "&:hover": {
+                    transform: "translateY(-2px) scale(1.03)",
+                    boxShadow: `0 12px 32px ${alpha(theme.palette.primary.main, 0.25)}`,
+                  },
+                }}
+                onClick={() => navigate(`/matches/${match.id}/teams`)}
+              >
+                寻找参赛团队
+              </Button>
+            </Box>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }} />
+            {/* 赛事主要信息 */}
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  <strong>报名时间：</strong> {getRegTime(match.registration_start, match.registration_end)}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  <strong>地点：</strong> {match.place}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  <strong>赛事级别：</strong> {nameToTag(match.level).description}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  <strong>素拓等级：</strong> {nameToTag(match.quality).description}
+                </Typography>
+              </Grid>
+            </Grid>
 
-          <Box
-            sx={{
-              mr: 2,
-              textAlign: "center",
-              ml: { xs: "auto", sm: 0 },
-              alignSelf: { xs: "flex-end", sm: "auto" },
-            }}
-          >
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
-                width: "fit-content",
-                whiteSpace: "nowrap",
-              }}
-              onClick={() => navigate(`/matches/${match.id}/teams`)}
-            >
-              寻找参赛团队
-            </Button>
-          </Box>
-        </Box>
+            <Divider sx={{ my: 3, borderColor: alpha(theme.palette.primary.main, 0.15) }} />
 
-        <Grid container spacing={1.5} sx={{ mb: 2 }}>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Typography
-              variant="body1"
-              noWrap
-              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
-            >
-              <strong>报名时间：</strong>{" "}
-              {getRegTime(match.registration_start, match.registration_end)}
-            </Typography>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Typography
-              variant="body1"
-              noWrap
-              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
-            >
-              <strong>地点：</strong> {match.place}
-            </Typography>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Typography
-              variant="body1"
-              noWrap
-              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
-            >
-              <strong>赛事级别：</strong> {nameToTag(match.level).description}
-            </Typography>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Typography
-              variant="body1"
-              noWrap
-              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
-            >
-              <strong>素拓等级：</strong> {nameToTag(match.quality).description}
-            </Typography>
-          </Grid>
-        </Grid>
+            {/* 关键词区 */}
+            <Box sx={{ mb: 3 }}>
+              <SectionTitle variant="h6">关键词</SectionTitle>
+              <Box sx={{ width: "fit-content" }}>
+                <TagGroup tags={match.keywords.map((keyword) => nameToTag(keyword))} />
+              </Box>
+            </Box>
 
-        <Divider sx={{ my: 3 }} />
+            {/* 简介区 */}
+            <Box sx={{ mb: 3 }}>
+              <SectionTitle variant="h6">简介</SectionTitle>
+              <Typography variant="body2" sx={{
+                lineHeight: 1.7,
+                fontSize: "1.08rem",
+                color: alpha(theme.palette.text.primary, 0.95),
+                mb: 1,
+              }}>
+                {match.description}
+              </Typography>
+            </Box>
 
-        <Box sx={{ mb: 3 }}>
-          <SectionTitle variant="h6">关键词</SectionTitle>
-          <Box sx={{ width: "fit-content" }}>
-            <TagGroup
-              tags={match.keywords.map((keyword) => nameToTag(keyword))}
-            />
-          </Box>
-        </Box>
-
-        <Box sx={{ mb: 3 }}>
-          <SectionTitle variant="h6">简介</SectionTitle>
-          <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
-            {match.description}
-          </Typography>
-        </Box>
-
-        {match.website && (
-          <Box sx={{ mb: 3 }}>
-            <SectionTitle variant="h6">官网链接</SectionTitle>
-            <Link href={match.website} target="_blank" rel="noopener">
-              {match.website}
-            </Link>
-          </Box>
-        )}
-
-        {match.materials.length > 0 && (
-          <Box sx={{ mb: 3 }}>
-            <SectionTitle variant="h6">学习资料</SectionTitle>
-            <Stack spacing={1}>
-              {match.materials.map((m) => (
-                <Link
-                  key={m.url}
-                  href={m.url}
-                  target="_blank"
-                  rel="noopener"
-                  underline="hover"
-                >
-                  {m.name}
+            {/* 官网链接 */}
+            {match.website && (
+              <Box sx={{ mb: 3 }}>
+                <SectionTitle variant="h6">官网链接</SectionTitle>
+                <Link href={match.website} target="_blank" rel="noopener" underline="hover" sx={{
+                  fontWeight: 500,
+                  fontSize: "1.05rem",
+                  color: theme.palette.primary.main,
+                  wordBreak: "break-all",
+                  "&:hover": { textDecoration: "underline", color: theme.palette.secondary.main },
+                }}>
+                  {match.website}
                 </Link>
-              ))}
-            </Stack>
-          </Box>
-        )}
-      </CardContent>
-    </Card>
+              </Box>
+            )}
+
+            {/* 学习资料 */}
+            {match.materials.length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                <SectionTitle variant="h6">学习资料</SectionTitle>
+                <Stack spacing={1}>
+                  {match.materials.map((m) => (
+                    <Link
+                      key={m.url}
+                      href={m.url}
+                      target="_blank"
+                      rel="noopener"
+                      underline="hover"
+                      sx={{
+                        fontWeight: 500,
+                        color: theme.palette.secondary.main,
+                        "&:hover": { color: theme.palette.primary.main },
+                      }}
+                    >
+                      {m.name}
+                    </Link>
+                  ))}
+                </Stack>
+              </Box>
+            )}
+          </Paper>
+        </Container>
+      </Box>
+      <Snackbar
+        open={message.open}
+        autoHideDuration={6000}
+        onClose={handleCloseMessage}
+      >
+        <Alert
+          onClose={handleCloseMessage}
+          severity={message.severity}
+          sx={{ width: "100%" }}
+        >
+          {message.text}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }

@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTheme, alpha } from "@mui/material";
 import { userAPI } from "../../services/UserServices";
 import { getCurrentUser } from "../../utils/auth";
@@ -70,7 +70,7 @@ export default function User() {
             text: `获取用户信息失败：${res.message || "未知错误。"}`,
             severity: "error",
           });
-          console.log(message.text);
+          console.log(`${message.severity}: ${message.text}`);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
@@ -79,7 +79,7 @@ export default function User() {
           text: `网络错误，请稍后再试。`,
           severity: "error",
         });
-        console.log(message.text);
+        console.log(`${message.severity}: ${message.text}`);
       } finally {
         setLoading(false);
       }
@@ -114,7 +114,7 @@ export default function User() {
             text: `获取用户队伍失败：${res.message || "未知错误。"}`,
             severity: "error",
           });
-          console.log(message.text);
+          console.log(`${message.severity}: ${message.text}`);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
@@ -123,7 +123,7 @@ export default function User() {
           text: `网络错误，请稍后再试。`,
           severity: "error",
         });
-        console.log(message.text);
+        console.log(`${message.severity}: ${message.text}`);
       } finally {
         setLoading(false);
       }
@@ -160,14 +160,14 @@ export default function User() {
             text: `用户信息已更新！`,
             severity: "success",
           });
-          console.log(message.text);
+          console.log(`${message.severity}: ${message.text}`);
         } else {
           setMessage({
             open: true,
             text: `获取用户信息失败：${res.message || "未知错误。"}`,
             severity: "error",
           });
-          console.log(message.text);
+          console.log(`${message.severity}: ${message.text}`);
         }
       } catch {
         setMessage({
@@ -175,7 +175,7 @@ export default function User() {
           text: `网络错误，请稍后再试。`,
           severity: "error",
         });
-        console.log(message.text);
+        console.log(`${message.severity}: ${message.text}`);
       } finally {
         setSaving(false);
         location.reload(true);

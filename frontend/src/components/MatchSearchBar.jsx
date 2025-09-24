@@ -14,6 +14,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useState } from "react";
 import { categories, categoryTags } from "./Tag";
 import TagGroup from "./TagGroup";
+import { createFadeInAnim, createFadeOutAnim } from "../styles/animations";
 
 export default function MatchSearchBar({
   search,
@@ -35,7 +36,20 @@ export default function MatchSearchBar({
         justifyContent: "center",
       }}
     >
-      <Stack direction="row" spacing={2} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        sx={{
+          animationDelay: "0.5s",
+          animation: "fadeInDown 0.8s ease-out",
+          ...createFadeInAnim({
+            name: "fadeInDown",
+            direction: "down",
+            distance: 30,
+          }),
+        }}
+      >
         <TextField
           label="查询比赛"
           variant="outlined"
@@ -89,6 +103,19 @@ export default function MatchSearchBar({
           bgcolor: alpha(theme.palette.primary.light, 0.08),
           boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.1)}`,
           p: 2,
+          animation: expanded
+            ? "fadeInUp 0.5s ease-out"
+            : "fadeOutDown 0.5s ease-out",
+          ...createFadeInAnim({
+            name: "fadeInUp",
+            direction: "up",
+            distance: 30,
+          }),
+          ...createFadeOutAnim({
+            name: "fadeOutDown",
+            direction: "down",
+            distance: 30,
+          }),
         }}
       >
         <Stack
@@ -144,6 +171,7 @@ export default function MatchSearchBar({
                     clickable={true}
                     selectedTags={selectedTags[cat]}
                     onTagClick={onTagClick}
+                    animate={expanded ? "fadeInScale" : ""}
                   />
                 </Box>
               </Box>
