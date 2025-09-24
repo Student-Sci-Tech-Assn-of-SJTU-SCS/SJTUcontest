@@ -23,6 +23,7 @@ import {
   Groups as TeamsIcon,
 } from "@mui/icons-material";
 import { userAPI } from "../services/UserServices";
+import NotificationFloat from "../components/NotificationFloat";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -89,6 +90,9 @@ const MainLayout = () => {
       }}
     >
       <CssBaseline />
+      
+      {/* 全局通知浮窗 */}
+      <NotificationFloat />
 
       {/* 顶部导航栏 */}
       <AppBar

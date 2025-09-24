@@ -10,7 +10,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
-    console.log("当前请求的token:", token);
+    // console.log("当前请求的token:", token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
