@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { userAPI } from "../../services/UserServices";
+import MessageSnackbar from "../../components/MessageSnackbar";
+import { enqueueSnackbar } from "notistack";
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({
@@ -26,11 +28,12 @@ const CreateUser = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({
-    open: false,
-    text: "",
-    severity: "success",
-  });
+  
+  // const [message, setMessage] = useState({
+  //   open: false,
+  //   text: "",
+  //   severity: "success",
+  // });
 
   const makeValidator = (regex, message) => ({
     method: (value) => regex.test(value),
@@ -67,11 +70,14 @@ const CreateUser = () => {
     for (const field in validations) {
       const { method, message } = validations[field];
       if (!method(formData[field])) {
-        setMessage({
-          open: true,
-          text: message,
-          severity: "warning",
+        enqueueSnackbar(message, {
+          variant: "warning",
         });
+        // setMessage({
+        //   open: true,
+        //   text: message,
+        //   severity: "warning",
+        // });
         return;
       }
     }
@@ -80,11 +86,14 @@ const CreateUser = () => {
 
     try {
       await userAPI.register(formData);
-      setMessage({
-        open: true,
-        text: "用户创建成功！",
-        severity: "success",
+      enqueueSnackbar("用户创建成功！", {
+        variant: "success",
       });
+      // setMessage({
+      //   open: true,
+      //   text: "用户创建成功！",
+      //   severity: "success",
+      // });
 
       // 重置表单
       setFormData({
@@ -93,20 +102,23 @@ const CreateUser = () => {
         password: "",
       });
     } catch (error) {
-      console.error("创建用户失败:", error);
-      setMessage({
-        open: true,
-        text: `创建用户失败: ${error.response?.data?.detail || error.message}`,
-        severity: "error",
+      enqueueSnackbar(`创建用户失败: ${error.response?.data?.detail || error.message}`, {
+        variant: "error",
       });
+      console.error("创建用户失败:", error.message);
+      // setMessage({
+      //   open: true,
+      //   text: `创建用户失败: ${error.response?.data?.detail || error.message}`,
+      //   severity: "error",
+      // });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCloseMessage = () => {
-    setMessage({ ...message, open: false });
-  };
+  // const handleCloseMessage = () => {
+  //   setMessage({ ...message, open: false });
+  // };
 
   return (
     <Box>
@@ -183,7 +195,8 @@ const CreateUser = () => {
         </CardContent>
       </Card>
 
-      <Snackbar
+      {/* <MessageSnackbar message={message} onClose={handleCloseMessage} /> */}
+      {/* <Snackbar
         open={message.open}
         autoHideDuration={6000}
         onClose={handleCloseMessage}
@@ -195,7 +208,7 @@ const CreateUser = () => {
         >
           {message.text}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </Box>
   );
 };

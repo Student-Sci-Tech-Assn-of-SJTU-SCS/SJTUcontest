@@ -1,6 +1,9 @@
 // App.jsx
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { SnackbarProvider } from "notistack";
+import { styleSnackbar } from "./styles/styles.jsx";
+import { Grow } from "@mui/material";
 import Login from "./pages/Login";
 import JAccount from "./pages/JAccount";
 import MainLayout from "./layouts/MainLayout";
@@ -120,7 +123,24 @@ const Router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={Router} />;
+  return (
+    <SnackbarProvider
+      Components={{
+        success: styleSnackbar,
+        error: styleSnackbar,
+        warning: styleSnackbar,
+        info: styleSnackbar,
+        default: styleSnackbar,
+      }}
+      TransitionComponent={Grow}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "center",
+      }}
+    >
+      <RouterProvider router={Router} />
+    </SnackbarProvider>
+  );
 }
 
 export default App;

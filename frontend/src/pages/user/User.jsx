@@ -17,6 +17,7 @@ import {
 import { useParams } from "react-router-dom";
 import { useTheme, alpha } from "@mui/material";
 import { userAPI } from "../../services/UserServices";
+import { enqueueSnackbar } from "notistack";
 import { getCurrentUser } from "../../utils/auth";
 import TeamCard from "../../components/team/TeamCard";
 import { styleInnerScrollBar } from "../../styles/styles";
@@ -37,11 +38,12 @@ export default function User() {
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState({
-    open: false,
-    text: "",
-    severity: "success",
-  });
+  // const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  // const [message, setMessage] = useState({
+  //   open: false,
+  //   text: "",
+  //   severity: "success",
+  // });
 
   useEffect(() => {
     if (user_id == getCurrentUser().id) {
@@ -49,7 +51,7 @@ export default function User() {
     } else {
       setUserIdentity("other");
     }
-    console.log(userIdentity);
+    console.log(`This is ${userIdentity}`);
   }, [user_id]);
 
   useEffect(() => {
@@ -65,21 +67,27 @@ export default function User() {
           setExperience(res.data.experience);
           setSpecialty(res.data.advantage);
         } else {
-          setMessage({
-            open: true,
-            text: `获取用户信息失败：${res.message || "未知错误。"}`,
-            severity: "error",
+          enqueueSnackbar(`获取用户信息失败：${res.message || "未知错误。"}`, {
+            variant: "error",
           });
-          console.log(`${message.severity}: ${message.text}`);
+          // setMessage({
+          //   open: true,
+          //   text: `获取用户信息失败：${res.message || "未知错误。"}`,
+          //   severity: "error",
+          // });
+          // console.log(`${message.severity}: ${message.text}`);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        setMessage({
-          open: true,
-          text: `网络错误，请稍后再试。`,
-          severity: "error",
+        enqueueSnackbar(`网络错误，请稍后再试。`, {
+          variant: "error",
         });
-        console.log(`${message.severity}: ${message.text}`);
+        // setMessage({
+        //   open: true,
+        //   text: `网络错误，请稍后再试。`,
+        //   severity: "error",
+        // });
+        // console.log(`${message.severity}: ${message.text}`);
       } finally {
         setLoading(false);
       }
@@ -109,21 +117,27 @@ export default function User() {
           setPageCount(res.data.total_pages);
           console.log(pageCount);
         } else {
-          setMessage({
-            open: true,
-            text: `获取用户队伍失败：${res.message || "未知错误。"}`,
-            severity: "error",
+          enqueueSnackbar(`获取用户队伍失败：${res.message || "未知错误。"}`, {
+            variant: "error",
           });
-          console.log(`${message.severity}: ${message.text}`);
+          // setMessage({
+          //   open: true,
+          //   text: `获取用户队伍失败：${res.message || "未知错误。"}`,
+          //   severity: "error",
+          // });
+          // console.log(`${message.severity}: ${message.text}`);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        setMessage({
-          open: true,
-          text: `网络错误，请稍后再试。`,
-          severity: "error",
+        enqueueSnackbar(`网络错误，请稍后再试。`, {
+          variant: "error",
         });
-        console.log(`${message.severity}: ${message.text}`);
+        // setMessage({
+        //   open: true,
+        //   text: `网络错误，请稍后再试。`,
+        //   severity: "error",
+        // });
+        // console.log(`${message.severity}: ${message.text}`);
       } finally {
         setLoading(false);
       }
@@ -155,27 +169,36 @@ export default function User() {
             };
             localStorage.setItem("user", JSON.stringify(updatedUser));
           }
-          setMessage({
-            open: true,
-            text: `用户信息已更新！`,
-            severity: "success",
+          enqueueSnackbar(`用户信息已更新！`, {
+            variant: "success",
           });
-          console.log(`${message.severity}: ${message.text}`);
+          // setMessage({
+          //   open: true,
+          //   text: `用户信息已更新！`,
+          //   severity: "success",
+          // });
+          // console.log(`${message.severity}: ${message.text}`);
         } else {
-          setMessage({
-            open: true,
-            text: `获取用户信息失败：${res.message || "未知错误。"}`,
-            severity: "error",
+          enqueueSnackbar(`更新用户信息失败：${res.message || "未知错误。"}`, {
+            variant: "error",
           });
-          console.log(`${message.severity}: ${message.text}`);
+          // setMessage({
+          //   open: true,
+          //   text: `更新用户信息失败：${res.message || "未知错误。"}`,
+          //   severity: "error",
+          // });
+          // console.log(`${message.severity}: ${message.text}`);
         }
       } catch {
-        setMessage({
-          open: true,
-          text: `网络错误，请稍后再试。`,
-          severity: "error",
+        enqueueSnackbar(`网络错误，请稍后再试。`, {
+          variant: "error",
         });
-        console.log(`${message.severity}: ${message.text}`);
+        // setMessage({
+        //   open: true,
+        //   text: `网络错误，请稍后再试。`,
+        //   severity: "error",
+        // });
+        // console.log(`${message.severity}: ${message.text}`);
       } finally {
         setSaving(false);
         location.reload(true);
@@ -187,9 +210,9 @@ export default function User() {
     updateProfile();
   };
 
-  const handleCloseMessage = () => {
-    setMessage({ ...message, open: false });
-  };
+  // const handleCloseMessage = () => {
+  //   setMessage({ ...message, open: false });
+  // };
 
   if (loading) {
     return (
@@ -434,7 +457,7 @@ export default function User() {
           </CardContent>
         </Card>
       </Box>
-      <Snackbar
+      {/* <Snackbar
         open={message.open}
         autoHideDuration={6000}
         onClose={handleCloseMessage}
@@ -446,7 +469,7 @@ export default function User() {
         >
           {message.text}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </>
   );
 
