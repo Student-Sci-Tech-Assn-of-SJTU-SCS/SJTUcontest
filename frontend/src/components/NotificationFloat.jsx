@@ -30,7 +30,7 @@ const NotificationFloat = () => {
   useEffect(() => {
     // 检查用户是否手动操作过浮窗
     const userInteracted = localStorage.getItem("notificationUserInteracted");
-    
+
     if (userInteracted === "true") {
       // 如果用户手动操作过，使用用户的选择（不再自动根据页面切换）
       setHasUserInteracted(true);
@@ -192,18 +192,20 @@ const NotificationFloat = () => {
         </Paper>
       ) : (
         /* 重新显示浮窗的小按钮 */
-        <Tooltip 
+        <Tooltip
           title={
             <Box>
               <div>查看竞赛填报通知</div>
               {hasUserInteracted && (
-                <div style={{ fontSize: '0.75rem', opacity: 0.8, marginTop: 4 }}>
+                <div
+                  style={{ fontSize: "0.75rem", opacity: 0.8, marginTop: 4 }}
+                >
                   按住Shift点击可重置为默认设置
                 </div>
               )}
             </Box>
-          } 
-          placement="right" 
+          }
+          placement="right"
           arrow
         >
           <Paper
@@ -231,7 +233,7 @@ const NotificationFloat = () => {
                   ${theme.palette.success.main})`,
                 boxShadow: `0 4px 20px ${alpha(
                   theme.palette.success.main,
-                  0.4
+                  0.4,
                 )}`,
                 animation: "slideInLeft 0.3s ease-out",
                 "& .arrow-icon": {
@@ -252,26 +254,23 @@ const NotificationFloat = () => {
                 "0%": {
                   boxShadow: `0 0 0 0 ${alpha(
                     theme.palette.success.main,
-                    0.6
+                    0.6,
                   )}`,
                 },
                 "40%": {
                   boxShadow: `0 0 0 8px ${alpha(
                     theme.palette.success.main,
-                    0.3
+                    0.3,
                   )}`,
                 },
                 "80%": {
                   boxShadow: `0 0 0 12px ${alpha(
                     theme.palette.success.main,
-                    0
+                    0,
                   )}`,
                 },
                 "100%": {
-                  boxShadow: `0 0 0 0 ${alpha(
-                    theme.palette.success.main,
-                    0
-                  )}`,
+                  boxShadow: `0 0 0 0 ${alpha(theme.palette.success.main, 0)}`,
                 },
               },
             }}

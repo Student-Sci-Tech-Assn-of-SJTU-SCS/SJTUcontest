@@ -167,8 +167,8 @@ const Matches = () => {
       />
 
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
-          <CircularProgress />
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+          <CircularProgress size={20} value={25} />
         </Box>
       ) : (
         <>
