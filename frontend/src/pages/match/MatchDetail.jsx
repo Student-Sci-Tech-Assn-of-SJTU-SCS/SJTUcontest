@@ -21,6 +21,8 @@ import axios from "axios";
 import { contestAPI } from "../../services/MatchServices";
 import TagGroup from "../../components/TagGroup";
 import { nameToTag } from "../../components/Tag";
+import { enqueueSnackbar } from "notistack";
+// import MessageSnackbar from "../../components/MessageSnackbar";
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1.5),
@@ -37,11 +39,11 @@ export default function MatchDetail() {
   const { match_id } = useParams();
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState({
-    open: false,
-    text: "",
-    severity: "success",
-  });
+  // const [message, setMessage] = useState({
+  //   open: false,
+  //   text: "",
+  //   severity: "success",
+  // });
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -70,21 +72,27 @@ export default function MatchDetail() {
         if (res.success) {
           setMatch(res.data);
         } else {
-          setMessage({
-            open: true,
-            text: `获取比赛信息失败：${res.message || "未知错误。"}`,
-            severity: "error",
+          enqueueSnackbar(`获取比赛信息失败：${res.message || "未知错误。"}`, {
+            variant: "error",
           });
-          console.log(`${message.severity}: ${message.text}`);
+          // setMessage({
+          //   open: true,
+          //   text: `获取比赛信息失败：${res.message || "未知错误。"}`,
+          //   severity: "error",
+          // });
+          // console.log(`${message.severity}: ${message.text}`);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        setMessage({
-          open: true,
-          text: "网络错误，请稍后再试。",
-          severity: "error",
+        enqueueSnackbar("网络错误，请稍后再试。", {
+          variant: "error",
         });
-        console.log(`${message.severity}: ${message.text}`);
+        // setMessage({
+        //   open: true,
+        //   text: "网络错误，请稍后再试。",
+        //   severity: "error",
+        // });
+        // console.log(`${message.severity}: ${message.text}`);
       } finally {
         setLoading(false);
       }
@@ -95,9 +103,9 @@ export default function MatchDetail() {
     fetchMatchDetail();
   }, [match_id]);
 
-  const handleCloseMessage = () => {
-    setMessage({ ...message, open: false });
-  };
+  // const handleCloseMessage = () => {
+  //   setMessage({ ...message, open: false });
+  // };
 
   if (loading) {
     return (
@@ -132,7 +140,12 @@ export default function MatchDetail() {
 
   return (
     <>
-      <Box sx={{ minHeight: "100vh", py: 0, /*background: alpha(theme.palette.background.paper, 0.98)*/ }}>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          py: 0 /*background: alpha(theme.palette.background.paper, 0.98)*/,
+        }}
+      >
         <Container maxWidth="md">
           <Paper
             elevation={8}
@@ -142,7 +155,7 @@ export default function MatchDetail() {
               mt: 8,
               mb: 6,
               boxShadow: `
-                0 10px 40px ${alpha(theme.palette.primary.main, 0.10)},
+                0 10px 40px ${alpha(theme.palette.primary.main, 0.1)},
                 inset 0 1px 0 ${alpha(theme.palette.common.white, 0.5)}
               `,
               backdropFilter: "blur(10px)",
@@ -152,9 +165,9 @@ export default function MatchDetail() {
             {/* 标题区 */}
             <Box sx={{ textAlign: "center", mb: 4 }}>
               <Typography
-                variant="h3"
+                variant="h4"
                 sx={{
-                  fontWeight: 800,
+                  fontWeight: "bold",
                   background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                   backgroundClip: "text",
                   WebkitBackgroundClip: "text",
@@ -216,25 +229,35 @@ export default function MatchDetail() {
               </Grid>
             </Grid>
 
-            <Divider sx={{ my: 3, borderColor: alpha(theme.palette.primary.main, 0.15) }} />
+            <Divider
+              sx={{
+                my: 3,
+                borderColor: alpha(theme.palette.primary.main, 0.15),
+              }}
+            />
 
             {/* 关键词区 */}
             <Box sx={{ mb: 3 }}>
               <SectionTitle variant="h6">关键词</SectionTitle>
               <Box sx={{ width: "fit-content" }}>
-                <TagGroup tags={match.keywords.map((keyword) => nameToTag(keyword))} />
+                <TagGroup
+                  tags={match.keywords.map((keyword) => nameToTag(keyword))}
+                />
               </Box>
             </Box>
 
             {/* 简介区 */}
             <Box sx={{ mb: 3 }}>
               <SectionTitle variant="h6">简介</SectionTitle>
-              <Typography variant="body2" sx={{
-                lineHeight: 1.7,
-                fontSize: "1.08rem",
-                color: alpha(theme.palette.text.primary, 0.95),
-                mb: 1,
-              }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  lineHeight: 1.7,
+                  fontSize: "1.08rem",
+                  color: alpha(theme.palette.text.primary, 0.95),
+                  mb: 1,
+                }}
+              >
                 {match.description}
               </Typography>
             </Box>
@@ -243,13 +266,22 @@ export default function MatchDetail() {
             {match.website && (
               <Box sx={{ mb: 3 }}>
                 <SectionTitle variant="h6">官网链接</SectionTitle>
-                <Link href={match.website} target="_blank" rel="noopener" underline="hover" sx={{
-                  fontWeight: 500,
-                  fontSize: "1.05rem",
-                  color: theme.palette.primary.main,
-                  wordBreak: "break-all",
-                  "&:hover": { textDecoration: "underline", color: theme.palette.secondary.main },
-                }}>
+                <Link
+                  href={match.website}
+                  target="_blank"
+                  rel="noopener"
+                  underline="hover"
+                  sx={{
+                    fontWeight: 500,
+                    fontSize: "1.05rem",
+                    color: theme.palette.primary.main,
+                    wordBreak: "break-all",
+                    "&:hover": {
+                      textDecoration: "underline",
+                      color: theme.palette.secondary.main,
+                    },
+                  }}
+                >
                   {match.website}
                 </Link>
               </Box>
@@ -282,7 +314,8 @@ export default function MatchDetail() {
           </Paper>
         </Container>
       </Box>
-      <Snackbar
+      {/* <MessageSnackbar message={message} onClose={handleCloseMessage} /> */}
+      {/* <Snackbar
         open={message.open}
         autoHideDuration={6000}
         onClose={handleCloseMessage}
@@ -294,7 +327,7 @@ export default function MatchDetail() {
         >
           {message.text}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </>
   );
 }
