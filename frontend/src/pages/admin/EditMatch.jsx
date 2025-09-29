@@ -23,6 +23,7 @@ import {
 } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import { contestAPI } from "../../services/MatchServices";
+import showMessage from "../../utils/message";
 
 // 枚举选项（和 CreateContest 一样）
 const CONTEST_LEVELS = [
@@ -65,7 +66,7 @@ const MONTHS = [
   { value: 12, label: "12月" },
 ];
 
-const MatchEdit = () => {
+const ContestEdit = () => {
   const { match_id } = useParams();
   const [formData, setFormData] = useState({
     name: "",
@@ -85,11 +86,11 @@ const MatchEdit = () => {
 
   const [materialInput, setMaterialInput] = useState({ name: "", url: "" });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({
-    open: false,
-    text: "",
-    severity: "success",
-  });
+  // const [message, setMessage] = useState({
+  //   open: false,
+  //   text: "",
+  //   severity: "success",
+  // });
   const [logoPreview, setLogoPreview] = useState("");
 
   // 获取比赛详情
@@ -109,18 +110,20 @@ const MatchEdit = () => {
           });
           setLogoPreview(res.data.logo || "");
         } else {
-          setMessage({
-            open: true,
-            text: res.message || "获取比赛详情失败",
-            severity: "error",
-          });
+          showMessage(`获取比赛详情失败：${res.message}`, "error");
+          // setMessage({
+          //   open: true,
+          //   text: res.message || "获取比赛详情失败",
+          //   severity: "error",
+          // });
         }
       } catch (err) {
-        setMessage({
-          open: true,
-          text: "网络错误，无法获取比赛详情",
-          severity: "error",
-        });
+        showMessage(`网络错误，请稍后再试：${err}`, "error");
+        // setMessage({
+        //   open: true,
+        //   text: "网络错误，无法获取比赛详情",
+        //   severity: "error",
+        // });
       }
     };
 
@@ -158,19 +161,21 @@ const MatchEdit = () => {
     const file = event.target.files[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        setMessage({
-          open: true,
-          text: "请选择图片文件",
-          severity: "error",
-        });
+        showMessage("请选择图片文件", "warning", false);
+        // setMessage({
+        //   open: true,
+        //   text: "请选择图片文件",
+        //   severity: "error",
+        // });
         return;
       }
       if (file.size > 2 * 1024 * 1024) {
-        setMessage({
-          open: true,
-          text: "图片文件大小不能超过2MB",
-          severity: "error",
-        });
+        showMessage("图片文件大小不能超过2MB", "warning", false);
+        // setMessage({
+        //   open: true,
+        //   text: "图片文件大小不能超过2MB",
+        //   severity: "error",
+        // });
         return;
       }
       const reader = new FileReader();
@@ -204,25 +209,28 @@ const MatchEdit = () => {
       };
 
       await contestAPI.updateContest(match_id, submitData);
-      setMessage({
-        open: true,
-        text: "比赛更新成功！",
-        severity: "success",
-      });
+      
+      showMessage("比赛更新成功！", "success");
+      // setMessage({
+      //   open: true,
+      //   text: "比赛更新成功！",
+      //   severity: "success",
+      // });
     } catch (error) {
-      setMessage({
-        open: true,
-        text: `更新失败: ${error.response?.data?.detail || error.message}`,
-        severity: "error",
-      });
+      showMessage(`比赛更新失败：${error.response?.data?.detail || error.message}`, "error");
+      // setMessage({
+      //   open: true,
+      //   text: `更新失败：${error.response?.data?.detail || error.message}`,
+      //   severity: "error",
+      // });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCloseMessage = () => {
-    setMessage({ ...message, open: false });
-  };
+  // const handleCloseMessage = () => {
+  //   setMessage({ ...message, open: false });
+  // };
 
   return (
     <Box>
@@ -503,7 +511,7 @@ const MatchEdit = () => {
         </CardContent>
       </Card>
 
-      <Snackbar
+      {/* <Snackbar
         open={message.open}
         autoHideDuration={6000}
         onClose={handleCloseMessage}
@@ -515,9 +523,9 @@ const MatchEdit = () => {
         >
           {message.text}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </Box>
   );
 };
 
-export default MatchEdit;
+export default ContestEdit;

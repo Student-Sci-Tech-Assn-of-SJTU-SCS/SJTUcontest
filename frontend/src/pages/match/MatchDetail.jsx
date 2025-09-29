@@ -21,8 +21,7 @@ import axios from "axios";
 import { contestAPI } from "../../services/MatchServices";
 import TagGroup from "../../components/TagGroup";
 import { nameToTag } from "../../components/Tag";
-import { enqueueSnackbar } from "notistack";
-// import MessageSnackbar from "../../components/MessageSnackbar";
+import showMessage from "../../utils/message";
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1.5),
@@ -72,27 +71,21 @@ export default function MatchDetail() {
         if (res.success) {
           setMatch(res.data);
         } else {
-          enqueueSnackbar(`获取比赛信息失败：${res.message || "未知错误。"}`, {
-            variant: "error",
-          });
+          showMessage(`获取比赛信息失败：${res.message || "未知错误。"}`, "error");
           // setMessage({
           //   open: true,
           //   text: `获取比赛信息失败：${res.message || "未知错误。"}`,
           //   severity: "error",
           // });
-          // console.log(`${message.severity}: ${message.text}`);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        enqueueSnackbar("网络错误，请稍后再试。", {
-          variant: "error",
-        });
+        showMessage(`网络错误，请稍后再试：${err}`, "error");
         // setMessage({
         //   open: true,
         //   text: "网络错误，请稍后再试。",
         //   severity: "error",
         // });
-        // console.log(`${message.severity}: ${message.text}`);
       } finally {
         setLoading(false);
       }

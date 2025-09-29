@@ -17,10 +17,10 @@ import {
 import { useParams } from "react-router-dom";
 import { useTheme, alpha } from "@mui/material";
 import { userAPI } from "../../services/UserServices";
-import { enqueueSnackbar } from "notistack";
 import { getCurrentUser } from "../../utils/auth";
 import TeamCard from "../../components/team/TeamCard";
 import { styleInnerScrollBar } from "../../styles/styles";
+import showMessage from "../../utils/message";
 
 export default function User() {
   const { user_id } = useParams();
@@ -38,7 +38,6 @@ export default function User() {
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  // const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   // const [message, setMessage] = useState({
   //   open: false,
   //   text: "",
@@ -67,27 +66,21 @@ export default function User() {
           setExperience(res.data.experience);
           setSpecialty(res.data.advantage);
         } else {
-          enqueueSnackbar(`获取用户信息失败：${res.message || "未知错误。"}`, {
-            variant: "error",
-          });
+          showMessage(`获取用户信息失败：${res.message || "未知错误。"}`, "error");
           // setMessage({
           //   open: true,
           //   text: `获取用户信息失败：${res.message || "未知错误。"}`,
           //   severity: "error",
           // });
-          // console.log(`${message.severity}: ${message.text}`);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        enqueueSnackbar(`网络错误，请稍后再试。`, {
-          variant: "error",
-        });
+        showMessage(`网络错误，请稍后再试：${err}`, "error");
         // setMessage({
         //   open: true,
         //   text: `网络错误，请稍后再试。`,
         //   severity: "error",
         // });
-        // console.log(`${message.severity}: ${message.text}`);
       } finally {
         setLoading(false);
       }
@@ -117,21 +110,16 @@ export default function User() {
           setPageCount(res.data.total_pages);
           console.log(pageCount);
         } else {
-          enqueueSnackbar(`获取用户队伍失败：${res.message || "未知错误。"}`, {
-            variant: "error",
-          });
+          showMessage(`获取用户队伍失败：${res.message || "未知错误。"}`, "error");
           // setMessage({
           //   open: true,
           //   text: `获取用户队伍失败：${res.message || "未知错误。"}`,
           //   severity: "error",
           // });
-          // console.log(`${message.severity}: ${message.text}`);
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        enqueueSnackbar(`网络错误，请稍后再试。`, {
-          variant: "error",
-        });
+        showMessage(`网络错误，请稍后再试：${err}`, "error");
         // setMessage({
         //   open: true,
         //   text: `网络错误，请稍后再试。`,
@@ -169,36 +157,27 @@ export default function User() {
             };
             localStorage.setItem("user", JSON.stringify(updatedUser));
           }
-          enqueueSnackbar(`用户信息已更新！`, {
-            variant: "success",
-          });
+          showMessage("用户信息已更新！", "success");
           // setMessage({
           //   open: true,
           //   text: `用户信息已更新！`,
           //   severity: "success",
           // });
-          // console.log(`${message.severity}: ${message.text}`);
         } else {
-          enqueueSnackbar(`更新用户信息失败：${res.message || "未知错误。"}`, {
-            variant: "error",
-          });
+          showMessage(`更新用户信息失败：${res.message || "未知错误。"}`, "error");
           // setMessage({
           //   open: true,
           //   text: `更新用户信息失败：${res.message || "未知错误。"}`,
           //   severity: "error",
           // });
-          // console.log(`${message.severity}: ${message.text}`);
         }
-      } catch {
-        enqueueSnackbar(`网络错误，请稍后再试。`, {
-          variant: "error",
-        });
+      } catch (err) {
+        showMessage(`网络错误，请稍后再试：${err}`, "error");
         // setMessage({
         //   open: true,
         //   text: `网络错误，请稍后再试。`,
         //   severity: "error",
         // });
-        // console.log(`${message.severity}: ${message.text}`);
       } finally {
         setSaving(false);
         location.reload(true);

@@ -16,8 +16,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { userAPI } from "../../services/UserServices";
-import MessageSnackbar from "../../components/MessageSnackbar";
-import { enqueueSnackbar } from "notistack";
+import showMessage from "../../utils/message";
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({
@@ -28,7 +27,7 @@ const CreateUser = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  
+
   // const [message, setMessage] = useState({
   //   open: false,
   //   text: "",
@@ -70,9 +69,7 @@ const CreateUser = () => {
     for (const field in validations) {
       const { method, message } = validations[field];
       if (!method(formData[field])) {
-        enqueueSnackbar(message, {
-          variant: "warning",
-        });
+        showMessage(message, "warning", false);
         // setMessage({
         //   open: true,
         //   text: message,
@@ -86,9 +83,7 @@ const CreateUser = () => {
 
     try {
       await userAPI.register(formData);
-      enqueueSnackbar("用户创建成功！", {
-        variant: "success",
-      });
+      showMessage("用户创建成功！", "success");
       // setMessage({
       //   open: true,
       //   text: "用户创建成功！",
@@ -102,13 +97,10 @@ const CreateUser = () => {
         password: "",
       });
     } catch (error) {
-      enqueueSnackbar(`创建用户失败: ${error.response?.data?.detail || error.message}`, {
-        variant: "error",
-      });
-      console.error("创建用户失败:", error.message);
+      showMessage( `创建用户失败：${error.response?.data?.detail || error.message}`, "error");
       // setMessage({
       //   open: true,
-      //   text: `创建用户失败: ${error.response?.data?.detail || error.message}`,
+      //   text: `创建用户失败：${error.response?.data?.detail || error.message}`,
       //   severity: "error",
       // });
     } finally {

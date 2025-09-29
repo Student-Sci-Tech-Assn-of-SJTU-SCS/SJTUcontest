@@ -12,14 +12,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { contestAPI } from "../../services/MatchServices";
+import showMessage from "../../utils/message";
 
-const ViewMatches = () => {
+const ViewContests = () => {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({
-    open: false,
-    text: "",
-    severity: "success",
-  });
+  // const [message, setMessage] = useState({
+  //   open: false,
+  //   text: "",
+  //   severity: "success",
+  // });
   const [matches, setMatches] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [pageIndex, setPageIndex] = useState(1);
@@ -39,19 +40,21 @@ const ViewMatches = () => {
           setMatches(res.data.matches || []);
           setPageCount(res.data.total_pages);
         } else {
-          setMessage({
-            open: true,
-            text: res.message || "未知错误。",
-            severity: "error",
-          });
+          showMessage(`获取比赛数据失败：${res.message || "未知错误。"}`, "error");
+          // setMessage({
+          //   open: true,
+          //   text: res.message || "未知错误。",
+          //   severity: "error",
+          // });
         }
       } catch (err) {
         if (!axios.isCancel(err)) {
-          setMessage({
-            open: true,
-            text: "网络错误，请稍后重试。",
-            severity: "error",
-          });
+          showMessage("网络错误，请稍后重试。", "error");
+          // setMessage({
+          //   open: true,
+          //   text: "网络错误，请稍后重试。",
+          //   severity: "error",
+          // });
         }
       } finally {
         setLoading(false);
@@ -70,24 +73,25 @@ const ViewMatches = () => {
       setMatches((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
       setSelectedIds([]);
 
-      setMessage({
-        open: true,
-        text: "比赛删除成功！",
-        severity: "success",
-      });
+      showMessage("比赛删除成功！", "success");
+      // setMessage({
+      //   open: true,
+      //   text: "比赛删除成功！",
+      //   severity: "success",
+      // });
     } catch (err) {
-      console.error(err);
-      setMessage({
-        open: true,
-        text: "删除失败，请稍后再试。",
-        severity: "error",
-      });
+      showMessage(`删除失败，请稍后再试：${err}`, "error");
+      // setMessage({
+      //   open: true,
+      //   text: "删除失败，请稍后再试。",
+      //   severity: "error",
+      // });
     }
   };
 
-  const handleCloseMessage = () => {
-    setMessage({ ...message, open: false });
-  };
+  // const handleCloseMessage = () => {
+  //   setMessage({ ...message, open: false });
+  // };
 
   const columns = [
     { field: "id", headerName: "UUID", width: 100 },
@@ -178,7 +182,7 @@ const ViewMatches = () => {
         </>
       )}
 
-      <Snackbar
+      {/* <Snackbar
         open={message.open}
         autoHideDuration={6000}
         onClose={handleCloseMessage}
@@ -190,9 +194,9 @@ const ViewMatches = () => {
         >
           {message.text}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </Box>
   );
 };
 
-export default ViewMatches;
+export default ViewContests;

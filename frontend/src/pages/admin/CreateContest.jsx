@@ -22,6 +22,7 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { contestAPI } from "../../services/MatchServices";
+import showMessage from "../../utils/message";
 
 // 从后端 choices.py 映射的选项
 const CONTEST_LEVELS = [
@@ -83,11 +84,11 @@ const CreateContest = () => {
 
   const [materialInput, setMaterialInput] = useState({ name: "", url: "" });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({
-    open: false,
-    text: "",
-    severity: "success",
-  });
+  // const [message, setMessage] = useState({
+  //   open: false,
+  //   text: "",
+  //   severity: "success",
+  // });
   const [logoPreview, setLogoPreview] = useState("");
 
   const handleInputChange = (field) => (event) => {
@@ -122,21 +123,25 @@ const CreateContest = () => {
     if (file) {
       // 检查文件类型
       if (!file.type.startsWith("image/")) {
-        setMessage({
-          open: true,
-          text: "请选择图片文件",
-          severity: "error",
-        });
+
+        // 没有造成实质性错误，建议为warning
+        showMessage("请选择图片文件", "warning", false);
+        // setMessage({
+        //   open: true,
+        //   text: "请选择图片文件",
+        //   severity: "error",
+        // });
         return;
       }
 
       // 检查文件大小 (限制为2MB)
       if (file.size > 2 * 1024 * 1024) {
-        setMessage({
-          open: true,
-          text: "图片文件大小不能超过2MB",
-          severity: "error",
-        });
+        showMessage("图片文件大小不能超过2MB", "warning", false);
+        // setMessage({
+        //   open: true,
+        //   text: "图片文件大小不能超过2MB",
+        //   severity: "error",
+        // });
         return;
       }
 
@@ -172,11 +177,13 @@ const CreateContest = () => {
       };
 
       await contestAPI.createContest(submitData);
-      setMessage({
-        open: true,
-        text: "比赛创建成功！",
-        severity: "success",
-      });
+
+      showMessage("比赛创建成功！", "success");
+      // setMessage({
+      //   open: true,
+      //   text: "比赛创建成功！",
+      //   severity: "success",
+      // });
 
       // 重置表单
       setFormData({
@@ -196,20 +203,21 @@ const CreateContest = () => {
       });
       setLogoPreview("");
     } catch (error) {
-      console.error("创建比赛失败:", error);
-      setMessage({
-        open: true,
-        text: `创建比赛失败: ${error.response?.data?.detail || error.message}`,
-        severity: "error",
-      });
+      showMessage(`创建比赛失败：${error.response?.data?.detail || error.message}`, "error");
+      // console.error(`创建比赛失败：${error.response?.data?.detail || error.message}`);
+      // setMessage({
+      //   open: true,
+      //   text: `创建比赛失败：${error.response?.data?.detail || error.message}`,
+      //   severity: "error",
+      // });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCloseMessage = () => {
-    setMessage({ ...message, open: false });
-  };
+  // const handleCloseMessage = () => {
+  //   setMessage({ ...message, open: false });
+  // };
 
   return (
     <Box>
@@ -491,7 +499,7 @@ const CreateContest = () => {
         </CardContent>
       </Card>
 
-      <Snackbar
+      {/* <Snackbar
         open={message.open}
         autoHideDuration={6000}
         onClose={handleCloseMessage}
@@ -503,7 +511,7 @@ const CreateContest = () => {
         >
           {message.text}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </Box>
   );
 };
