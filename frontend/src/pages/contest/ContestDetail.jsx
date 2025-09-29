@@ -71,7 +71,10 @@ export default function ContestDetail() {
         if (res.success) {
           setContest(res.data);
         } else {
-          showMessage(`获取比赛信息失败：${res.message || "未知错误。"}`, "error");
+          showMessage(
+            `获取比赛信息失败：${res.message || "未知错误。"}`,
+            "error",
+          );
           // setMessage({
           //   open: true,
           //   text: `获取比赛信息失败：${res.message || "未知错误。"}`,
@@ -202,7 +205,11 @@ export default function ContestDetail() {
             <Grid container spacing={3} sx={{ mb: 3 }}>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  <strong>报名时间：</strong> {getRegTime(contest.registration_start, contest.registration_end)}
+                  <strong>报名时间：</strong>{" "}
+                  {getRegTime(
+                    contest.registration_start,
+                    contest.registration_end,
+                  )}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -212,12 +219,14 @@ export default function ContestDetail() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  <strong>赛事级别：</strong> {nameToTag(contest.level).description}
+                  <strong>赛事级别：</strong>{" "}
+                  {nameToTag(contest.level).description}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  <strong>素拓等级：</strong> {nameToTag(contest.quality).description}
+                  <strong>素拓等级：</strong>{" "}
+                  {nameToTag(contest.quality).description}
                 </Typography>
               </Grid>
             </Grid>

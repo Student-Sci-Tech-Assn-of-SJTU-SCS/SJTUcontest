@@ -21,7 +21,7 @@ export const styleInnerScrollBar = (theme) => {
 };
 
 import { styled } from "@mui/material/styles";
-import { MaterialDesignContent } from 'notistack'
+import { MaterialDesignContent } from "notistack";
 
 export const styleSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
   fontWeight: 500,
@@ -52,4 +52,3 @@ export const styleSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     color: theme.palette.text.primary,
   },
 }));
-

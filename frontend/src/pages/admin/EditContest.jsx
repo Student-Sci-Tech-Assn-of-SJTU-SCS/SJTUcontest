@@ -209,7 +209,7 @@ const ContestEdit = () => {
       };
 
       await contestAPI.updateContest(contest_id, submitData);
-      
+
       showMessage("比赛更新成功！", "success");
       // setMessage({
       //   open: true,
@@ -217,7 +217,10 @@ const ContestEdit = () => {
       //   severity: "success",
       // });
     } catch (error) {
-      showMessage(`比赛更新失败：${error.response?.data?.detail || error.message}`, "error");
+      showMessage(
+        `比赛更新失败：${error.response?.data?.detail || error.message}`,
+        "error",
+      );
       // setMessage({
       //   open: true,
       //   text: `更新失败：${error.response?.data?.detail || error.message}`,

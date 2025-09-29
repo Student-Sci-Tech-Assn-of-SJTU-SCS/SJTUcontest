@@ -7,7 +7,12 @@ import { enqueueSnackbar } from "notistack";
  * log: 是否在控制台打印该消息，默认为 true
  * options: 其他 notistack 支持的选项
  */
-export default function showMessage({ message, variant, log = true, options = {} } = {}) {
+export default function showMessage({
+  message,
+  variant,
+  log = true,
+  options = {},
+} = {}) {
   enqueueSnackbar(message, {
     variant: variant,
     ...options,
@@ -15,13 +20,17 @@ export default function showMessage({ message, variant, log = true, options = {}
   if (log) {
     switch (variant) {
       case "success":
-        console.log(message); break;
+        console.log(message);
+        break;
       case "warning":
-        console.warn(message); break;
+        console.warn(message);
+        break;
       case "error":
-        console.error(message); break;
+        console.error(message);
+        break;
       case "info":
-        console.info(message); break;
+        console.info(message);
+        break;
       default:
         console.log(message);
     }

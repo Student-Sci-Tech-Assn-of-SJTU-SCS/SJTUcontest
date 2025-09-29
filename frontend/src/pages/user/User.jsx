@@ -66,7 +66,10 @@ export default function User() {
           setExperience(res.data.experience);
           setSpecialty(res.data.advantage);
         } else {
-          showMessage(`获取用户信息失败：${res.message || "未知错误。"}`, "error");
+          showMessage(
+            `获取用户信息失败：${res.message || "未知错误。"}`,
+            "error",
+          );
           // setMessage({
           //   open: true,
           //   text: `获取用户信息失败：${res.message || "未知错误。"}`,
@@ -110,7 +113,10 @@ export default function User() {
           setPageCount(res.data.total_pages);
           console.log(pageCount);
         } else {
-          showMessage(`获取用户队伍失败：${res.message || "未知错误。"}`, "error");
+          showMessage(
+            `获取用户队伍失败：${res.message || "未知错误。"}`,
+            "error",
+          );
           // setMessage({
           //   open: true,
           //   text: `获取用户队伍失败：${res.message || "未知错误。"}`,
@@ -164,7 +170,10 @@ export default function User() {
           //   severity: "success",
           // });
         } else {
-          showMessage(`更新用户信息失败：${res.message || "未知错误。"}`, "error");
+          showMessage(
+            `更新用户信息失败：${res.message || "未知错误。"}`,
+            "error",
+          );
           // setMessage({
           //   open: true,
           //   text: `更新用户信息失败：${res.message || "未知错误。"}`,

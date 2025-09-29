@@ -97,7 +97,10 @@ const CreateUser = () => {
         password: "",
       });
     } catch (error) {
-      showMessage( `创建用户失败：${error.response?.data?.detail || error.message}`, "error");
+      showMessage(
+        `创建用户失败：${error.response?.data?.detail || error.message}`,
+        "error",
+      );
       // setMessage({
       //   open: true,
       //   text: `创建用户失败：${error.response?.data?.detail || error.message}`,

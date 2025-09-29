@@ -123,7 +123,6 @@ const CreateContest = () => {
     if (file) {
       // 检查文件类型
       if (!file.type.startsWith("image/")) {
-
         // 没有造成实质性错误，建议为warning
         showMessage("请选择图片文件", "warning", false);
         // setMessage({
@@ -203,7 +202,10 @@ const CreateContest = () => {
       });
       setLogoPreview("");
     } catch (error) {
-      showMessage(`创建比赛失败：${error.response?.data?.detail || error.message}`, "error");
+      showMessage(
+        `创建比赛失败：${error.response?.data?.detail || error.message}`,
+        "error",
+      );
       // console.error(`创建比赛失败：${error.response?.data?.detail || error.message}`);
       // setMessage({
       //   open: true,

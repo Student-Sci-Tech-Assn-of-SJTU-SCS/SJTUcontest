@@ -40,7 +40,10 @@ const ViewContests = () => {
           setContests(res.data.contests || []);
           setPageCount(res.data.total_pages);
         } else {
-          showMessage(`获取比赛数据失败：${res.message || "未知错误。"}`, "error");
+          showMessage(
+            `获取比赛数据失败：${res.message || "未知错误。"}`,
+            "error",
+          );
           // setMessage({
           //   open: true,
           //   text: res.message || "未知错误。",
