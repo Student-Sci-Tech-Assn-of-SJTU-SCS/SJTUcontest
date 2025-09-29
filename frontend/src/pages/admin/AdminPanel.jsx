@@ -45,7 +45,7 @@ const AdminPanel = () => {
     {
       text: "管理比赛",
       icon: <EditIcon />,
-      path: "/admin/view-matches",
+      path: "/admin/view-contests",
     },
     {
       text: "轮播管理",

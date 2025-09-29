@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
-import { contestAPI } from "../../services/MatchServices";
+import { contestAPI } from "../../services/ContestServices";
 import TagGroup from "../../components/TagGroup";
 import { nameToTag } from "../../components/Tag";
 import showMessage from "../../utils/message";
@@ -34,9 +34,9 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   letterSpacing: 1,
 }));
 
-export default function MatchDetail() {
-  const { match_id } = useParams();
-  const [match, setMatch] = useState(null);
+export default function ContestDetail() {
+  const { contest_id } = useParams();
+  const [contest, setContest] = useState(null);
   const [loading, setLoading] = useState(true);
   // const [message, setMessage] = useState({
   //   open: false,
@@ -61,15 +61,15 @@ export default function MatchDetail() {
   };
 
   useEffect(() => {
-    const fetchMatchDetail = async () => {
+    const fetchContestDetail = async () => {
       const controller = new AbortController();
       setLoading(true);
 
       try {
-        const res = await contestAPI.getContestDetail(match_id);
+        const res = await contestAPI.getContestDetail(contest_id);
 
         if (res.success) {
-          setMatch(res.data);
+          setContest(res.data);
         } else {
           showMessage(`获取比赛信息失败：${res.message || "未知错误。"}`, "error");
           // setMessage({
@@ -93,8 +93,8 @@ export default function MatchDetail() {
       return () => controller.abort();
     };
 
-    fetchMatchDetail();
-  }, [match_id]);
+    fetchContestDetail();
+  }, [contest_id]);
 
   // const handleCloseMessage = () => {
   //   setMessage({ ...message, open: false });
@@ -108,7 +108,7 @@ export default function MatchDetail() {
     );
   }
 
-  if (!match) {
+  if (!contest) {
     return (
       <>
         <Typography color="error" align="center" sx={{ mt: 5 }}>
@@ -173,7 +173,7 @@ export default function MatchDetail() {
                   whiteSpace: "nowrap",
                 }}
               >
-                {match.name}
+                {contest.name}
               </Typography>
               <Button
                 variant="contained"
@@ -192,7 +192,7 @@ export default function MatchDetail() {
                     boxShadow: `0 12px 32px ${alpha(theme.palette.primary.main, 0.25)}`,
                   },
                 }}
-                onClick={() => navigate(`/matches/${match.id}/teams`)}
+                onClick={() => navigate(`/contests/${contest.id}/teams`)}
               >
                 寻找参赛团队
               </Button>
@@ -202,22 +202,22 @@ export default function MatchDetail() {
             <Grid container spacing={3} sx={{ mb: 3 }}>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  <strong>报名时间：</strong> {getRegTime(match.registration_start, match.registration_end)}
+                  <strong>报名时间：</strong> {getRegTime(contest.registration_start, contest.registration_end)}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  <strong>地点：</strong> {match.place}
+                  <strong>地点：</strong> {contest.place}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  <strong>赛事级别：</strong> {nameToTag(match.level).description}
+                  <strong>赛事级别：</strong> {nameToTag(contest.level).description}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  <strong>素拓等级：</strong> {nameToTag(match.quality).description}
+                  <strong>素拓等级：</strong> {nameToTag(contest.quality).description}
                 </Typography>
               </Grid>
             </Grid>
@@ -234,7 +234,7 @@ export default function MatchDetail() {
               <SectionTitle variant="h6">关键词</SectionTitle>
               <Box sx={{ width: "fit-content" }}>
                 <TagGroup
-                  tags={match.keywords.map((keyword) => nameToTag(keyword))}
+                  tags={contest.keywords.map((keyword) => nameToTag(keyword))}
                 />
               </Box>
             </Box>
@@ -251,16 +251,16 @@ export default function MatchDetail() {
                   mb: 1,
                 }}
               >
-                {match.description}
+                {contest.description}
               </Typography>
             </Box>
 
             {/* 官网链接 */}
-            {match.website && (
+            {contest.website && (
               <Box sx={{ mb: 3 }}>
                 <SectionTitle variant="h6">官网链接</SectionTitle>
                 <Link
-                  href={match.website}
+                  href={contest.website}
                   target="_blank"
                   rel="noopener"
                   underline="hover"
@@ -275,17 +275,17 @@ export default function MatchDetail() {
                     },
                   }}
                 >
-                  {match.website}
+                  {contest.website}
                 </Link>
               </Box>
             )}
 
             {/* 学习资料 */}
-            {match.materials.length > 0 && (
+            {contest.materials.length > 0 && (
               <Box sx={{ mb: 3 }}>
                 <SectionTitle variant="h6">学习资料</SectionTitle>
                 <Stack spacing={1}>
-                  {match.materials.map((m) => (
+                  {contest.materials.map((m) => (
                     <Link
                       key={m.url}
                       href={m.url}

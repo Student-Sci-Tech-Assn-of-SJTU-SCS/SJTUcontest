@@ -164,7 +164,7 @@ const Home = () => {
                 color="primary"
                 size="large"
                 startIcon={<ContestIcon />}
-                onClick={() => navigate("/matches")}
+                onClick={() => navigate("/contests")}
                 sx={{
                   borderRadius: 20,
                   px: 5,

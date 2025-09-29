@@ -8,8 +8,8 @@ import Login from "./pages/Login";
 import JAccount from "./pages/JAccount";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
-import Matches from "./pages/match/Matches";
-import MatchDetail from "./pages/match/MatchDetail";
+import Contests from "./pages/contest/Contests";
+import ContestDetail from "./pages/contest/ContestDetail";
 import Teams from "./pages/team/Teams";
 import User from "./pages/user/User";
 import Error from "./pages/Error";
@@ -20,8 +20,8 @@ import AdminPanel from "./pages/admin/AdminPanel.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import CreateContest from "./pages/admin/CreateContest.jsx";
 import CreateUser from "./pages/admin/CreateUser.jsx";
-import ViewMatches from "./pages/admin/ViewMatches.jsx";
-import MatchEdit from "./pages/admin/EditMatch.jsx";
+import ViewContests from "./pages/admin/ViewContests.jsx";
+import ContestEdit from "./pages/admin/EditContest.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
 
 const Router = createBrowserRouter([
@@ -45,12 +45,12 @@ const Router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "matches",
-        element: <Matches />,
+        path: "contests",
+        element: <Contests />,
       },
       {
-        path: "matches/:match_id",
-        element: <MatchDetail />,
+        path: "contests/:contest_id",
+        element: <ContestDetail />,
       },
       {
         path: "teams",
@@ -61,7 +61,7 @@ const Router = createBrowserRouter([
         ),
       },
       {
-        path: "matches/:match_id/teams",
+        path: "contests/:contest_id/teams",
         element: (
           <PrivateRoute>
             <Teams />
@@ -105,12 +105,12 @@ const Router = createBrowserRouter([
             element: <CreateUser />,
           },
           {
-            path: "view-matches",
-            element: <ViewMatches />,
+            path: "view-contests",
+            element: <ViewContests />,
           },
           {
-            path: "edit-match/:match_id",
-            element: <MatchEdit />,
+            path: "edit-contest/:contest_id",
+            element: <ContestEdit />,
           },
           {
             path: "manage-news",

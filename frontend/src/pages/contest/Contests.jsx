@@ -8,17 +8,17 @@ import {
   useTheme,
   alpha,
 } from "@mui/material";
-import MatchSearchBar from "../../components/MatchSearchBar";
-import MatchCard from "../../components/MatchCard";
+import ContestSearchBar from "../../components/ContestSearchBar";
+import ContestCard from "../../components/ContestCard";
 import { useState, useEffect } from "react";
 import { categories } from "../../components/Tag";
 import { useMediaQuery } from "@mui/material";
 import { createFadeInAnim } from "../../styles/animations";
 
 import axios from "axios";
-import { contestAPI } from "../../services/MatchServices";
+import { contestAPI } from "../../services/ContestServices";
 
-const Matches = () => {
+const Contests = () => {
   const theme = useTheme();
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState({
@@ -44,11 +44,11 @@ const Matches = () => {
   // const pageSize = sm ? 3 : md ? 6 : lg ? 9 : 12;
   // const pageSize = 1; // 调试用
 
-  const [matches, setMatches] = useState([]);
+  const [contests, setContests] = useState([]);
 
   // 后端请求
   useEffect(() => {
-    const fetchMatches = async () => {
+    const fetchContests = async () => {
       const controller = new AbortController();
       setLoading(true);
       setError("");
@@ -64,7 +64,7 @@ const Matches = () => {
         });
 
         if (res.success) {
-          setMatches(res.data.matches || []);
+          setContests(res.data.matches || []);
           setPageCount(res.data.total_pages);
         } else {
           setError(res.message || "Unknown error.");
@@ -80,7 +80,7 @@ const Matches = () => {
       return () => controller.abort();
     };
 
-    fetchMatches();
+    fetchContests();
   }, [pageIndex, pageSize, search, selectedTags]);
 
   const handleSearchChange = (newSearch) => {
@@ -159,7 +159,7 @@ const Matches = () => {
         }}
       />
 
-      <MatchSearchBar
+      <ContestSearchBar
         search={search}
         onSearchChange={handleSearchChange}
         selectedTags={selectedTags}
@@ -178,7 +178,7 @@ const Matches = () => {
             justifyContent="center"
             alignItems="stretch"
           >
-            {matches.length === 0 ? (
+            {contests.length === 0 ? (
               <Grid size={{ xs: 12 }}>
                 <Box
                   sx={{
@@ -206,9 +206,9 @@ const Matches = () => {
                 </Box>
               </Grid>
             ) : (
-              matches.map((match, idx) => (
+              contests.map((contest, idx) => (
                 <Grid
-                  key={match.id}
+                  key={contest.id}
                   size={{ sm: 12, md: 6 }}
                   display="flex"
                   justifyContent="center"
@@ -239,7 +239,7 @@ const Matches = () => {
                     }),
                   }}
                 >
-                  <MatchCard match={match} />
+                  <ContestCard contest={contest} />
                 </Grid>
               ))
             )}
@@ -267,4 +267,4 @@ const Matches = () => {
   );
 };
 
-export default Matches;
+export default Contests;

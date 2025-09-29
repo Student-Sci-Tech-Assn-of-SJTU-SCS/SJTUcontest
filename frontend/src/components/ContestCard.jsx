@@ -17,19 +17,19 @@ const colorChoices = {
   ended: "rgb(244, 67, 54)",
 };
 
-export default function MatchCard({ match }) {
-  const [matchTimeLabel, setMatchTimeLabel] = useState("");
+export default function ContestCard({ contest }) {
+  const [contestTimeLabel, setContestTimeLabel] = useState("");
   const [statusLabel, setStatusLabel] = useState(""); // 倒计时类型标签
   const [countdown, setCountdown] = useState(""); // 倒计时内容
   const [countdownColor, setCountdownColor] = useState(""); // 倒计时显示颜色
 
   useEffect(() => {
-    if (match.year && match.months) {
-      let monthList = [...match.months, 100];
-      let label = `${String(match.year)}年`;
+    if (contest.year && contest.months) {
+      let monthList = [...contest.months, 100];
+      let label = `${String(contest.year)}年`;
       let yearOffset = 0;
       let consecStart = {
-        year: match.year,
+        year: contest.year,
         month: monthList[0],
       };
       let isJustCrossedYear = false;
@@ -43,7 +43,7 @@ export default function MatchCard({ match }) {
             isJustCrossedYear = false;
           } else if (isJustCrossedYear) {
             // 跨年
-            label += `${isFirst ? "" : "、"}${isJustCrossedYear ? String(consecStart.year) + "年" : ""}${String(consecStart.month)}月-${String(match.year + yearOffset)}年${String(monthList[i - 1])}月`;
+            label += `${isFirst ? "" : "、"}${isJustCrossedYear ? String(consecStart.year) + "年" : ""}${String(consecStart.month)}月-${String(contest.year + yearOffset)}年${String(monthList[i - 1])}月`;
           } else {
             label += `${isFirst ? "" : "、"}${isJustCrossedYear ? String(consecStart.year) + "年" : ""}${String(consecStart.month)}-${String(monthList[i - 1])}月`;
             isJustCrossedYear = false;
@@ -56,22 +56,22 @@ export default function MatchCard({ match }) {
         }
         if (monthList[i] !== (monthList[i - 1] + 1) % 12) {
           consecStart = {
-            year: match.year + yearOffset,
+            year: contest.year + yearOffset,
             month: monthList[i],
           };
         }
       }
-      setMatchTimeLabel(label);
-    } else if (match.year) {
-      setMatchTimeLabel(`${String(match.year)}年`);
+      setContestTimeLabel(label);
+    } else if (contest.year) {
+      setContestTimeLabel(`${String(contest.year)}年`);
     } else {
-      setMatchTimeLabel("时间未定");
+      setContestTimeLabel("时间未定");
     }
-  }, [match.year, match.months]);
+  }, [contest.year, contest.months]);
 
   useEffect(() => {
-    const start = new Date(match.registration_start);
-    const end = new Date(match.registration_end);
+    const start = new Date(contest.registration_start);
+    const end = new Date(contest.registration_end);
     if (isNaN(start) || isNaN(end)) return;
 
     const updateCountdown = () => {
@@ -108,11 +108,11 @@ export default function MatchCard({ match }) {
     updateCountdown();
     const timer = setInterval(updateCountdown, 1000);
     return () => clearInterval(timer);
-  }, [match.registration_start, match.registration_end]);
+  }, [contest.registration_start, contest.registration_end]);
 
   return (
     <Link
-      href={`/matches/${match.id}`}
+      href={`/contests/${contest.id}`}
       underline="none"
       sx={{
         display: "block",
@@ -144,7 +144,7 @@ export default function MatchCard({ match }) {
           sx={{
             position: "absolute",
             inset: 0,
-            backgroundImage: `url(${match.logo})`,
+            backgroundImage: `url(${contest.logo})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             zIndex: 0,
@@ -173,7 +173,7 @@ export default function MatchCard({ match }) {
           {/* 名称 */}
           <Typography
             variant="h6"
-            title={match.name}
+            title={contest.name}
             sx={{
               display: "-webkit-box",
               WebkitLineClamp: 1,
@@ -186,7 +186,7 @@ export default function MatchCard({ match }) {
               mb: 1,
             }}
           >
-            {match.name}
+            {contest.name}
           </Typography>
 
           <Divider sx={{ my: "5px", mx: "auto", width: "calc(100%)" }} />
@@ -194,7 +194,7 @@ export default function MatchCard({ match }) {
           {/* 简介 */}
           <Typography
             variant="body2"
-            title={match.description}
+            title={contest.description}
             sx={{
               display: "-webkit-box",
               WebkitLineClamp: 3,
@@ -206,34 +206,23 @@ export default function MatchCard({ match }) {
               my: "10px",
             }}
           >
-            {match.description || "暂无简介"}
+            {contest.description || "暂无简介"}
           </Typography>
 
           <Box sx={{ flexGrow: 1 }} />
 
           {/* 标签 */}
           <TagGroup
-            tags={[match.level, match.quality, ...match.keywords].map(
+            tags={[contest.level, contest.quality, ...contest.keywords].map(
               (keyword) => nameToTag(keyword),
             )}
             truncate={true}
           />
-          {/* <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, my: 1 }}>
-            {[
-              match.level,
-              match.quality,
-              ...match.keywords,
-              // match.year,
-              // ...match.months,
-            ].map((keyword, idx) => (
-              <Tag key={idx} tag={nameToTag(keyword)} />
-            ))}
-          </Box> */}
 
           {/* 比赛时间 */}
           <Typography
             variant="body2"
-            title={matchTimeLabel}
+            title={contestTimeLabel}
             sx={{
               display: "-webkit-box",
               WebkitLineClamp: 1,
@@ -247,7 +236,7 @@ export default function MatchCard({ match }) {
               mt: 2,
             }}
           >
-            比赛时间：{matchTimeLabel}
+            比赛时间：{contestTimeLabel}
           </Typography>
 
           {/* 倒计时 */}

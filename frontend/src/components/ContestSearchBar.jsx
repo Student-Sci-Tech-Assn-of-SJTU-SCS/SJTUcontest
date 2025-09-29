@@ -16,7 +16,7 @@ import { categories, categoryTags } from "./Tag";
 import TagGroup from "./TagGroup";
 import { createFadeInAnim, createFadeOutAnim } from "../styles/animations";
 
-export default function MatchSearchBar({
+export default function ContestSearchBar({
   search,
   onSearchChange,
   selectedTags,

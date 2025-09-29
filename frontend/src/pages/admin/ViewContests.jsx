@@ -11,7 +11,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { contestAPI } from "../../services/MatchServices";
+import { contestAPI } from "../../services/ContestServices";
 import showMessage from "../../utils/message";
 
 const ViewContests = () => {
@@ -21,7 +21,7 @@ const ViewContests = () => {
   //   text: "",
   //   severity: "success",
   // });
-  const [matches, setMatches] = useState([]);
+  const [contests, setContests] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageCount, setPageCount] = useState(0);
@@ -31,13 +31,13 @@ const ViewContests = () => {
 
   // 获取比赛数据
   useEffect(() => {
-    const fetchMatches = async () => {
+    const fetchContests = async () => {
       setLoading(true);
 
       try {
         const res = await contestAPI.getContests(pageIndex, pageSize, {});
         if (res.success) {
-          setMatches(res.data.matches || []);
+          setContests(res.data.contests || []);
           setPageCount(res.data.total_pages);
         } else {
           showMessage(`获取比赛数据失败：${res.message || "未知错误。"}`, "error");
@@ -60,7 +60,7 @@ const ViewContests = () => {
         setLoading(false);
       }
     };
-    fetchMatches();
+    fetchContests();
   }, [pageIndex, pageSize]);
 
   // 删除所选比赛
@@ -68,9 +68,9 @@ const ViewContests = () => {
     if (selectedIds.length === 0) return;
     try {
       await Promise.all(
-        selectedIds.map((match_id) => contestAPI.deleteContest(match_id)),
+        selectedIds.map((contest_id) => contestAPI.deleteContest(contest_id)),
       );
-      setMatches((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
+      setContests((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
       setSelectedIds([]);
 
       showMessage("比赛删除成功！", "success");
@@ -106,7 +106,7 @@ const ViewContests = () => {
         <Button
           size="small"
           variant="contained"
-          onClick={() => navigate(`/admin/edit-match/${params.row.id}`)}
+          onClick={() => navigate(`/admin/edit-contest/${params.row.id}`)}
         >
           编辑
         </Button>
@@ -151,7 +151,7 @@ const ViewContests = () => {
 
           <div style={{ height: 600, width: "100%" }}>
             <DataGrid
-              rows={matches}
+              rows={contests}
               columns={columns}
               checkboxSelection
               pageSize={pageSize}

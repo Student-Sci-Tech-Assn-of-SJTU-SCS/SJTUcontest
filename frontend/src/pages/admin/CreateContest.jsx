@@ -21,7 +21,7 @@ import {
   CloudUpload as CloudUploadIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { contestAPI } from "../../services/MatchServices";
+import { contestAPI } from "../../services/ContestServices";
 import showMessage from "../../utils/message";
 
 // 从后端 choices.py 映射的选项

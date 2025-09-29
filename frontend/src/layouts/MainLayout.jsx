@@ -281,7 +281,7 @@ const MainLayout = () => {
           >
             <Button
               color="inherit"
-              onClick={() => navigate("/matches")}
+              onClick={() => navigate("/contests")}
               startIcon={<ContestIcon />}
               sx={{
                 borderRadius: 8,
@@ -289,13 +289,13 @@ const MainLayout = () => {
                 py: 1,
                 textTransform: "none",
                 fontWeight: 500,
-                color: isCurrentPage("/matches")
+                color: isCurrentPage("/contests")
                   ? theme.palette.common.white
                   : alpha(theme.palette.common.white, 0.9),
-                backgroundColor: isCurrentPage("/matches")
+                backgroundColor: isCurrentPage("/contests")
                   ? alpha(theme.palette.common.white, 0.15)
                   : "transparent",
-                border: isCurrentPage("/matches")
+                border: isCurrentPage("/contests")
                   ? `1px solid ${alpha(theme.palette.common.white, 0.3)}`
                   : "1px solid transparent",
                 position: "relative",
@@ -304,7 +304,7 @@ const MainLayout = () => {
                   content: '""',
                   position: "absolute",
                   top: 0,
-                  left: isCurrentPage("/matches") ? 0 : "-100%",
+                  left: isCurrentPage("/contests") ? 0 : "-100%",
                   width: "100%",
                   height: "100%",
                   background: `linear-gradient(90deg, 

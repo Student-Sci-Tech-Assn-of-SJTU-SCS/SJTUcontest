@@ -24,7 +24,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 
 import { teamAPI } from "../../services/TeamServices";
-import { contestAPI } from "../../services/MatchServices";
+import { contestAPI } from "../../services/ContestServices";
 
 import EditTeamDialog from "../../components/team/EditTeamDialog";
 
@@ -138,7 +138,7 @@ const TeamDetail = () => {
       await teamAPI.deleteTeam(team_id);
       setSnackbar({ open: true, message: "队伍已删除", severity: "success" });
       const target = team?.contest
-        ? `/matches/${team.contest}/teams`
+        ? `/contests/${team.contest}/teams`
         : "/teams";
       navigate(target, { replace: true });
     } catch (error) {

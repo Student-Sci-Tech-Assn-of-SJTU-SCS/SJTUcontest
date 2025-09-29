@@ -40,7 +40,7 @@ function getNowDateTimeString() {
 }
 
 const Teams = () => {
-  const { match_id } = useParams();
+  const { contest_id } = useParams();
   const [teams, setTeams] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [search, setSearch] = useState("");
@@ -95,9 +95,9 @@ const Teams = () => {
           status: selectedStatus ? [selectedStatus] : [],
         };
 
-        const res = match_id
+        const res = contest_id
           ? await teamAPI.getRecruitingTeamsOfContest(
-              match_id,
+              contest_id,
               pageIndex,
               pageSize,
               filters,
@@ -129,12 +129,12 @@ const Teams = () => {
     };
 
     fetchTeams();
-  }, [match_id, pageIndex, pageSize, search, selectedStatus]);
+  }, [contest_id, pageIndex, pageSize, search, selectedStatus]);
 
   const handleCreateTeam = async (form) => {
     try {
       const resp = await teamAPI.createTeam({
-        contest: match_id,
+        contest: contest_id,
         name: form.name,
         introduction: form.introduction,
         expected_members: Number(form.expected_members),
@@ -183,7 +183,7 @@ const Teams = () => {
         gutterBottom
         sx={{ letterSpacing: 1, color: "#222", textAlign: "center" }}
       >
-        {match_id ? "赛事队伍" : "队伍列表"}
+        {contest_id ? "赛事队伍" : "队伍列表"}
       </Typography>
       <Divider sx={{ mb: 4, mx: "auto", width: 120, borderColor: "#1976d2" }} />
 
@@ -196,7 +196,7 @@ const Teams = () => {
         alignItems="center"
       >
         <Stack direction="row" spacing={1}>
-          {match_id ? (
+          {contest_id ? (
             // 正常显示创建队伍/编辑队伍逻辑
             haveCreatedTeam ? (
               <Button

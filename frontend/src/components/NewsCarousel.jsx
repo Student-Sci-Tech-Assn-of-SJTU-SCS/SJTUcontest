@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Slide, CircularProgress, Alert, Typography } from "@mui/material";
 import { newsAPI } from "../services/NewsServices";
-import MatchCard from "./MatchCard";
+import ContestCard from "./ContestCard";
 
 const INTERVAL = 4000;
 
@@ -138,7 +138,7 @@ export default function NewsCarousel() {
               sx={{
                 width: 520,
                 height: 300,
-                // 禁用MatchCard的hover效果
+                // 禁用ContestCard的hover效果
                 "& .MuiCard-root": {
                   "&:hover": {
                     transform: "none !important",
@@ -147,7 +147,7 @@ export default function NewsCarousel() {
                 },
               }}
             >
-              <MatchCard match={contest} />
+              <ContestCard contest={contest} />
             </Box>
           </Box>
         </Slide>

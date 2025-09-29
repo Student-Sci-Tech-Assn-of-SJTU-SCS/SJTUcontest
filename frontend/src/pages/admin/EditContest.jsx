@@ -22,7 +22,7 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import { contestAPI } from "../../services/MatchServices";
+import { contestAPI } from "../../services/ContestServices";
 import showMessage from "../../utils/message";
 
 // 枚举选项（和 CreateContest 一样）
@@ -67,7 +67,7 @@ const MONTHS = [
 ];
 
 const ContestEdit = () => {
-  const { match_id } = useParams();
+  const { contest_id } = useParams();
   const [formData, setFormData] = useState({
     name: "",
     year: new Date().getFullYear(),
@@ -97,7 +97,7 @@ const ContestEdit = () => {
   useEffect(() => {
     const fetchContest = async () => {
       try {
-        const res = await contestAPI.getContestDetail(match_id);
+        const res = await contestAPI.getContestDetail(contest_id);
         if (res.success) {
           setFormData({
             ...res.data,
@@ -128,7 +128,7 @@ const ContestEdit = () => {
     };
 
     fetchContest();
-  }, [match_id]);
+  }, [contest_id]);
 
   const handleInputChange = (field) => (event) => {
     setFormData({ ...formData, [field]: event.target.value });
@@ -208,7 +208,7 @@ const ContestEdit = () => {
           : null,
       };
 
-      await contestAPI.updateContest(match_id, submitData);
+      await contestAPI.updateContest(contest_id, submitData);
       
       showMessage("比赛更新成功！", "success");
       // setMessage({
