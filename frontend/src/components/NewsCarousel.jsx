@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Slide, CircularProgress, Alert, Typography } from "@mui/material";
 import { newsAPI } from "../services/NewsServices";
 import ContestCard from "./ContestCard";
+import showMessage from "../utils/message";
 
 const INTERVAL = 4000;
 
@@ -21,15 +22,15 @@ export default function NewsCarousel() {
 
         if (response.success) {
           // 提取contest数据
-          const contests =
-            response.data?.map((item) => item.contest).filter(Boolean) || [];
+          const contests = response.data?.map((item) => item.contest).filter(Boolean) || [];
           setNewsItems(contests);
         } else {
-          setError(response.message || "获取新闻失败");
+          setError(`获取新闻失败：${response.message || "未知错误。"}`);
+          showMessage(`获取新闻失败：${response.message || "未知错误。"}`, "error");
         }
       } catch (err) {
-        setError("网络错误，无法获取新闻");
-        console.error("获取新闻失败:", err);
+        setError(`网络错误，获取新闻失败：${err}`);
+        showMessage(`网络错误，获取新闻失败：${err}`, "error");
       } finally {
         setLoading(false);
       }

@@ -17,6 +17,7 @@ import { createFadeInAnim } from "../../styles/animations";
 
 import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
+import showMessage from "../../utils/message";
 
 const Contests = () => {
   const theme = useTheme();
@@ -31,7 +32,7 @@ const Contests = () => {
   const [pageIndex, setPageIndex] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
 
   const sm = useMediaQuery(theme.breakpoints.down("md"));
   const md = useMediaQuery(theme.breakpoints.between("md", "lg"));
@@ -51,7 +52,6 @@ const Contests = () => {
     const fetchContests = async () => {
       const controller = new AbortController();
       setLoading(true);
-      setError("");
 
       try {
         const res = await contestAPI.getContests(pageIndex, pageSize, {
@@ -67,12 +67,13 @@ const Contests = () => {
           setContests(res.data.matches || []);
           setPageCount(res.data.total_pages);
         } else {
-          setError(res.message || "Unknown error.");
-          console.log(error);
+          showMessage(`获取比赛失败：${res.message || "未知错误。"}`, "error");
+          // setError(res.message || "Unknown error.");
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        setError("Network error.");
+        showMessage("获取比赛失败：网络错误。", "error");
+        // setError("Network error.");
       } finally {
         setLoading(false);
       }

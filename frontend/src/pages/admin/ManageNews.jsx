@@ -33,6 +33,7 @@ import {
   Check as CheckIcon,
 } from "@mui/icons-material";
 import { newsAPI } from "../../services/NewsServices";
+import showMessage from "../../utils/message";
 
 const ManageNews = () => {
   const [news, setNews] = useState([]);
@@ -40,11 +41,11 @@ const ManageNews = () => {
   const [loading, setLoading] = useState(false);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [selectedContest, setSelectedContest] = useState("");
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
+  // const [snackbar, setSnackbar] = useState({
+  //   open: false,
+  //   message: "",
+  //   severity: "success",
+  // });
   const [searchTerm, setSearchTerm] = useState("");
 
   // 获取新闻列表
@@ -55,8 +56,9 @@ const ManageNews = () => {
       if (response.success) {
         setNews(response.data || []);
       }
-    } catch (error) {
-      showSnackbar("获取新闻列表失败", "error");
+    } catch (err) {
+      showMessage(`获取新闻列表失败：${err}`, "error");
+      // showSnackbar("获取新闻列表失败", "err");
     } finally {
       setLoading(false);
     }
@@ -69,8 +71,9 @@ const ManageNews = () => {
       if (response.success) {
         setContests(response.data || []);
       }
-    } catch (error) {
-      showSnackbar("获取比赛列表失败", "error");
+    } catch (err) {
+      showMessage(`获取比赛列表失败：${err}`, "error");
+      // showSnackbar("获取比赛列表失败", "error");
     }
   };
 
@@ -80,14 +83,14 @@ const ManageNews = () => {
   }, []);
 
   // 显示提示信息
-  const showSnackbar = (message, severity = "success") => {
-    setSnackbar({ open: true, message, severity });
-  };
+  // const showSnackbar = (message, severity = "success") => {
+  //   setSnackbar({ open: true, message, severity });
+  // };
 
   // 关闭提示
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
+  // const handleCloseSnackbar = () => {
+  //   setSnackbar({ ...snackbar, open: false });
+  // };
 
   // 删除新闻
   const handleDelete = async (newsId) => {
@@ -98,37 +101,44 @@ const ManageNews = () => {
     try {
       const response = await newsAPI.deleteNews(newsId);
       if (response.success) {
-        showSnackbar("删除成功");
+        showMessage(`删除成功！`, "success");
+        // showSnackbar("删除成功");
         fetchNews();
         fetchContests(); // 刷新比赛列表状态
       } else {
-        showSnackbar(response.message || "删除失败", "error");
+        showMessage(`删除失败：${response.message || "未知错误。"}`, "error");
+        // showSnackbar(response.message || "删除失败", "error");
       }
-    } catch (error) {
-      showSnackbar("删除失败", "error");
+    } catch (err) {
+      showMessage(`删除失败：${err}`, "error");
+      // showSnackbar("删除失败", "error");
     }
   };
 
   // 添加新闻
   const handleAdd = async () => {
     if (!selectedContest) {
-      showSnackbar("请选择一个比赛", "warning");
+      showMessage(`请选择一个比赛`, "warning");
+      // showSnackbar("请选择一个比赛", "warning");
       return;
     }
 
     try {
       const response = await newsAPI.createNews({ contest: selectedContest });
       if (response.success) {
-        showSnackbar("添加成功");
+        showMessage("添加成功", "success");
+        // showSnackbar("添加成功");
         setOpenAddDialog(false);
         setSelectedContest("");
         fetchNews();
         fetchContests(); // 刷新比赛列表状态
       } else {
-        showSnackbar(response.message || "添加失败", "error");
+        showMessage(`添加失败：${response.message || "未知错误。"}`, "error");
+        // showSnackbar(response.message || "添加失败", "error");
       }
-    } catch (error) {
-      showSnackbar("添加失败", "error");
+    } catch (err) {
+      showMessage(`添加失败：${err}`, "error");
+      // showSnackbar("添加失败", "error");
     }
   };
 
@@ -372,7 +382,7 @@ const ManageNews = () => {
       </Dialog>
 
       {/* 提示消息 */}
-      <Snackbar
+      {/* <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
@@ -385,7 +395,7 @@ const ManageNews = () => {
         >
           {snackbar.message}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </Box>
   );
 };
