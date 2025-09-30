@@ -22,11 +22,15 @@ export default function NewsCarousel() {
 
         if (response.success) {
           // 提取contest数据
-          const contests = response.data?.map((item) => item.contest).filter(Boolean) || [];
+          const contests =
+            response.data?.map((item) => item.contest).filter(Boolean) || [];
           setNewsItems(contests);
         } else {
           setError(`获取新闻失败：${response.message || "未知错误。"}`);
-          showMessage(`获取新闻失败：${response.message || "未知错误。"}`, "error");
+          showMessage(
+            `获取新闻失败：${response.message || "未知错误。"}`,
+            "error",
+          );
         }
       } catch (err) {
         setError(`网络错误，获取新闻失败：${err}`);
