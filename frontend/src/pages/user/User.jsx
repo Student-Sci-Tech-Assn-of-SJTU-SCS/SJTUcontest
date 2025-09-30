@@ -216,10 +216,10 @@ export default function User() {
         sx={{
           minHeight: "100vh",
           py: 6,
-          background: `linear-gradient(180deg,
-            ${theme.palette.background.paper} 0%,
-            ${alpha(theme.palette.primary.main, 0.03)} 50%,
-            ${theme.palette.background.paper} 100%)`,
+          // background: `linear-gradient(180deg,
+          //   ${theme.palette.background.paper} 0%,
+          //   ${alpha(theme.palette.primary.main, 0.03)} 50%,
+          //   ${theme.palette.background.paper} 100%)`,
         }}
       >
         <Card
