@@ -104,6 +104,18 @@ const Contests = () => {
     setPageIndex(1);
   };
 
+  const handleClearAll = () => {
+    setSearch("");
+    setSelectedTags({
+      [categories.LEVEL]: [],
+      [categories.QUAL]: [],
+      [categories.KWORD]: [],
+      [categories.YEAR]: [],
+      [categories.MONTH]: [],
+    });
+    setPageIndex(1);
+  }
+
   useEffect(() => {
     setPageIndex(1);
   }, [pageSize]);
@@ -165,6 +177,7 @@ const Contests = () => {
         onSearchChange={handleSearchChange}
         selectedTags={selectedTags}
         onTagClick={handleTagClick}
+        onClearAll={handleClearAll}
       />
 
       {loading ? (

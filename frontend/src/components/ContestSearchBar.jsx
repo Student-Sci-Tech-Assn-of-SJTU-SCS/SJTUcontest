@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import SearchIcon from '@mui/icons-material/Search';
 import { useState } from "react";
 import { categories, categoryTags } from "./Tag";
 import TagGroup from "./TagGroup";
@@ -20,10 +21,12 @@ export default function ContestSearchBar({
   search,
   onSearchChange,
   selectedTags,
-  onTagClick,
+  onTagClick = () => {},
+  onClearAll = () => {},
 }) {
   const [expanded, setExpanded] = useState(false);
   const theme = useTheme();
+  // const 
 
   return (
     <Box
@@ -70,7 +73,8 @@ export default function ContestSearchBar({
           onClick={() => setExpanded((prev) => !prev)}
           variant="contained"
           size="medium"
-          startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          // startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          startIcon={<SearchIcon/>}
           sx={{
             height: "40px",
             whiteSpace: "nowrap",
@@ -86,9 +90,41 @@ export default function ContestSearchBar({
               boxShadow: `0 6px 18px ${alpha(theme.palette.primary.main, 0.18)}`,
               transform: "scale(1.04)",
             },
+            "::after": {
+              content: '"/"',
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "20px",
+              height: "20px",
+              px: "8px",
+              ml: "10px",
+              backgroundColor: alpha("#fff", 0.5),
+              borderRadius: "4px",
+            },
           }}
         >
-          {expanded ? "收起筛选" : "展开筛选"}
+          {/* {expanded ? "收起筛选" : "展开筛选"} */}
+          展开筛选
+        </Button>
+        <Button
+          size="small"
+          color="error"
+          variant="outlined"
+          onClick={onClearAll}
+          sx={{
+            height: "40px",
+            whiteSpace: "nowrap",
+            px: "16px",
+            borderRadius: 3,
+            transition: "all 0.2s",
+            "&:hover": {
+              border: "1px solid #c62828",
+              transform: "scale(1.04)",
+            }
+          }}
+        >
+          清除筛选
         </Button>
       </Stack>
 
