@@ -1,22 +1,18 @@
 import { enqueueSnackbar } from "notistack";
 
 /**
- * 可全局调用的消息临时弹窗
+ * showMessage(message, variant, log, options)): 可全局调用的消息临时弹窗
  * message: 消息的内容
  * variant: 消息的类型，可选值 "error" | "success" | "warning" | "info" | "default"
  * log: 是否在控制台打印该消息，默认为 true
  * options: 其他 notistack 支持的选项
  */
-export default function showMessage({
+export default function showMessage(
   message,
-  variant,
+  variant = "default",
   log = true,
   options = {},
-} = {}) {
-  enqueueSnackbar(message, {
-    variant: variant,
-    ...options,
-  });
+) {
   if (log) {
     switch (variant) {
       case "success":
@@ -35,4 +31,8 @@ export default function showMessage({
         console.log(message);
     }
   }
+  enqueueSnackbar(message, {
+    variant: variant,
+    ...options,
+  });
 }

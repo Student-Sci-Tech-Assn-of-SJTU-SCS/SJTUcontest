@@ -63,7 +63,7 @@ const Contests = () => {
           months: selectedTags[categories.MONTH].map((tag) => tag.name),
         });
 
-        if (res.data.success) {
+        if (res.success) {
           setContests(res.data.matches || []);
           setPageCount(res.data.total_pages);
         } else {
