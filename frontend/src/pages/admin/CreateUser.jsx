@@ -6,8 +6,6 @@ import {
   TextField,
   Button,
   Box,
-  Alert,
-  Snackbar,
   OutlinedInput,
   InputAdornment,
   FormControl,
@@ -15,6 +13,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import axios from "axios";
 import { userAPI } from "../../services/UserServices";
 import showMessage from "../../utils/message";
 
@@ -27,12 +26,6 @@ const CreateUser = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
-
-  // const [message, setMessage] = useState({
-  //   open: false,
-  //   text: "",
-  //   severity: "success",
-  // });
 
   const makeValidator = (regex, message) => ({
     method: (value) => regex.test(value),
@@ -55,7 +48,7 @@ const CreateUser = () => {
   };
 
   const handleInputChange = (field) => (event) => {
-    setFormData({ ...formData, [field]: event.target.value });
+    setFormData({ ...formData, [field]: event.target.value.trim() });
   };
 
   const handleTogglePassword = () => {
@@ -70,50 +63,39 @@ const CreateUser = () => {
       const { method, message } = validations[field];
       if (!method(formData[field])) {
         showMessage(message, "warning", false);
-        // setMessage({
-        //   open: true,
-        //   text: message,
-        //   severity: "warning",
-        // });
         return;
       }
     }
 
+    const controller = new AbortController();
     setLoading(true);
 
     try {
-      await userAPI.register(formData);
-      showMessage("用户创建成功！", "success");
-      // setMessage({
-      //   open: true,
-      //   text: "用户创建成功！",
-      //   severity: "success",
-      // });
+      const res = await userAPI.register(formData, { signal: controller.signal });
 
-      // 重置表单
+      if (res.success) {
+        showMessage("用户创建成功！", "success");
+      } else {
+        showMessage(`创建用户失败：${res.message || "未知错误。"}`, "error");
+      }
+
       setFormData({
         username: "",
         email: "",
         password: "",
       });
     } catch (error) {
+      if (axios.isCancel(error)) return;
       showMessage(
         `创建用户失败：${error.response?.data?.detail || error.message}`,
         "error",
       );
-      // setMessage({
-      //   open: true,
-      //   text: `创建用户失败：${error.response?.data?.detail || error.message}`,
-      //   severity: "error",
-      // });
     } finally {
       setLoading(false);
     }
-  };
 
-  // const handleCloseMessage = () => {
-  //   setMessage({ ...message, open: false });
-  // };
+    return () => controller.abort();
+  };
 
   return (
     <Box>
@@ -189,21 +171,6 @@ const CreateUser = () => {
           </Box>
         </CardContent>
       </Card>
-
-      {/* <MessageSnackbar message={message} onClose={handleCloseMessage} /> */}
-      {/* <Snackbar
-        open={message.open}
-        autoHideDuration={6000}
-        onClose={handleCloseMessage}
-      >
-        <Alert
-          onClose={handleCloseMessage}
-          severity={message.severity}
-          sx={{ width: "100%" }}
-        >
-          {message.text}
-        </Alert>
-      </Snackbar> */}
     </Box>
   );
 };

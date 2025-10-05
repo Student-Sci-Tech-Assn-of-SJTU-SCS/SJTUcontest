@@ -4,8 +4,6 @@ import {
   Divider,
   Button,
   CircularProgress,
-  Alert,
-  Snackbar,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useState, useEffect } from "react";
@@ -16,11 +14,6 @@ import showMessage from "../../utils/message";
 
 const ViewContests = () => {
   const [loading, setLoading] = useState(false);
-  // const [message, setMessage] = useState({
-  //   open: false,
-  //   text: "",
-  //   severity: "success",
-  // });
   const [contests, setContests] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [pageIndex, setPageIndex] = useState(1);
@@ -32,10 +25,11 @@ const ViewContests = () => {
   // 获取比赛数据
   useEffect(() => {
     const fetchContests = async () => {
+      const controller = new AbortController();
       setLoading(true);
 
       try {
-        const res = await contestAPI.getContests(pageIndex, pageSize, {});
+        const res = await contestAPI.getContests(pageIndex, pageSize, { signal: controller.signal });
         if (res.success) {
           setContests(res.data.contests || []);
           setPageCount(res.data.total_pages);
@@ -44,21 +38,10 @@ const ViewContests = () => {
             `获取比赛数据失败：${res.message || "未知错误。"}`,
             "error",
           );
-          // setMessage({
-          //   open: true,
-          //   text: res.message || "未知错误。",
-          //   severity: "error",
-          // });
         }
       } catch (err) {
-        if (!axios.isCancel(err)) {
-          showMessage("网络错误，请稍后重试。", "error");
-          // setMessage({
-          //   open: true,
-          //   text: "网络错误，请稍后重试。",
-          //   severity: "error",
-          // });
-        }
+        if (axios.isCancel(err)) return;
+        showMessage("网络错误，请稍后重试。", "error");
       } finally {
         setLoading(false);
       }
@@ -69,32 +52,24 @@ const ViewContests = () => {
   // 删除所选比赛
   const handleDelete = async () => {
     if (selectedIds.length === 0) return;
+
+    const controller = new AbortController();
+    
     try {
       await Promise.all(
-        selectedIds.map((contest_id) => contestAPI.deleteContest(contest_id)),
+        selectedIds.map((contest_id) => contestAPI.deleteContest(contest_id), { signal: controller.signal })
       );
       setContests((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
       setSelectedIds([]);
 
       showMessage("比赛删除成功！", "success");
-      // setMessage({
-      //   open: true,
-      //   text: "比赛删除成功！",
-      //   severity: "success",
-      // });
     } catch (err) {
+      if (axios.isCancel(err)) return;
       showMessage(`删除失败，请稍后再试：${err}`, "error");
-      // setMessage({
-      //   open: true,
-      //   text: "删除失败，请稍后再试。",
-      //   severity: "error",
-      // });
     }
-  };
 
-  // const handleCloseMessage = () => {
-  //   setMessage({ ...message, open: false });
-  // };
+    return () => controller.abort();
+  };
 
   const columns = [
     { field: "id", headerName: "UUID", width: 100 },
@@ -159,7 +134,6 @@ const ViewContests = () => {
               checkboxSelection
               pageSize={pageSize}
               onRowSelectionModelChange={(model) => {
-                // console.log(`selectedIds of DataGrid: ${Array.from(model.ids)}`);
                 setSelectedIds(Array.from(model.ids));
               }}
               paginationMode="server"
@@ -184,20 +158,6 @@ const ViewContests = () => {
           </div>
         </>
       )}
-
-      {/* <Snackbar
-        open={message.open}
-        autoHideDuration={6000}
-        onClose={handleCloseMessage}
-      >
-        <Alert
-          onClose={handleCloseMessage}
-          severity={message.severity}
-          sx={{ width: "100%" }}
-        >
-          {message.text}
-        </Alert>
-      </Snackbar> */}
     </Box>
   );
 };

@@ -59,9 +59,8 @@ const Contests = () => {
           quality: selectedTags[categories.QUAL].map((tag) => tag.name),
           keywords: selectedTags[categories.KWORD].map((tag) => tag.name),
           years: selectedTags[categories.YEAR].map((tag) => tag.name),
-
           months: selectedTags[categories.MONTH].map((tag) => tag.name),
-        });
+        }, { signal: controller.signal });
 
         if (res.success) {
           setContests(res.data.matches || []);
@@ -70,8 +69,7 @@ const Contests = () => {
           showMessage(`获取比赛失败：${res.message || "未知错误。"}`, "error");
         }
       } catch (err) {
-        console.error(err);
-        // if (axios.isCancel(err)) return;
+        if (axios.isCancel(err)) return;
         showMessage("获取比赛失败：网络错误。", "error");
       } finally {
         setLoading(false);

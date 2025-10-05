@@ -12,8 +12,6 @@ import {
   MenuItem,
   Chip,
   OutlinedInput,
-  Alert,
-  Snackbar,
   IconButton,
   Avatar,
 } from "@mui/material";
@@ -22,6 +20,7 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
 import showMessage from "../../utils/message";
 
@@ -86,18 +85,15 @@ const ContestEdit = () => {
 
   const [materialInput, setMaterialInput] = useState({ name: "", url: "" });
   const [loading, setLoading] = useState(false);
-  // const [message, setMessage] = useState({
-  //   open: false,
-  //   text: "",
-  //   severity: "success",
-  // });
   const [logoPreview, setLogoPreview] = useState("");
 
   // 获取比赛详情
   useEffect(() => {
     const fetchContest = async () => {
+      const controller = new AbortController();
+
       try {
-        const res = await contestAPI.getContestDetail(contest_id);
+        const res = await contestAPI.getContestDetail(contest_id, { signal: controller.signal });
         if (res.success) {
           setFormData({
             ...res.data,
@@ -111,20 +107,13 @@ const ContestEdit = () => {
           setLogoPreview(res.data.logo || "");
         } else {
           showMessage(`获取比赛详情失败：${res.message}`, "error");
-          // setMessage({
-          //   open: true,
-          //   text: res.message || "获取比赛详情失败",
-          //   severity: "error",
-          // });
         }
       } catch (err) {
+        if (axios.isCancel(err)) return;
         showMessage(`网络错误，请稍后再试：${err}`, "error");
-        // setMessage({
-        //   open: true,
-        //   text: "网络错误，无法获取比赛详情",
-        //   severity: "error",
-        // });
       }
+
+      return () => controller.abort();
     };
 
     fetchContest();
@@ -162,20 +151,10 @@ const ContestEdit = () => {
     if (file) {
       if (!file.type.startsWith("image/")) {
         showMessage("请选择图片文件", "warning", false);
-        // setMessage({
-        //   open: true,
-        //   text: "请选择图片文件",
-        //   severity: "error",
-        // });
         return;
       }
       if (file.size > 2 * 1024 * 1024) {
         showMessage("图片文件大小不能超过2MB", "warning", false);
-        // setMessage({
-        //   open: true,
-        //   text: "图片文件大小不能超过2MB",
-        //   severity: "error",
-        // });
         return;
       }
       const reader = new FileReader();
@@ -195,6 +174,7 @@ const ContestEdit = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const controller = new AbortController();
     setLoading(true);
 
     try {
@@ -208,32 +188,25 @@ const ContestEdit = () => {
           : null,
       };
 
-      await contestAPI.updateContest(contest_id, submitData);
+      const res = await contestAPI.updateContest(contest_id, submitData, { signal: controller.signal });
 
-      showMessage("比赛更新成功！", "success");
-      // setMessage({
-      //   open: true,
-      //   text: "比赛更新成功！",
-      //   severity: "success",
-      // });
+      if (res.success) {
+        showMessage("比赛更新成功！", "success");
+      } else {
+        showMessage(`比赛更新失败：${res.message || "未知错误。"}`, "error");
+      }
     } catch (error) {
+      if (axios.isCancel(error)) return;
       showMessage(
         `比赛更新失败：${error.response?.data?.detail || error.message}`,
         "error",
       );
-      // setMessage({
-      //   open: true,
-      //   text: `更新失败：${error.response?.data?.detail || error.message}`,
-      //   severity: "error",
-      // });
     } finally {
       setLoading(false);
     }
-  };
 
-  // const handleCloseMessage = () => {
-  //   setMessage({ ...message, open: false });
-  // };
+    return () => controller.abort();
+  };
 
   return (
     <Box>
@@ -513,20 +486,6 @@ const ContestEdit = () => {
           </Box>
         </CardContent>
       </Card>
-
-      {/* <Snackbar
-        open={message.open}
-        autoHideDuration={6000}
-        onClose={handleCloseMessage}
-      >
-        <Alert
-          onClose={handleCloseMessage}
-          severity={message.severity}
-          sx={{ width: "100%" }}
-        >
-          {message.text}
-        </Alert>
-      </Snackbar> */}
     </Box>
   );
 };
