@@ -33,6 +33,16 @@ const EditTeamDialog = ({
   });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  
+  const toDatetimeLocal = (val) => {
+    if (!val) return "";
+    // 已经是 yyyy-MM-ddTHH:mm 直接返回
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(val)) return val;
+    const d = new Date(val);
+    if (isNaN(d)) return "";
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
 
   // 打开时用父级传入的初始值填充
   useEffect(() => {
@@ -44,7 +54,7 @@ const EditTeamDialog = ({
           typeof initialValues?.expected_members === "number"
             ? initialValues.expected_members
             : 1,
-        recruitment_deadline: initialValues?.recruitment_deadline ?? "",
+        recruitment_deadline: toDatetimeLocal(initialValues?.recruitment_deadline ?? ""),
       });
       setError("");
       setSubmitting(false);
