@@ -1,20 +1,20 @@
 import api from "../utils/api";
 
 export const newsAPI = {
-  getNews: async () => {
-    const response = await api.get("news/all/");
+  getNews: async (config = {}) => {
+    const response = await api.get("news/all/", config);
     return response;
   },
-  createNews: async (data) => {
-    const response = await api.post("news/create/", data);
+  createNews: async (data, config = {}) => {
+    const response = await api.post("news/create/", data, config);
     return response;
   },
-  deleteNews: async (newsId) => {
-    const response = await api.delete(`news/delete/${newsId}/`);
+  deleteNews: async (newsId, config = {}) => {
+    const response = await api.delete(`news/delete/${newsId}/`, config);
     return response;
   },
-  getAllContestsForNews: async () => {
-    const response = await api.get("news/contests/");
+  getAllContestsForNews: async (config = {}) => {
+    const response = await api.get("news/contests/", config);
     return response;
   },
 };
