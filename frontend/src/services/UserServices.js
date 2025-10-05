@@ -8,13 +8,13 @@ import {
 
 // 用户相关API
 export const userAPI = {
-  getjAccountAuthURL: async () => {
-    const response = await api.get("users/jaccount/auth/url/");
+  getjAccountAuthURL: async (config = {}) => {
+    const response = await api.get("users/jaccount/auth/url/", config);
     return response;
   },
 
-  loginByjAccount: async (code) => {
-    const response = await api.post("users/jaccount/login/", { code });
+  loginByjAccount: async (code, config = {}) => {
+    const response = await api.post("users/jaccount/login/", { code }, config);
     const { access, refresh, user } = response;
 
     // 保存tokens和用户信息
@@ -25,8 +25,12 @@ export const userAPI = {
   },
 
   // 登录
-  login: async (username, password) => {
-    const response = await api.post("users/login/", { username, password });
+  login: async (username, password, config = {}) => {
+    const response = await api.post(
+      "users/login/",
+      { username, password },
+      config,
+    );
     const { access, refresh, user } = response;
 
     // 保存tokens和用户信息
@@ -37,44 +41,60 @@ export const userAPI = {
   },
 
   // 注册
-  register: async (username, email, password) => {
-    const response = await api.post("users/register/", {
-      username,
-      email,
-      password,
-    });
+  register: async (username, email, password, config = {}) => {
+    const response = await api.post(
+      "users/register/",
+      {
+        username,
+        email,
+        password,
+      },
+      config,
+    );
     return response;
   },
 
   // 获取用户资料
-  getUserProfile: async (user_id) => {
-    const response = await api.get(`users/${user_id}/`);
+  getUserProfile: async (user_id, config = {}) => {
+    const response = await api.get(`users/${user_id}/`, config);
     return response;
   },
 
   // 获取用户参与队伍
-  getUserTeams: async (page_index, page_size) => {
-    const response = await api.post(`users/my/teams/`, {
-      page_index,
-      page_size,
-    });
+  getUserTeams: async (page_index, page_size, config = {}) => {
+    const response = await api.post(
+      `users/my/teams/`,
+      {
+        page_index,
+        page_size,
+      },
+      config,
+    );
     return response;
   },
 
   // 更新用户资料
-  updateProfile: async (nick_name, experience, advantage) => {
-    const response = await api.post("users/profile/update/", {
-      nick_name,
-      experience,
-      advantage,
-    });
+  updateProfile: async (nick_name, experience, advantage, config = {}) => {
+    const response = await api.post(
+      "users/profile/update/",
+      {
+        nick_name,
+        experience,
+        advantage,
+      },
+      config,
+    );
     return response;
   },
 
   // 登出
-  logout: async () => {
+  logout: async (config = {}) => {
     const refreshToken = getRefreshToken();
-    const response = await api.post("users/logout/", { refresh: refreshToken });
+    const response = await api.post(
+      "users/logout/",
+      { refresh: refreshToken },
+      config,
+    );
     clearAuth();
     return response;
   },

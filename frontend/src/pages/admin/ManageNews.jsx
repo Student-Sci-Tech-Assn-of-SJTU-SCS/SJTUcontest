@@ -21,7 +21,6 @@ import {
   MenuItem,
   Chip,
   Alert,
-  Snackbar,
   CircularProgress,
   TextField,
   InputAdornment,
@@ -34,6 +33,7 @@ import {
 } from "@mui/icons-material";
 import { newsAPI } from "../../services/NewsServices";
 import showMessage from "../../utils/message";
+import axios from "axios";
 
 const ManageNews = () => {
   const [news, setNews] = useState([]);
@@ -41,40 +41,45 @@ const ManageNews = () => {
   const [loading, setLoading] = useState(false);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [selectedContest, setSelectedContest] = useState("");
-  // const [snackbar, setSnackbar] = useState({
-  //   open: false,
-  //   message: "",
-  //   severity: "success",
-  // });
   const [searchTerm, setSearchTerm] = useState("");
 
   // 获取新闻列表
   const fetchNews = async () => {
+    const controller = new AbortController();
+
     try {
       setLoading(true);
-      const response = await newsAPI.getNews();
+      const response = await newsAPI.getNews({ signal: controller.signal });
       if (response.success) {
         setNews(response.data || []);
       }
     } catch (err) {
+      if (axios.isCancel(err)) return;
       showMessage(`获取新闻列表失败：${err}`, "error");
-      // showSnackbar("获取新闻列表失败", "err");
     } finally {
       setLoading(false);
     }
+
+    return () => controller.abort();
   };
 
   // 获取所有比赛列表
   const fetchContests = async () => {
+    const controller = new AbortController();
+
     try {
-      const response = await newsAPI.getAllContestsForNews();
+      const response = await newsAPI.getAllContestsForNews({
+        signal: controller.signal,
+      });
       if (response.success) {
         setContests(response.data || []);
       }
     } catch (err) {
+      if (axios.isCancel(err)) return;
       showMessage(`获取比赛列表失败：${err}`, "error");
-      // showSnackbar("获取比赛列表失败", "error");
     }
+
+    return () => controller.abort();
   };
 
   useEffect(() => {
@@ -82,64 +87,63 @@ const ManageNews = () => {
     fetchContests();
   }, []);
 
-  // 显示提示信息
-  // const showSnackbar = (message, severity = "success") => {
-  //   setSnackbar({ open: true, message, severity });
-  // };
-
-  // 关闭提示
-  // const handleCloseSnackbar = () => {
-  //   setSnackbar({ ...snackbar, open: false });
-  // };
-
   // 删除新闻
   const handleDelete = async (newsId) => {
     if (!window.confirm("确定要从新闻展示中移除这个比赛吗？")) {
       return;
     }
 
+    const controller = new AbortController();
+
     try {
-      const response = await newsAPI.deleteNews(newsId);
+      const response = await newsAPI.deleteNews(newsId, {
+        signal: controller.signal,
+      });
       if (response.success) {
         showMessage(`删除成功！`, "success");
-        // showSnackbar("删除成功");
         fetchNews();
         fetchContests(); // 刷新比赛列表状态
       } else {
         showMessage(`删除失败：${response.message || "未知错误。"}`, "error");
-        // showSnackbar(response.message || "删除失败", "error");
       }
     } catch (err) {
+      if (axios.isCancel(err)) return;
       showMessage(`删除失败：${err}`, "error");
       // showSnackbar("删除失败", "error");
     }
+
+    return () => controller.abort();
   };
 
   // 添加新闻
   const handleAdd = async () => {
     if (!selectedContest) {
       showMessage(`请选择一个比赛`, "warning");
-      // showSnackbar("请选择一个比赛", "warning");
       return;
     }
 
+    const controller = new AbortController();
+
     try {
-      const response = await newsAPI.createNews({ contest: selectedContest });
+      const response = await newsAPI.createNews(
+        { contest: selectedContest },
+        { signal: controller.signal },
+      );
       if (response.success) {
         showMessage("添加成功", "success");
-        // showSnackbar("添加成功");
         setOpenAddDialog(false);
         setSelectedContest("");
         fetchNews();
         fetchContests(); // 刷新比赛列表状态
       } else {
         showMessage(`添加失败：${response.message || "未知错误。"}`, "error");
-        // showSnackbar(response.message || "添加失败", "error");
       }
     } catch (err) {
+      if (axios.isCancel(err)) return;
       showMessage(`添加失败：${err}`, "error");
-      // showSnackbar("添加失败", "error");
     }
+
+    return () => controller.abort();
   };
 
   // 过滤比赛列表
@@ -380,22 +384,6 @@ const ManageNews = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      {/* 提示消息 */}
-      {/* <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar> */}
     </Box>
   );
 };

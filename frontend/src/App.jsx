@@ -23,6 +23,7 @@ import CreateUser from "./pages/admin/CreateUser.jsx";
 import ViewContests from "./pages/admin/ViewContests.jsx";
 import ContestEdit from "./pages/admin/EditContest.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
+import { HotkeysProvider } from "react-hotkeys-hook";
 
 const Router = createBrowserRouter([
   {
@@ -124,22 +125,24 @@ const Router = createBrowserRouter([
 
 function App() {
   return (
-    <SnackbarProvider
-      Components={{
-        success: styleSnackbar,
-        error: styleSnackbar,
-        warning: styleSnackbar,
-        info: styleSnackbar,
-        default: styleSnackbar,
-      }}
-      TransitionComponent={Grow}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "center",
-      }}
-    >
-      <RouterProvider router={Router} />
-    </SnackbarProvider>
+    <HotkeysProvider initiallyActiveScopes={["global"]}>
+      <SnackbarProvider
+        Components={{
+          success: styleSnackbar,
+          error: styleSnackbar,
+          warning: styleSnackbar,
+          info: styleSnackbar,
+          default: styleSnackbar,
+        }}
+        TransitionComponent={Grow}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        <RouterProvider router={Router} />
+      </SnackbarProvider>
+    </HotkeysProvider>
   );
 }
 

@@ -11,8 +11,11 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import SearchIcon from '@mui/icons-material/Search';
-import { useState } from "react";
+import SearchIcon from "@mui/icons-material/Search";
+
+import { useRef, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+
 import { categories, categoryTags } from "./Tag";
 import TagGroup from "./TagGroup";
 import { createFadeInAnim, createFadeOutAnim } from "../styles/animations";
@@ -24,9 +27,38 @@ export default function ContestSearchBar({
   onTagClick = () => {},
   onClearAll = () => {},
 }) {
-  const [expanded, setExpanded] = useState(false);
   const theme = useTheme();
-  // const 
+
+  const [expanded, setExpanded] = useState(false);
+  const inputRef = useRef(null);
+
+  useHotkeys(
+    "/",
+    (e) => {
+      console.log(`‘/’ triggered. expanded=${expanded}`);
+      e.preventDefault();
+      setExpanded(true);
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    },
+    { useKey: true },
+    [],
+  );
+
+  useHotkeys(
+    "esc",
+    (e) => {
+      console.log(`‘Esc’ triggered. expanded=${expanded}`);
+      e.preventDefault();
+      setExpanded(false);
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
+    },
+    { useKey: true, enableOnFormTags: ["INPUT", "TEXTAREA"] },
+    [],
+  );
 
   return (
     <Box
@@ -58,6 +90,7 @@ export default function ContestSearchBar({
           variant="outlined"
           size="small"
           value={search}
+          inputRef={inputRef}
           onChange={(e) => onSearchChange(e.target.value)}
           sx={{
             width: { xs: "90vw", sm: "clamp(250px, 400px, 30%)" },
@@ -73,8 +106,8 @@ export default function ContestSearchBar({
           onClick={() => setExpanded((prev) => !prev)}
           variant="contained"
           size="medium"
-          // startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          startIcon={<SearchIcon/>}
+          startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          // startIcon={<SearchIcon/>}
           sx={{
             height: "40px",
             whiteSpace: "nowrap",
@@ -84,18 +117,18 @@ export default function ContestSearchBar({
             background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
             color: "#fff",
             boxShadow: `0 2px 8px ${alpha(theme.palette.primary.main, 0.12)}`,
-            transition: "all 0.2s",
+            transition: "all ease-in-out 0.2s",
             "&:hover": {
               background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`,
               boxShadow: `0 6px 18px ${alpha(theme.palette.primary.main, 0.18)}`,
               transform: "scale(1.04)",
             },
             "::after": {
-              content: '"/"',
+              content: expanded ? '"Esc"' : '"/"',
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              width: "20px",
+              width: "fit-content",
               height: "20px",
               px: "8px",
               ml: "10px",
@@ -104,8 +137,7 @@ export default function ContestSearchBar({
             },
           }}
         >
-          {/* {expanded ? "收起筛选" : "展开筛选"} */}
-          展开筛选
+          {expanded ? "收起筛选" : "展开筛选"}
         </Button>
         <Button
           size="small"
@@ -121,7 +153,19 @@ export default function ContestSearchBar({
             "&:hover": {
               border: "1px solid #c62828",
               transform: "scale(1.04)",
-            }
+            },
+            // "::after": {
+            //   content: '"Del"',
+            //   display: "inline-flex",
+            //   alignItems: "center",
+            //   justifyContent: "center",
+            //   width: "fit-content",
+            //   height: "20px",
+            //   px: "8px",
+            //   ml: "10px",
+            //   backgroundColor: alpha("#c62828", 0.4),
+            //   borderRadius: "4px",
+            // },
           }}
         >
           清除筛选
@@ -157,7 +201,11 @@ export default function ContestSearchBar({
         <Stack
           direction="column"
           flexWrap="wrap"
-          sx={{ width: "auto", m: 1.5, justifyContent: "flex-start" }}
+          sx={{
+            width: "auto",
+            m: 1.5,
+            justifyContent: "flex-start",
+          }}
         >
           {Object.values(categories).map((cat) => {
             if (cat == categories.UNDEF) {

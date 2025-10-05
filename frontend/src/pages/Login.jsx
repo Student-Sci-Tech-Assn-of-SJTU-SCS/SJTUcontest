@@ -43,13 +43,18 @@ const Login = () => {
     setLoading(true);
     setError("");
 
+    const controller = new AbortController();
+
     try {
       // 调用 UserServices 中的 login 方法
-      await userAPI.login(formData.username, formData.password);
+      await userAPI.login(formData.username, formData.password, {
+        signal: controller.signal,
+      });
 
       // 登录成功，跳转到用户原本想要访问的页面
       navigate(from);
     } catch (err) {
+      if (axios.isCancel(err)) return;
       setError(
         "登录失败，请检查用户名和密码：" +
           (err.response.data.detail || "未知错误"),
@@ -57,6 +62,8 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+
+    return () => controller.abort();
   };
 
   return (

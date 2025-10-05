@@ -12,8 +12,6 @@ import {
   MenuItem,
   Chip,
   OutlinedInput,
-  Alert,
-  Snackbar,
   IconButton,
   Avatar,
 } from "@mui/material";
@@ -21,6 +19,7 @@ import {
   CloudUpload as CloudUploadIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
+import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
 import showMessage from "../../utils/message";
 
@@ -84,11 +83,6 @@ const CreateContest = () => {
 
   const [materialInput, setMaterialInput] = useState({ name: "", url: "" });
   const [loading, setLoading] = useState(false);
-  // const [message, setMessage] = useState({
-  //   open: false,
-  //   text: "",
-  //   severity: "success",
-  // });
   const [logoPreview, setLogoPreview] = useState("");
 
   const handleInputChange = (field) => (event) => {
@@ -125,22 +119,12 @@ const CreateContest = () => {
       if (!file.type.startsWith("image/")) {
         // 没有造成实质性错误，建议为warning
         showMessage("请选择图片文件", "warning", false);
-        // setMessage({
-        //   open: true,
-        //   text: "请选择图片文件",
-        //   severity: "error",
-        // });
         return;
       }
 
       // 检查文件大小 (限制为2MB)
       if (file.size > 2 * 1024 * 1024) {
         showMessage("图片文件大小不能超过2MB", "warning", false);
-        // setMessage({
-        //   open: true,
-        //   text: "图片文件大小不能超过2MB",
-        //   severity: "error",
-        // });
         return;
       }
 
@@ -161,6 +145,7 @@ const CreateContest = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const controller = new AbortController();
     setLoading(true);
 
     try {
@@ -175,14 +160,15 @@ const CreateContest = () => {
           : null,
       };
 
-      await contestAPI.createContest(submitData);
+      const res = await contestAPI.createContest(submitData, {
+        signal: controller.signal,
+      });
 
-      showMessage("比赛创建成功！", "success");
-      // setMessage({
-      //   open: true,
-      //   text: "比赛创建成功！",
-      //   severity: "success",
-      // });
+      if (res.success) {
+        showMessage("比赛创建成功！", "success");
+      } else {
+        showMessage(`创建比赛失败：${res.message || "未知错误。"}`, "error");
+      }
 
       // 重置表单
       setFormData({
@@ -202,24 +188,17 @@ const CreateContest = () => {
       });
       setLogoPreview("");
     } catch (error) {
+      if (axios.isCancel(error)) return;
       showMessage(
-        `创建比赛失败：${error.response?.data?.detail || error.message}`,
+        `创建比赛失败：${error.response?.data?.detail || error.message || "未知错误。"}`,
         "error",
       );
-      // console.error(`创建比赛失败：${error.response?.data?.detail || error.message}`);
-      // setMessage({
-      //   open: true,
-      //   text: `创建比赛失败：${error.response?.data?.detail || error.message}`,
-      //   severity: "error",
-      // });
     } finally {
       setLoading(false);
     }
-  };
 
-  // const handleCloseMessage = () => {
-  //   setMessage({ ...message, open: false });
-  // };
+    return () => controller.abort();
+  };
 
   return (
     <Box>
@@ -500,20 +479,6 @@ const CreateContest = () => {
           </Box>
         </CardContent>
       </Card>
-
-      {/* <Snackbar
-        open={message.open}
-        autoHideDuration={6000}
-        onClose={handleCloseMessage}
-      >
-        <Alert
-          onClose={handleCloseMessage}
-          severity={message.severity}
-          sx={{ width: "100%" }}
-        >
-          {message.text}
-        </Alert>
-      </Snackbar> */}
     </Box>
   );
 };

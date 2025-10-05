@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Slide, CircularProgress, Alert, Typography } from "@mui/material";
+import axios from "axios";
 import { newsAPI } from "../services/NewsServices";
 import ContestCard from "./ContestCard";
 import showMessage from "../utils/message";
@@ -11,14 +12,15 @@ export default function NewsCarousel() {
   const [index, setIndex] = useState(0);
   const [show, setShow] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   // 获取新闻数据
   useEffect(() => {
     const fetchNews = async () => {
+      const controller = new AbortController();
+
       try {
         setLoading(true);
-        const response = await newsAPI.getNews();
+        const response = await newsAPI.getNews({ signal: controller.signal });
 
         if (response.success) {
           // 提取contest数据
@@ -26,18 +28,19 @@ export default function NewsCarousel() {
             response.data?.map((item) => item.contest).filter(Boolean) || [];
           setNewsItems(contests);
         } else {
-          setError(`获取新闻失败：${response.message || "未知错误。"}`);
           showMessage(
             `获取新闻失败：${response.message || "未知错误。"}`,
             "error",
           );
         }
       } catch (err) {
-        setError(`网络错误，获取新闻失败：${err}`);
+        if (axios.isCancel(err)) return;
         showMessage(`网络错误，获取新闻失败：${err}`, "error");
       } finally {
         setLoading(false);
       }
+
+      return () => controller.abort();
     };
 
     fetchNews();
@@ -72,15 +75,6 @@ export default function NewsCarousel() {
         }}
       >
         <CircularProgress />
-      </Box>
-    );
-  }
-
-  // 错误状态
-  if (error) {
-    return (
-      <Box sx={{ width: 550, height: 320, p: 2 }}>
-        <Alert severity="error">{error}</Alert>
       </Box>
     );
   }

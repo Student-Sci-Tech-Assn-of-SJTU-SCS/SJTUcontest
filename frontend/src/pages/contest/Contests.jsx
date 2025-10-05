@@ -32,7 +32,6 @@ const Contests = () => {
   const [pageIndex, setPageIndex] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState("");
 
   const sm = useMediaQuery(theme.breakpoints.down("md"));
   const md = useMediaQuery(theme.breakpoints.between("md", "lg"));
@@ -54,26 +53,29 @@ const Contests = () => {
       setLoading(true);
 
       try {
-        const res = await contestAPI.getContests(pageIndex, pageSize, {
-          query: search.trim(),
-          level: selectedTags[categories.LEVEL].map((tag) => tag.name),
-          quality: selectedTags[categories.QUAL].map((tag) => tag.name),
-          keywords: selectedTags[categories.KWORD].map((tag) => tag.name),
-          years: selectedTags[categories.YEAR].map((tag) => tag.name),
-          months: selectedTags[categories.MONTH].map((tag) => tag.name),
-        });
+        const res = await contestAPI.getContests(
+          pageIndex,
+          pageSize,
+          {
+            query: search.trim(),
+            level: selectedTags[categories.LEVEL].map((tag) => tag.name),
+            quality: selectedTags[categories.QUAL].map((tag) => tag.name),
+            keywords: selectedTags[categories.KWORD].map((tag) => tag.name),
+            years: selectedTags[categories.YEAR].map((tag) => tag.name),
+            months: selectedTags[categories.MONTH].map((tag) => tag.name),
+          },
+          { signal: controller.signal },
+        );
 
         if (res.success) {
           setContests(res.data.matches || []);
           setPageCount(res.data.total_pages);
         } else {
           showMessage(`获取比赛失败：${res.message || "未知错误。"}`, "error");
-          // setError(res.message || "Unknown error.");
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
         showMessage("获取比赛失败：网络错误。", "error");
-        // setError("Network error.");
       } finally {
         setLoading(false);
       }
@@ -114,7 +116,7 @@ const Contests = () => {
       [categories.MONTH]: [],
     });
     setPageIndex(1);
-  }
+  };
 
   useEffect(() => {
     setPageIndex(1);
@@ -191,6 +193,9 @@ const Contests = () => {
             spacing={3}
             justifyContent="center"
             alignItems="stretch"
+            sx={{
+              transition: "all ease-in-out 0.5s",
+            }}
           >
             {contests.length === 0 ? (
               <Grid size={{ xs: 12 }}>
