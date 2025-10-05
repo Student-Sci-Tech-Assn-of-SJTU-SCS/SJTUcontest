@@ -93,7 +93,9 @@ const ContestEdit = () => {
       const controller = new AbortController();
 
       try {
-        const res = await contestAPI.getContestDetail(contest_id, { signal: controller.signal });
+        const res = await contestAPI.getContestDetail(contest_id, {
+          signal: controller.signal,
+        });
         if (res.success) {
           setFormData({
             ...res.data,
@@ -188,7 +190,9 @@ const ContestEdit = () => {
           : null,
       };
 
-      const res = await contestAPI.updateContest(contest_id, submitData, { signal: controller.signal });
+      const res = await contestAPI.updateContest(contest_id, submitData, {
+        signal: controller.signal,
+      });
 
       if (res.success) {
         showMessage("比赛更新成功！", "success");

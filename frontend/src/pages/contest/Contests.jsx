@@ -53,14 +53,19 @@ const Contests = () => {
       setLoading(true);
 
       try {
-        const res = await contestAPI.getContests(pageIndex, pageSize, {
-          query: search.trim(),
-          level: selectedTags[categories.LEVEL].map((tag) => tag.name),
-          quality: selectedTags[categories.QUAL].map((tag) => tag.name),
-          keywords: selectedTags[categories.KWORD].map((tag) => tag.name),
-          years: selectedTags[categories.YEAR].map((tag) => tag.name),
-          months: selectedTags[categories.MONTH].map((tag) => tag.name),
-        }, { signal: controller.signal });
+        const res = await contestAPI.getContests(
+          pageIndex,
+          pageSize,
+          {
+            query: search.trim(),
+            level: selectedTags[categories.LEVEL].map((tag) => tag.name),
+            quality: selectedTags[categories.QUAL].map((tag) => tag.name),
+            keywords: selectedTags[categories.KWORD].map((tag) => tag.name),
+            years: selectedTags[categories.YEAR].map((tag) => tag.name),
+            months: selectedTags[categories.MONTH].map((tag) => tag.name),
+          },
+          { signal: controller.signal },
+        );
 
         if (res.success) {
           setContests(res.data.matches || []);

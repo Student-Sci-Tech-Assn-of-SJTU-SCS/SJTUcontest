@@ -52,7 +52,9 @@ export default function User() {
       setLoading(true);
 
       try {
-        const res = await userAPI.getUserProfile(user_id, { signal: controller.signal });
+        const res = await userAPI.getUserProfile(user_id, {
+          signal: controller.signal,
+        });
 
         if (res.success) {
           setNickname(res.data.nick_name);
@@ -88,7 +90,9 @@ export default function User() {
       setLoading(true);
 
       try {
-        const res = await userAPI.getUserTeams(pageIndex, pageSize, { signal: controller.signal });
+        const res = await userAPI.getUserTeams(pageIndex, pageSize, {
+          signal: controller.signal,
+        });
 
         if (res.success) {
           setUserTeams(res.data.teams || []);
@@ -279,9 +283,7 @@ export default function User() {
               label="特长"
               value={userSpecialty || ""}
               placeholder={
-                userIdentity === "me"
-                  ? "在这里填写您的特长吧！"
-                  : "空空如也……"
+                userIdentity === "me" ? "在这里填写您的特长吧！" : "空空如也……"
               }
               onChange={(e) => setSpecialty(e.target.value)}
               multiline

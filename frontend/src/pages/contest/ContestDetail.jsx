@@ -59,7 +59,9 @@ export default function ContestDetail() {
       setLoading(true);
 
       try {
-        const res = await contestAPI.getContestDetail(contest_id, { signal: controller.signal });
+        const res = await contestAPI.getContestDetail(contest_id, {
+          signal: controller.signal,
+        });
 
         if (res.success) {
           setContest(res.data);

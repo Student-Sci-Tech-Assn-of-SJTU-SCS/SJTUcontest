@@ -47,7 +47,9 @@ const Login = () => {
 
     try {
       // 调用 UserServices 中的 login 方法
-      await userAPI.login(formData.username, formData.password, { signal: controller.signal });
+      await userAPI.login(formData.username, formData.password, {
+        signal: controller.signal,
+      });
 
       // 登录成功，跳转到用户原本想要访问的页面
       navigate(from);

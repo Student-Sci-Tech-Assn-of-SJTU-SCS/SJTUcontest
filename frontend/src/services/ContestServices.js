@@ -4,11 +4,15 @@ import api from "../utils/api";
 export const contestAPI = {
   // 获取赛事列表
   getContests: async (page_index, page_size, options = {}, config = {}) => {
-    const response = await api.post("matches/", {
-      page_index,
-      page_size,
-      options,
-    }, config);
+    const response = await api.post(
+      "matches/",
+      {
+        page_index,
+        page_size,
+        options,
+      },
+      config,
+    );
     return response;
   },
 
@@ -27,7 +31,11 @@ export const contestAPI = {
 
   // 修改比赛
   updateContest: async (match_id, contestData, config = {}) => {
-    const response = await api.post(`matches/${match_id}/update/`, contestData, config);
+    const response = await api.post(
+      `matches/${match_id}/update/`,
+      contestData,
+      config,
+    );
     return response;
   },
 

@@ -160,7 +160,9 @@ const CreateContest = () => {
           : null,
       };
 
-      const res = await contestAPI.createContest(submitData, { signal: controller.signal });
+      const res = await contestAPI.createContest(submitData, {
+        signal: controller.signal,
+      });
 
       if (res.success) {
         showMessage("比赛创建成功！", "success");

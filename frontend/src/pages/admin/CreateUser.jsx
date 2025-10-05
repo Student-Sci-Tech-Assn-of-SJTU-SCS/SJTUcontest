@@ -71,7 +71,9 @@ const CreateUser = () => {
     setLoading(true);
 
     try {
-      const res = await userAPI.register(formData, { signal: controller.signal });
+      const res = await userAPI.register(formData, {
+        signal: controller.signal,
+      });
 
       if (res.success) {
         showMessage("用户创建成功！", "success");

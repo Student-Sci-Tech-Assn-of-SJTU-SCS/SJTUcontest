@@ -4,16 +4,29 @@ import api from "../utils/api";
 export const teamAPI = {
   // 获取正在招募中的队伍
   getRecruitingTeams: async (page_index, page_size, config = {}) => {
-    const response = await api.post("teams/", { page_index, page_size }, config);
+    const response = await api.post(
+      "teams/",
+      { page_index, page_size },
+      config,
+    );
     return response;
   },
 
   // 获取某个比赛正在招募中的队伍
-  getRecruitingTeamsOfContest: async (match_id, page_index, page_size, config = {}) => {
-    const response = await api.post(`matches/${match_id}/teams/`, {
-      page_index,
-      page_size,
-    }, config);
+  getRecruitingTeamsOfContest: async (
+    match_id,
+    page_index,
+    page_size,
+    config = {},
+  ) => {
+    const response = await api.post(
+      `matches/${match_id}/teams/`,
+      {
+        page_index,
+        page_size,
+      },
+      config,
+    );
     return response;
   },
 
@@ -31,9 +44,13 @@ export const teamAPI = {
 
   // 加入队伍
   joinTeam: async (team_id, invitation_code, config = {}) => {
-    const response = await api.post(`teams/${team_id}/join/`, {
-      invitation_code,
-    }, config);
+    const response = await api.post(
+      `teams/${team_id}/join/`,
+      {
+        invitation_code,
+      },
+      config,
+    );
     return response;
   },
 
@@ -52,12 +69,16 @@ export const teamAPI = {
     recruitment_deadline,
     config = {},
   ) => {
-    const response = await api.post(`teams/${team_id}/update/`, {
-      name,
-      introduction,
-      expected_members,
-      recruitment_deadline,
-    }, config);
+    const response = await api.post(
+      `teams/${team_id}/update/`,
+      {
+        name,
+        introduction,
+        expected_members,
+        recruitment_deadline,
+      },
+      config,
+    );
     return response;
   },
 

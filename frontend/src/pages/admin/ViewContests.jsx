@@ -29,7 +29,9 @@ const ViewContests = () => {
       setLoading(true);
 
       try {
-        const res = await contestAPI.getContests(pageIndex, pageSize, { signal: controller.signal });
+        const res = await contestAPI.getContests(pageIndex, pageSize, {
+          signal: controller.signal,
+        });
         if (res.success) {
           setContests(res.data.contests || []);
           setPageCount(res.data.total_pages);
@@ -54,10 +56,12 @@ const ViewContests = () => {
     if (selectedIds.length === 0) return;
 
     const controller = new AbortController();
-    
+
     try {
       await Promise.all(
-        selectedIds.map((contest_id) => contestAPI.deleteContest(contest_id), { signal: controller.signal })
+        selectedIds.map((contest_id) => contestAPI.deleteContest(contest_id), {
+          signal: controller.signal,
+        }),
       );
       setContests((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
       setSelectedIds([]);

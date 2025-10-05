@@ -68,7 +68,9 @@ const ManageNews = () => {
     const controller = new AbortController();
 
     try {
-      const response = await newsAPI.getAllContestsForNews({ signal: controller.signal });
+      const response = await newsAPI.getAllContestsForNews({
+        signal: controller.signal,
+      });
       if (response.success) {
         setContests(response.data || []);
       }
@@ -94,7 +96,9 @@ const ManageNews = () => {
     const controller = new AbortController();
 
     try {
-      const response = await newsAPI.deleteNews(newsId, { signal: controller.signal });
+      const response = await newsAPI.deleteNews(newsId, {
+        signal: controller.signal,
+      });
       if (response.success) {
         showMessage(`删除成功！`, "success");
         fetchNews();
@@ -121,7 +125,10 @@ const ManageNews = () => {
     const controller = new AbortController();
 
     try {
-      const response = await newsAPI.createNews({ contest: selectedContest }, { signal: controller.signal });
+      const response = await newsAPI.createNews(
+        { contest: selectedContest },
+        { signal: controller.signal },
+      );
       if (response.success) {
         showMessage("添加成功", "success");
         setOpenAddDialog(false);
