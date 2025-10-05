@@ -14,6 +14,7 @@ import {
   Button,
   Stack,
   Tooltip,
+  TextField,
 } from "@mui/material";
 
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
@@ -196,6 +197,19 @@ const Teams = () => {
         alignItems="center"
       >
         <Stack direction="row" spacing={1}>
+          <TextField
+            label="搜索队伍名称"
+            size="small"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPageIndex(1); // 输入时重置分页
+            }}
+            placeholder="请输入队伍名称"
+            sx={{ width: 200 }}
+          />
+
+
           {contest_id ? (
             // 正常显示创建队伍/编辑队伍逻辑
             haveCreatedTeam ? (
