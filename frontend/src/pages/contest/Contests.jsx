@@ -191,7 +191,7 @@ const Contests = () => {
           <Grid
             container
             spacing={3}
-            justifyContent="center"
+            justifyContent="space-between"
             alignItems="stretch"
             sx={{
               transition: "all ease-in-out 0.5s",
