@@ -73,7 +73,6 @@ export const categoryTags = {
 };
 
 export function nameToTag(str) {
-  // console.log(`Calling stringToTag(${str}) ...`);
   for (const cat of Reflect.ownKeys(categoryTags)) {
     for (const tag of Object.values(categoryTags[cat])) {
       if (str === tag.name) {

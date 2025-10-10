@@ -13,7 +13,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import SearchIcon from "@mui/icons-material/Search";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { categories, categoryTags } from "./Tag";
@@ -31,6 +31,12 @@ export default function ContestSearchBar({
 
   const [expanded, setExpanded] = useState(false);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("contests_searchBarExpanded") === "true") {
+      setExpanded(true);
+    }
+  }, []);
 
   useHotkeys(
     "/",
@@ -103,7 +109,10 @@ export default function ContestSearchBar({
           }}
         />
         <Button
-          onClick={() => setExpanded((prev) => !prev)}
+          onClick={() => setExpanded((prev) => {
+            sessionStorage.setItem("contests_searchBarExpanded", !prev);  
+            return !prev;
+          })}
           variant="contained"
           size="medium"
           startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
