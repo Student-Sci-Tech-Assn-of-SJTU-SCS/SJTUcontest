@@ -85,8 +85,18 @@ const CreateContest = () => {
   const [loading, setLoading] = useState(false);
   const [logoPreview, setLogoPreview] = useState("");
 
+  useEffect(() => {
+    if (sessionStorage.getItem("admin_create_contest")) {
+      setFormData(JSON.parse(sessionStorage.getItem("admin_create_contest")));
+    }
+  }, []);
+
   const handleInputChange = (field) => (event) => {
     setFormData({ ...formData, [field]: event.target.value });
+    sessionStorage.setItem(
+      "admin_create_contest",
+      JSON.stringify({ ...formData, [field]: event.target.value }),
+    );
   };
 
   const handleMultiSelectChange = (field) => (event) => {
@@ -95,6 +105,10 @@ const CreateContest = () => {
         ? event.target.value.split(",")
         : event.target.value;
     setFormData({ ...formData, [field]: value });
+    sessionStorage.setItem(
+      "admin_create_contest",
+      JSON.stringify({ ...formData, [field]: value }),
+    );
   };
 
   const handleAddMaterial = () => {
@@ -103,6 +117,13 @@ const CreateContest = () => {
         ...formData,
         materials: [...formData.materials, { ...materialInput }],
       });
+      sessionStorage.setItem(
+        "admin_create_contest",
+        JSON.stringify({
+          ...formData,
+          materials: [...formData.materials, { ...materialInput }],
+        }),
+      );
       setMaterialInput({ name: "", url: "" });
     }
   };
@@ -110,6 +131,10 @@ const CreateContest = () => {
   const handleRemoveMaterial = (index) => {
     const newMaterials = formData.materials.filter((_, i) => i !== index);
     setFormData({ ...formData, materials: newMaterials });
+    sessionStorage.setItem(
+      "admin_create_contest",
+      JSON.stringify({ ...formData, materials: newMaterials }),
+    );
   };
 
   const handleImageUpload = (event) => {
@@ -132,6 +157,10 @@ const CreateContest = () => {
       reader.onload = (e) => {
         const base64String = e.target.result;
         setFormData({ ...formData, logo: base64String });
+        sessionStorage.setItem(
+          "admin_create_contest",
+          JSON.stringify({ ...formData, logo: base64String }),
+        );
         setLogoPreview(base64String);
       };
       reader.readAsDataURL(file);
@@ -140,6 +169,10 @@ const CreateContest = () => {
 
   const handleRemoveLogo = () => {
     setFormData({ ...formData, logo: "" });
+    sessionStorage.setItem(
+      "admin_create_contest",
+      JSON.stringify({ ...formData, logo: "" }),
+    );
     setLogoPreview("");
   };
 
@@ -186,6 +219,7 @@ const CreateContest = () => {
         registration_start: "",
         registration_end: "",
       });
+      sessionStorage.removeItem("admin_create_contest");
       setLogoPreview("");
     } catch (error) {
       if (axios.isCancel(error)) return;

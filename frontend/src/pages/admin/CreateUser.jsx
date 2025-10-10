@@ -27,8 +27,8 @@ const CreateUser = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("admin_create_user")) {
-      setFormData(JSON.parse(localStorage.getItem("admin_create_user")));
+    if (sessionStorage.getItem("admin_create_user")) {
+      setFormData(JSON.parse(sessionStorage.getItem("admin_create_user")));
     }
   }, []);
 
@@ -54,7 +54,7 @@ const CreateUser = () => {
 
   const handleInputChange = (field) => (event) => {
     setFormData({ ...formData, [field]: event.target.value.trim() });
-    localStorage.setItem("admin_create_user", JSON.stringify({
+    sessionStorage.setItem("admin_create_user", JSON.stringify({
       ...formData,
       [field]: event.target.value.trim(),
     }));
@@ -95,7 +95,7 @@ const CreateUser = () => {
         email: "",
         password: "",
       });
-      localStorage.removeItem("admin_create_user");
+      sessionStorage.removeItem("admin_create_user");
     } catch (error) {
       if (axios.isCancel(error)) return;
       showMessage(
