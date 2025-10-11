@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useTheme, alpha } from "@mui/material";
+// import { useConfirm } from "material-ui-confirm";
 import { userAPI } from "../../services/UserServices";
 import { getCurrentUser } from "../../utils/auth";
 import TeamCard from "../../components/team/TeamCard";
@@ -23,6 +24,7 @@ import showMessage from "../../utils/message";
 export default function User() {
   const { user_id } = useParams();
   const theme = useTheme();
+  // const confirm = useConfirm();
 
   const [userIdentity, setUserIdentity] = useState("");
   const [userNickname, setNickname] = useState("");
@@ -40,10 +42,11 @@ export default function User() {
   useEffect(() => {
     if (user_id == getCurrentUser().id) {
       setUserIdentity("me");
+      console.log(`This is me.`);
     } else {
       setUserIdentity("other");
+      console.log(`This is someone else.`);
     }
-    console.log(`This is ${userIdentity}`);
   }, [user_id]);
 
   useEffect(() => {
@@ -119,6 +122,22 @@ export default function User() {
   }, [userIdentity]);
 
   const handleSave = async () => {
+    // try {
+    //   await confirm({
+    //     title: "确认保存",
+    //     description: `确定要保存对用户信息的修改吗？`,
+    //     confirmationText: "保存",
+    //     cancellationText: "取消",
+    //     dialogProps: {
+    //       maxWidth: "xs",
+    //     },
+    //   });
+    //   console.log("用户确认保存");
+    // } catch {
+    //   console.log("用户取消保存");
+    //   return;
+    // }
+
     const updateProfile = async () => {
       const controller = new AbortController();
       setSaving(true);
@@ -128,8 +147,14 @@ export default function User() {
           userNickname,
           userExperience,
           userSpecialty,
-          { signal: controller.signal },
+          {
+            signal: controller.signal,
+            validateStatus(status) {
+              return status >= 200 && status < 300 || status === 429;
+            },
+          },
         );
+        console.log(res.message);
         if (res.success) {
           const storedUser = localStorage.getItem("user");
           if (storedUser) {
@@ -141,6 +166,7 @@ export default function User() {
             localStorage.setItem("user", JSON.stringify(updatedUser));
           }
           showMessage("用户信息已更新！", "success");
+          location.reload();
         } else {
           showMessage(
             `更新用户信息失败：${res.message || "未知错误。"}`,
@@ -152,7 +178,6 @@ export default function User() {
         showMessage(`网络错误，请稍后再试：${err}`, "error");
       } finally {
         setSaving(false);
-        location.reload(true);
       }
 
       return () => controller.abort();
@@ -174,10 +199,6 @@ export default function User() {
       sx={{
         minHeight: "100vh",
         py: 6,
-        // background: `linear-gradient(180deg,
-        //   ${theme.palette.background.paper} 0%,
-        //   ${alpha(theme.palette.primary.main, 0.03)} 50%,
-        //   ${theme.palette.background.paper} 100%)`,
       }}
     >
       <Card
@@ -302,35 +323,36 @@ export default function User() {
                 ...styleInnerScrollBar(theme),
               }}
             />
-          </Box>
 
-          {/* 保存按钮 */}
-          {userIdentity === "me" && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              size="medium"
-              sx={{
-                borderRadius: 3,
-                px: 4,
-                py: 1.5,
-                fontWeight: 600,
-                fontSize: "1rem",
-                boxShadow: `0 6px 18px ${alpha(theme.palette.primary.main, 0.15)}`,
-                background: `linear-gradient(135deg, 
-                  ${theme.palette.primary.main} 0%, 
-                  ${theme.palette.primary.dark} 100%)`,
-                transition: "all 0.2s",
-                "&:hover": {
-                  transform: "scale(1.03)",
-                  boxShadow: `0 12px 30px ${alpha(theme.palette.primary.main, 0.22)}`,
-                },
-              }}
-            >
-              保存修改
-            </Button>
-          )}
+            {/* 保存按钮 */}
+            {userIdentity === "me" && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSave}
+                size="medium"
+                sx={{
+                  borderRadius: 3,
+                  px: 4,
+                  py: 1.5,
+                  mx: "auto",
+                  fontWeight: 600,
+                  fontSize: "1rem",
+                  boxShadow: `0 6px 18px ${alpha(theme.palette.primary.main, 0.15)}`,
+                  background: `linear-gradient(135deg, 
+                    ${theme.palette.primary.main} 0%, 
+                    ${theme.palette.primary.dark} 100%)`,
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    transform: "scale(1.03)",
+                    boxShadow: `0 12px 30px ${alpha(theme.palette.primary.main, 0.22)}`,
+                  },
+                }}
+              >
+                保存修改
+              </Button>
+            )}
+          </Box>
 
           {/* 队伍区域 */}
           {userIdentity === "me" && (
