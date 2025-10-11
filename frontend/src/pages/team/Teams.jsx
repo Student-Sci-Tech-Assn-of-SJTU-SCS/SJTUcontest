@@ -209,7 +209,6 @@ const Teams = () => {
             sx={{ width: 200 }}
           />
 
-
           {contest_id ? (
             // 正常显示创建队伍/编辑队伍逻辑
             haveCreatedTeam ? (

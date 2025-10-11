@@ -84,7 +84,9 @@ const Contests = () => {
       const cols = parseInt(sessionStorage.getItem("contests_pageColumns"), 10);
       if (pageColumns === cols) {
         if (sessionStorage.getItem("contests_pageIndex")) {
-          setPageIndex(parseInt(sessionStorage.getItem("contests_pageIndex"), 10));
+          setPageIndex(
+            parseInt(sessionStorage.getItem("contests_pageIndex"), 10),
+          );
         }
       }
     }

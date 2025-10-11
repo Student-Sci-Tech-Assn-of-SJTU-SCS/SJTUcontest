@@ -54,10 +54,13 @@ const CreateUser = () => {
 
   const handleInputChange = (field) => (event) => {
     setFormData({ ...formData, [field]: event.target.value.trim() });
-    sessionStorage.setItem("admin_create_user", JSON.stringify({
-      ...formData,
-      [field]: event.target.value.trim(),
-    }));
+    sessionStorage.setItem(
+      "admin_create_user",
+      JSON.stringify({
+        ...formData,
+        [field]: event.target.value.trim(),
+      }),
+    );
   };
 
   const handleTogglePassword = () => {

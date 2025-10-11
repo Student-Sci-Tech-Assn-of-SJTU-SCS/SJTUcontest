@@ -109,10 +109,12 @@ export default function ContestSearchBar({
           }}
         />
         <Button
-          onClick={() => setExpanded((prev) => {
-            sessionStorage.setItem("contests_searchBarExpanded", !prev);  
-            return !prev;
-          })}
+          onClick={() =>
+            setExpanded((prev) => {
+              sessionStorage.setItem("contests_searchBarExpanded", !prev);
+              return !prev;
+            })
+          }
           variant="contained"
           size="medium"
           startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}

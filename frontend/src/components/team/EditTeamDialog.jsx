@@ -36,7 +36,7 @@ const EditTeamDialog = ({
   });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  
+
   const toDatetimeLocal = (val) => {
     if (!val) return "";
     // 已经是 yyyy-MM-ddTHH:mm 直接返回
@@ -57,7 +57,9 @@ const EditTeamDialog = ({
           typeof initialValues?.expected_members === "number"
             ? initialValues.expected_members
             : 1,
-        recruitment_deadline: toDatetimeLocal(initialValues?.recruitment_deadline ?? ""),
+        recruitment_deadline: toDatetimeLocal(
+          initialValues?.recruitment_deadline ?? "",
+        ),
       });
       setError("");
       setSubmitting(false);
