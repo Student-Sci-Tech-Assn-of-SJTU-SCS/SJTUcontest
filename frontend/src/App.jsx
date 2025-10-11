@@ -1,8 +1,10 @@
 // App.jsx
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { HotkeysProvider } from "react-hotkeys-hook";
 import { SnackbarProvider } from "notistack";
 import { styleSnackbar } from "./styles/styles.jsx";
+import { ConfirmProvider } from "material-ui-confirm";
 import { Grow } from "@mui/material";
 import Login from "./pages/Login";
 import JAccount from "./pages/JAccount";
@@ -23,7 +25,6 @@ import CreateUser from "./pages/admin/CreateUser.jsx";
 import ViewContests from "./pages/admin/ViewContests.jsx";
 import ContestEdit from "./pages/admin/EditContest.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
-import { HotkeysProvider } from "react-hotkeys-hook";
 
 const Router = createBrowserRouter([
   {
@@ -140,7 +141,9 @@ function App() {
           horizontal: "center",
         }}
       >
-        <RouterProvider router={Router} />
+        <ConfirmProvider defaultOptions={{ dialogProps: { maxWidth: "xs" } }}>
+          <RouterProvider router={Router} />
+        </ConfirmProvider>
       </SnackbarProvider>
     </HotkeysProvider>
   );
