@@ -61,8 +61,8 @@ def update_user_profile(request):
             if time_since_last_update < minimum_interval:
                 remaining_time = minimum_interval - time_since_last_update
                 remain_days = int(remaining_time.total_seconds() / 86400)
-                remain_hours = int(remaining_time.total_seconds() / 3600)
-                remaining_minutes = int(remaining_time.total_seconds() / 60)
+                remain_hours = int(remaining_time.total_seconds() % 86400 / 3600)
+                remaining_minutes = int(remaining_time.total_seconds() % 3600 / 60)
 
                 return ApiResponse.error(
                     message=f"更新频率过快，请在{remain_days}天{remain_hours}小时{remaining_minutes}分后再试",
