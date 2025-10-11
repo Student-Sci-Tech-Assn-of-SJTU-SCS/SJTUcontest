@@ -11,8 +11,11 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
 import showMessage from "../../utils/message";
+import { useConfirm } from "material-ui-confirm";
 
 const ViewContests = () => {
+  const confirm = useConfirm();
+
   const [loading, setLoading] = useState(false);
   const [contests, setContests] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -33,7 +36,7 @@ const ViewContests = () => {
           signal: controller.signal,
         });
         if (res.success) {
-          setContests(res.data.contests || []);
+          setContests(res.data.matches || []);
           setPageCount(res.data.total_pages);
         } else {
           showMessage(
@@ -49,11 +52,25 @@ const ViewContests = () => {
       }
     };
     fetchContests();
+    console.log(contests);
   }, [pageIndex, pageSize]);
 
   // 删除所选比赛
   const handleDelete = async () => {
     if (selectedIds.length === 0) return;
+
+    const { confirmed, reason } = await confirm({
+      title: "确认删除",
+      description: `确定要删除所选的 ${selectedIds.length} 个比赛吗？此操作不可撤销。`,
+      confirmationText: "删除",
+      cancellationText: "取消",
+    });
+
+    if (!confirmed) {
+      console.log("管理员取消删除。");
+      return;
+    }
+    console.log("管理员确认删除。");
 
     const controller = new AbortController();
 
@@ -76,10 +93,10 @@ const ViewContests = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "UUID", width: 100 },
+    // { field: "id", headerName: "UUID", width: 100 },
     { field: "name", headerName: "比赛名称", flex: 1 },
     { field: "year", headerName: "年份", width: 60 },
-    { field: "description", headerName: "描述", width: 300 },
+    { field: "description", headerName: "描述", width: 400 },
     {
       field: "actions",
       headerName: "操作",

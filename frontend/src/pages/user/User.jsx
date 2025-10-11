@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useTheme, alpha } from "@mui/material";
-// import { useConfirm } from "material-ui-confirm";
+import { useConfirm } from "material-ui-confirm";
 import { userAPI } from "../../services/UserServices";
 import { getCurrentUser } from "../../utils/auth";
 import TeamCard from "../../components/team/TeamCard";
@@ -24,7 +24,7 @@ import showMessage from "../../utils/message";
 export default function User() {
   const { user_id } = useParams();
   const theme = useTheme();
-  // const confirm = useConfirm();
+  const confirm = useConfirm();
 
   const [userIdentity, setUserIdentity] = useState("");
   const [userNickname, setNickname] = useState("");
@@ -122,21 +122,18 @@ export default function User() {
   }, [userIdentity]);
 
   const handleSave = async () => {
-    // try {
-    //   await confirm({
-    //     title: "确认保存",
-    //     description: `确定要保存对用户信息的修改吗？`,
-    //     confirmationText: "保存",
-    //     cancellationText: "取消",
-    //     dialogProps: {
-    //       maxWidth: "xs",
-    //     },
-    //   });
-    //   console.log("用户确认保存");
-    // } catch {
-    //   console.log("用户取消保存");
-    //   return;
-    // }
+    const { confirmed, reason } = await confirm({
+      title: "确认保存",
+      description: `确定要保存修改吗？每周仅能修改一次。`,
+      confirmationText: "保存",
+      cancellationText: "取消",
+    });
+
+    if (!confirmed) {
+      console.log("用户取消保存");
+      return;
+    }
+    console.log("用户确认保存");
 
     const updateProfile = async () => {
       const controller = new AbortController();
