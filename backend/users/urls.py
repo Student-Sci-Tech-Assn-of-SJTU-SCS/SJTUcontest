@@ -15,6 +15,7 @@ from .views import (
     get_user_teams,
     forbid_user_by_id,
     get_user_total_info_by_id,
+    get_user_list,
 )
 
 urlpatterns = [
@@ -33,4 +34,5 @@ urlpatterns = [
         get_user_total_info_by_id,
         name="get_user_total_info_by_id",
     ),
+    path("list/", get_user_list, name="get_user_list"),
 ]

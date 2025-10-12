@@ -120,6 +120,29 @@ class UserTeamsRequestSerializer(serializers.Serializer):
     page_size = serializers.IntegerField(min_value=1, max_value=100, required=True)
 
 
+class UserListRequestSerializer(serializers.Serializer):
+    page_index = serializers.IntegerField(min_value=1, required=True)
+    page_size = serializers.IntegerField(min_value=1, max_value=100, required=True)
+    search = serializers.CharField(required=False, allow_blank=True, max_length=100)
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    """用户列表序列化器，用于管理员查看用户列表"""
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "email",
+            "nick_name",
+            "is_staff",
+            "is_active",
+            "date_joined",
+            "last_login",
+        ]
+
+
 class UserTotalInfoSerializer(serializers.ModelSerializer):
     teams = serializers.SerializerMethodField()
 
