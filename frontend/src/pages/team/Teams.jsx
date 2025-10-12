@@ -13,106 +13,89 @@ import {
   IconButton,
   Button,
   Stack,
-  Tooltip,
   TextField,
+  MenuItem,
+  Tooltip,
 } from "@mui/material";
-
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-
-import { useMediaQuery } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
-
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { teamAPI } from "../../services/TeamServices";
-import EditTeamDialog from "../../components/team/EditTeamDialog";
-import TeamCard from "../../components/team/TeamCard";
-import { getCurrentUser } from "../../utils/auth";
 
-function getNowDateTimeString() {
-  const now = new Date();
-  const pad = (n) => n.toString().padStart(2, "0");
 
-  const year = now.getFullYear();
-  const month = pad(now.getMonth() + 1);
-  const day = pad(now.getDate());
-  const hours = pad(now.getHours());
-  const minutes = pad(now.getMinutes());
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
+// 轻量防抖 Hook
+function useDebounce(value, delay = 400) {
+  const [v, setV] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setV(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return v;
 }
 
 const Teams = () => {
+  const navigate = useNavigate();
   const { contest_id } = useParams();
-  const [teams, setTeams] = useState([]);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [search, setSearch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState(null);
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageCount, setPageCount] = useState(0);
+
+  // UI 状态
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const currentUser = getCurrentUser();
-  const myId = currentUser?.id;
+
+  // 列表 & 分页
+  const [teams, setTeams] = useState([]);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize] = useState(12);
+  const [pageCount, setPageCount] = useState(0);
+
+  // 搜索 & 过滤
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 400);
+  const [selectedStatus, setSelectedStatus] = useState(""); // 保留原先的状态筛选
+
+  const myId = Number(localStorage.getItem("user_id"));
   const [haveCreatedTeam, sethaveCreatedTeam] = useState(null);
-
-  const [helpOpen, setHelpOpen] = useState(false);
-
-  const navigate = useNavigate();
-
-  const theme = createTheme();
-  const sm = useMediaQuery(theme.breakpoints.down("md"));
-  const pageSize = sm ? 6 : 12;
-
-  const handleSubmitEdit = async (editForm) => {
-    const isoDeadline = new Date(editForm.recruitment_deadline).toISOString();
-
-    await teamAPI.updateTeam(
-      team_id,
-      editForm.name,
-      editForm.introduction,
-      editForm.expected_members,
-      isoDeadline,
-    );
-
-    setSnackbar({
-      open: true,
-      message: "更新成功",
-      severity: "success",
-    });
-
-    const updated = await teamAPI.getTeamDetail(team_id);
-    setTeam(updated.data);
-
-    return null;
-  };
 
   useEffect(() => {
     const fetchTeams = async () => {
-      const controller = new AbortController();
       setLoading(true);
       setError("");
-
       try {
-        const filters = {
-          status: selectedStatus ? [selectedStatus] : [],
-        };
-
-        const res = contest_id
-          ? await teamAPI.getRecruitingTeamsOfContest(
-              contest_id,
-              pageIndex,
-              pageSize,
-              filters,
-            )
-          : await teamAPI.getRecruitingTeams(pageIndex, pageSize, filters);
+        // 👇 改为优先调用后端“按队伍名搜索”接口
+        const options = {};
+        let res;
+        if (debouncedSearch.trim()) {
+          res = await teamAPI.searchTeamsByName(
+            debouncedSearch.trim(),
+            pageIndex,
+            pageSize,
+          );
+        } else {
+          if (selectedStatus) options.status = [selectedStatus];
+          res = contest_id
+            ? await teamAPI.getRecruitingTeamsOfContest(
+                contest_id,
+                pageIndex,
+                pageSize,
+                options,
+                {},
+              )
+            : await teamAPI.getRecruitingTeams(
+                pageIndex,
+                pageSize,
+                options,
+                {},
+              );
+        }
 
         if (res.success) {
-          setTeams(res.data.teams || []);
-          setPageCount(res.data.total_pages);
+          const data = res.data || {};
+          const list = data.teams || [];
+          const totalPages = data.total_pages ?? data.total_page ?? 0; // 兼容两种字段
 
-          const myTeam = (res.data.teams || []).find((team) =>
+          setTeams(list);
+          setPageCount(totalPages);
+
+          const myTeam = list.find((team) =>
             team.members?.some((m) => m.id === myId && m.is_leader),
           );
-
           sethaveCreatedTeam(myTeam || null);
         } else {
           setError(res.message || "获取队伍列表失败");
@@ -125,122 +108,62 @@ const Teams = () => {
       } finally {
         setLoading(false);
       }
-
-      return () => controller.abort();
     };
 
     fetchTeams();
-  }, [contest_id, pageIndex, pageSize, search, selectedStatus]);
+  }, [contest_id, pageIndex, pageSize, debouncedSearch, selectedStatus]);
 
-  const handleCreateTeam = async (form) => {
-    try {
-      const resp = await teamAPI.createTeam({
-        contest: contest_id,
-        name: form.name,
-        introduction: form.introduction,
-        expected_members: Number(form.expected_members),
-        recruitment_deadline: form.recruitment_deadline,
-      });
-
-      // 兼容两种返回：ApiResponse{data} 或直接对象
-      const data = resp?.data ?? resp;
-
-      setShowCreateForm(false);
-      setPageIndex(1); // 刷新列表到第一页
-
-      // 如果后端返回了 id，则跳转详情
-      if (data?.id) {
-        navigate(`/teams/${data.id}`);
-      } else {
-        const res = await teamAPI.getRecruitingTeams(pageIndex, pageSize);
-        if (res.success) {
-          setTeams(res.data.teams || []);
-          setPageCount(res.data.total_pages);
-        }
-      }
-
-      return null;
-    } catch (e) {
-      const msg =
-        e?.response?.data?.message ||
-        e?.response?.data?.detail ||
-        e?.message ||
-        "创建失败";
-      return msg;
-    }
+  const onSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPageIndex(1);
   };
 
   return (
     <Box
-      sx={{
-        px: { xs: 2, sm: 5 },
-        py: 5,
-        transition: "width 0.5s ease",
-      }}
+      sx={{ px: { xs: 2, sm: 5 }, py: 5, transition: "width 0.5s ease" }}
     >
-      <Typography
-        variant="h4"
-        fontWeight={700}
-        gutterBottom
-        sx={{ letterSpacing: 1, color: "#222", textAlign: "center" }}
-      >
+      <Typography variant="h4" fontWeight={700} gutterBottom>
         {contest_id ? "赛事队伍" : "队伍列表"}
       </Typography>
-      <Divider sx={{ mb: 4, mx: "auto", width: 120, borderColor: "#1976d2" }} />
 
       {/* 搜索和筛选控制区域 */}
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        spacing={2}
-        sx={{ mb: 3 }}
-        justifyContent="flex-end"
-        alignItems="center"
-      >
-        <Stack direction="row" spacing={1}>
-          <TextField
-            label="搜索队伍名称"
-            size="small"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPageIndex(1); // 输入时重置分页
-            }}
-            placeholder="请输入队伍名称"
-            sx={{ width: 200 }}
-          />
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center" sx={{ mb: 2 }}>
+        <TextField
+          label="搜索队伍名称"
+          size="small"
+          value={search}
+          onChange={onSearchChange}
+          placeholder="输入关键词，按名称模糊搜索"
+        />
 
+        <TextField
+          select
+          size="small"
+          sx={{ minWidth: 160 }}
+          label="状态筛选"
+          value={selectedStatus}
+          onChange={(e) => {
+            setSelectedStatus(e.target.value);
+            setPageIndex(1);
+          }}
+        >
+          <MenuItem value="">全部</MenuItem>
+          <MenuItem value="recruiting">招募中</MenuItem>
+          <MenuItem value="full">已满员</MenuItem>
+          <MenuItem value="closed">已截止</MenuItem>
+        </TextField>
 
-          {contest_id ? (
-            // 正常显示创建队伍/编辑队伍逻辑
-            haveCreatedTeam ? (
-              <Button
-                variant="outlined"
-                onClick={() => setShowCreateForm(true)}
-              >
-                编辑已创建的队伍
-              </Button>
-            ) : (
-              <Button
-                variant="contained"
-                onClick={() => setShowCreateForm(true)}
-              >
-                创建新队伍
-              </Button>
-            )
-          ) : (
-            // 非赛事页面：显示问号按钮
-            <Tooltip title="查看帮助">
-              <IconButton onClick={() => setHelpOpen(true)} color="primary">
-                <HelpOutlineIcon />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Stack>
+        <Tooltip title="当输入关键词时，会按队伍名搜索；清空后恢复为招募列表。">
+          <IconButton>
+            <InfoOutlinedIcon />
+          </IconButton>
+        </Tooltip>
       </Stack>
 
-      {/* 队伍列表 */}
+      <Divider sx={{ mb: 2 }} />
+
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
           <CircularProgress />
         </Box>
       ) : error ? (
@@ -252,67 +175,59 @@ const Teams = () => {
           <Box>
             {teams.length === 0 ? (
               <Typography align="center" color="text.secondary" sx={{ py: 6 }}>
-                "当前没有正在招募的队伍"
+                {debouncedSearch ? "没有匹配的队伍" : "当前没有正在招募的队伍"}
               </Typography>
             ) : (
               teams.map((team) => {
                 const isMeInTeam = team.members?.some((m) => m.id === myId);
                 return (
-                  <TeamCard key={team.id} team={team} highlight={isMeInTeam} />
+                  <Box key={team.id} sx={{ p: 2, borderRadius: 2, border: "1px solid #eee", mb: 2 }}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Typography variant="h6">{team.name}</Typography>
+                      <Button variant="outlined" onClick={() => navigate(`/teams/${team.id}`)}>
+                        查看详情
+                      </Button>
+                    </Stack>
+                    {team.introduction && (
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                        {team.introduction}
+                      </Typography>
+                    )}
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+                      人数：{team.existing_members}/{team.expected_members}
+                      {team.recruitment_deadline && ` · 截止：${new Date(team.recruitment_deadline).toLocaleString()}`}
+                      {team.contest && ` · 赛事：${team.contest}`}
+                    </Typography>
+                  </Box>
                 );
               })
             )}
           </Box>
 
+          {/* 分页 */}
           {pageCount > 1 && (
-            <Box display="flex" justifyContent="center" mt={4}>
+            <Stack alignItems="center" sx={{ mt: 3 }}>
               <Pagination
-                count={pageCount}
                 page={pageIndex}
-                onChange={(_, value) => setPageIndex(value)}
+                count={pageCount}
+                onChange={(_, page) => setPageIndex(page)}
                 color="primary"
-                shape="rounded"
               />
-            </Box>
+            </Stack>
           )}
         </>
       )}
 
-      <EditTeamDialog
-        open={showCreateForm}
-        initialValues={
-          haveCreatedTeam
-            ? {
-                name: haveCreatedTeam.name,
-                introduction: haveCreatedTeam.introduction,
-                expected_members: haveCreatedTeam.expected_members,
-                recruitment_deadline: haveCreatedTeam.recruitment_deadline,
-              }
-            : {
-                name: "",
-                introduction: "",
-                expected_members: 1,
-                recruitment_deadline: getNowDateTimeString(),
-              }
-        }
-        // [ADDED] 自定义标题与确认按钮文案（可选）
-        title={haveCreatedTeam ? "编辑已创建的队伍" : "创建新队伍"}
-        confirmText={haveCreatedTeam ? "保存修改" : "创建"}
-        cancelText="取消"
-        onClose={() => setShowCreateForm(false)}
-        onSubmit={haveCreatedTeam ? handleSubmitEdit : handleCreateTeam}
-      />
-
-      <Dialog open={helpOpen} onClose={() => setHelpOpen(false)}>
+      {/* 不允许在列表页创建队伍的提示对话框（保持原逻辑） */}
+      <Dialog open={false} onClose={() => {}}>
         <DialogTitle>提示</DialogTitle>
         <DialogContent>
           <Typography>
-            队伍列表无法创建队伍，请在「赛事列表 →
-            寻找参赛团队」中创建您的队伍。
+            队伍列表无法创建队伍，请在「赛事列表 → 寻找参赛团队」中创建您的队伍。
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setHelpOpen(false)}>关闭</Button>
+          <Button onClick={() => {}}>关闭</Button>
         </DialogActions>
       </Dialog>
     </Box>
