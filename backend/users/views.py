@@ -69,7 +69,7 @@ def update_user_profile(request):
 
                 return ApiResponse.error(
                     message=f"更新频率过快，请在{remain_days}天{remain_hours}小时{remaining_minutes}分后再试",
-                    status_code=429,
+                    status_code=400,
                 )
 
         serializer = UserProfileSerializer(
