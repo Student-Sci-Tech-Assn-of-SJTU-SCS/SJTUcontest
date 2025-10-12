@@ -56,10 +56,10 @@ def update_user_profile(request):
     try:
         user = request.user
 
-        # 检查更新频率限制（1周）
+        # 检查更新频率限制（1小时）
         if user.updated_at:
             time_since_last_update = timezone.now() - user.updated_at
-            minimum_interval = timedelta(weeks=1)
+            minimum_interval = timedelta(hours=1)
 
             if time_since_last_update < minimum_interval:
                 remaining_time = minimum_interval - time_since_last_update
