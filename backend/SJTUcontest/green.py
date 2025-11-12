@@ -29,7 +29,7 @@ detection_type = [
 
 
 def write_detection_log(content):
-    with open("content_detection_risks_log.txt", "a") as f:
+    with open("content_detection_risks.log", "a") as f:
         f.write("====================\n")
         f.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S\n"))
         f.write(content)
