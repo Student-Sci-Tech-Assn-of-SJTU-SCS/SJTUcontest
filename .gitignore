@@ -29,4 +29,4 @@ build/
 .venv/
 
 # 内容审核风险记录
-content_detection_risks_log.txt
+content_detection_risks.log
