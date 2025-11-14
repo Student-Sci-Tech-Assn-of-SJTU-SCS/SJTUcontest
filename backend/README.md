@@ -10,15 +10,21 @@
 
 **在`backend/`目录下创建`.env`文件并配置以下字段：**
 ```
+# Django
+DJANGO_DEBUG=True  # 本地开发环境设为 True
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+DJANGO_SECRET_KEY=
+
 # 把以下字段改为你自己的数据库配置信息
 DB_NAME=
 DB_USER=
 DB_PASSWORD=
 DB_HOST=
 DB_PORT=
-
-# Django Secret Key
-DJANGO_SECRET_KEY=
+# 供 postgres 镜像识别，本地开发不用配置这三个字段
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
 
 # jAccount OAuth2 配置
 JACCOUNT_CLIENT_ID=
@@ -28,6 +34,7 @@ JACCOUNT_SCOPE=
 # 阿里云内容机审配置
 ALIBABA_CLOUD_ACCESS_KEY_ID=
 ALIBABA_CLOUD_ACCESS_KEY_SECRET=
+
 ```
 
 ## 定期清理 Django Simple JWT 的 token blacklist
