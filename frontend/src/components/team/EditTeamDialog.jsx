@@ -156,9 +156,9 @@ const EditTeamDialog = ({
             multiline
             minRows={4}
             placeholder={`按Tab键确认：
-          - 联系方式：微信/邮箱/QQ/电话 
+          - 项目方向：XXX
           - 希望招募：前端、视觉设计、网络安全
-          - 项目方向：XXX`}
+          - 联系方式：微信/邮箱/QQ/电话`}
             InputProps={{
               style: {
                 fontStyle: values.introduction ? "normal" : "italic",
@@ -170,9 +170,9 @@ const EditTeamDialog = ({
                   e.preventDefault();
                   setValues((s) => ({
                     ...s,
-                    introduction: `联系方式：
+                    introduction: `项目方向：
 希望招募：
-项目方向：`,
+联系方式：`,
                   }));
                 }
               },
