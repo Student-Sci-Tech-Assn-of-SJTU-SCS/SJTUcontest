@@ -3,10 +3,10 @@ import api from "../utils/api";
 // 队伍相关 API
 export const teamAPI = {
   // 获取正在招募中的队伍
-  getRecruitingTeams: async (page_index, page_size, config = {}) => {
+  getRecruitingTeams: async (page_index, page_size, config) => {
     const response = await api.post(
       "teams/",
-      { page_index, page_size },
+      { page_index, page_size,},
       config,
     );
     return response;
@@ -17,7 +17,7 @@ export const teamAPI = {
     match_id,
     page_index,
     page_size,
-    config = {},
+    config,
   ) => {
     const response = await api.post(
       `matches/${match_id}/teams/`,
@@ -29,6 +29,16 @@ export const teamAPI = {
     );
     return response;
   },
+
+  searchTeamsByName: async (team_name, page_index, page_size, config = {}) => {
+    const response = await api.post(
+      "teams/search/",
+      { team_name, page_index, page_size },
+      config
+    );
+    return response;
+  },
+
 
   // 获取队伍详情
   getTeamDetail: async (team_id, config = {}) => {

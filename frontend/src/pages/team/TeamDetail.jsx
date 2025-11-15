@@ -409,23 +409,76 @@ const TeamDetail = () => {
       </Paper>
 
       {/* 邀请码弹窗 */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogTitle>队伍邀请码</DialogTitle>
+      <Dialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: "bold", textAlign: "center" }}>
+          队伍邀请码
+        </DialogTitle>
         <DialogContent>
-          <Box display="flex" alignItems="center" mt={1}>
-            <Typography sx={{ wordBreak: "break-all", flex: 1, mr: 2 }}>
-              {invitationCode || "暂无邀请码"}
-            </Typography>
-            <Button
-              variant="outlined"
-              onClick={handleCopy}
-              startIcon={<ContentCopyIcon />}
-              size="small"
-            />
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            mt={2}
+            mb={2}
+            sx={{
+              textAlign: "center",
+            }}
+          >
+            {invitationCode ? (
+              <Paper
+                elevation={2}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  p: 2,
+                  borderRadius: 2,
+                  bgcolor: "grey.100",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    bgcolor: "grey.200",
+                  },
+                }}
+                onClick={handleCopy}
+              >
+                <Typography
+                  variant="body1"
+                  sx={{
+                    wordBreak: "break-all",
+                    flex: 1,
+                  }}
+                >
+                  {invitationCode}
+                </Typography>
+                <ContentCopyIcon
+                  fontSize="small"
+                  color="action"
+                  sx={{ ml: 1 }}
+                />
+              </Paper>
+            ) : (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 2, textAlign: "center" }}
+              >
+                暂无可用邀请码，请稍后重试
+              </Typography>
+            )}
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>关闭</Button>
+        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+          <Button variant="contained" onClick={() => setDialogOpen(false)}>
+            关闭
+          </Button>
         </DialogActions>
       </Dialog>
 
