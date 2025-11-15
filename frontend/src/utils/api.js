@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAccessToken, getRefreshToken, saveTokens, logout } from "./auth.js";
 
-const defaultApiBase = "http://localhost:8000/api/";
+const defaultApiBase = "http://localhost/api/";
 const configuredApiBase = import.meta.env.VITE_API_BASE_URL;
 const apiBaseUrl = (() => {
   if (typeof configuredApiBase === "string" && configuredApiBase.trim()) {
