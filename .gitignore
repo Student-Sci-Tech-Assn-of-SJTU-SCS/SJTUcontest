@@ -28,5 +28,6 @@ build/
 
 .venv/
 
-# 内容审核风险记录
-content_detection_risks_log.txt
+# 日志
+backend/logs/
+!backend/logs/.gitkeep
