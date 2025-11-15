@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { useConfirm } from "material-ui-confirm";
 
 const EditTeamDialog = ({
   open,
@@ -25,6 +26,8 @@ const EditTeamDialog = ({
   confirmText = "保存",
   cancelText = "取消",
 }) => {
+  const confirm = useConfirm();
+
   const [values, setValues] = useState({
     name: "",
     introduction: "",
@@ -33,7 +36,7 @@ const EditTeamDialog = ({
   });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  
+
   const toDatetimeLocal = (val) => {
     if (!val) return "";
     // 已经是 yyyy-MM-ddTHH:mm 直接返回
@@ -54,7 +57,9 @@ const EditTeamDialog = ({
           typeof initialValues?.expected_members === "number"
             ? initialValues.expected_members
             : 1,
-        recruitment_deadline: toDatetimeLocal(initialValues?.recruitment_deadline ?? ""),
+        recruitment_deadline: toDatetimeLocal(
+          initialValues?.recruitment_deadline ?? "",
+        ),
       });
       setError("");
       setSubmitting(false);
@@ -78,6 +83,19 @@ const EditTeamDialog = ({
   };
 
   const handleConfirm = async () => {
+    const { confirmed, reason } = await confirm({
+      title: "确认保存",
+      description: `确定要保存修改吗？每10分钟仅能修改一次。`,
+      confirmationText: "保存",
+      cancellationText: "取消",
+    });
+
+    if (!confirmed) {
+      console.log("用户取消保存");
+      return;
+    }
+    console.log("用户确认保存");
+
     const v = validate();
     if (v) {
       setError(v);

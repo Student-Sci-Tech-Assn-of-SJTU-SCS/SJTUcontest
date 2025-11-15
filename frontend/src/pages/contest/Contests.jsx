@@ -11,13 +11,34 @@ import {
 import ContestSearchBar from "../../components/ContestSearchBar";
 import ContestCard from "../../components/ContestCard";
 import { useState, useEffect } from "react";
-import { categories } from "../../components/Tag";
+import { categories, nameToTag } from "../../components/Tag";
 import { useMediaQuery } from "@mui/material";
 import { createFadeInAnim } from "../../styles/animations";
-
 import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
 import showMessage from "../../utils/message";
+
+function saveSelectedTagsToSession(selectedTags) {
+  const plainObject = {};
+  for (const [cat, symkey] of Object.entries(categories)) {
+    if (symkey === categories.UNDEF) continue;
+    plainObject[cat] = selectedTags[symkey].map((tag) => tag.name);
+  }
+  sessionStorage.setItem("contests_selectedTags", JSON.stringify(plainObject));
+}
+
+function loadSelectedTagsFromSession() {
+  const json = sessionStorage.getItem("contests_selectedTags");
+  if (!json) return null;
+
+  const plain = JSON.parse(json);
+  const restored = {};
+  for (const strKey in plain) {
+    const symKey = categories[strKey];
+    if (symKey) restored[symKey] = plain[strKey].map((name) => nameToTag(name));
+  }
+  return restored;
+}
 
 const Contests = () => {
   const theme = useTheme();
@@ -31,6 +52,7 @@ const Contests = () => {
   });
   const [pageIndex, setPageIndex] = useState(1);
   const [pageCount, setPageCount] = useState(0);
+  const [initReady, setInitReady] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const sm = useMediaQuery(theme.breakpoints.down("md"));
@@ -45,6 +67,31 @@ const Contests = () => {
   // const pageSize = 1; // 调试用
 
   const [contests, setContests] = useState([]);
+
+  /**
+   * 恢复时出现的问题：初始化值和恢复值导致了两次后端查询，初始化值查询的响应晚于恢复值，故覆盖了后者
+   * 使用 initReady 标志位来避免这个问题
+   */
+  useEffect(() => {
+    if (sessionStorage.getItem("contests_search")) {
+      setSearch(sessionStorage.getItem("contests_search"));
+    }
+    if (sessionStorage.getItem("contests_selectedTags")) {
+      setSelectedTags(loadSelectedTagsFromSession());
+    }
+    // 只有当列数（布局）不变时才恢复页码
+    if (sessionStorage.getItem("contests_pageColumns")) {
+      const cols = parseInt(sessionStorage.getItem("contests_pageColumns"), 10);
+      if (pageColumns === cols) {
+        if (sessionStorage.getItem("contests_pageIndex")) {
+          setPageIndex(
+            parseInt(sessionStorage.getItem("contests_pageIndex"), 10),
+          );
+        }
+      }
+    }
+    setInitReady(true);
+  }, []);
 
   // 后端请求
   useEffect(() => {
@@ -75,7 +122,9 @@ const Contests = () => {
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        showMessage("获取比赛失败：网络错误。", "error");
+        console.log(selectedTags);
+        console.log(categories);
+        showMessage(`获取比赛失败：网络错误，${err}`, "error");
       } finally {
         setLoading(false);
       }
@@ -83,12 +132,16 @@ const Contests = () => {
       return () => controller.abort();
     };
 
+    if (!initReady) return;
     fetchContests();
-  }, [pageIndex, pageSize, search, selectedTags]);
+  }, [initReady, pageIndex, pageSize, search, selectedTags]);
 
   const handleSearchChange = (newSearch) => {
     setSearch(newSearch);
     setPageIndex(1);
+    sessionStorage.setItem("contests_search", newSearch);
+    sessionStorage.setItem("contests_pageColumns", pageColumns);
+    sessionStorage.setItem("contests_pageIndex", 1);
   };
 
   const handleTagClick = (tag) => {
@@ -104,6 +157,14 @@ const Contests = () => {
       return { ...prev, [category]: upd };
     });
     setPageIndex(1);
+    saveSelectedTagsToSession({
+      ...selectedTags,
+      [category]: selectedTags[category].includes(tag)
+        ? selectedTags[category].filter((t) => t !== tag)
+        : [...selectedTags[category], tag],
+    });
+    sessionStorage.setItem("contests_pageColumns", pageColumns);
+    sessionStorage.setItem("contests_pageIndex", 1);
   };
 
   const handleClearAll = () => {
@@ -116,11 +177,21 @@ const Contests = () => {
       [categories.MONTH]: [],
     });
     setPageIndex(1);
+    sessionStorage.removeItem("contests_search");
+    sessionStorage.removeItem("contests_selectedTags");
+    sessionStorage.setItem("contests_pageColumns", pageColumns);
+    sessionStorage.setItem("contests_pageIndex", 1);
   };
 
   useEffect(() => {
     setPageIndex(1);
+    sessionStorage.setItem("contests_pageColumns", pageColumns);
+    sessionStorage.setItem("contests_pageIndex", 1);
   }, [pageSize]);
+
+  useEffect(() => {
+    console.log(`Contests count=${contests.length}`);
+  }, [contests]);
 
   return (
     <Box

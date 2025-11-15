@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.core.paginator import Paginator
+from django.db.models import Q
 from datetime import timedelta
 
 from .serializers import (
@@ -14,6 +15,8 @@ from .serializers import (
     jAccountLoginRequestSerializer,
     UserTeamsRequestSerializer,
     UserTotalInfoSerializer,
+    UserListSerializer,
+    UserListRequestSerializer,
 )
 from .jaccount import (
     get_jaccount_authorize_url,
@@ -53,20 +56,20 @@ def update_user_profile(request):
     try:
         user = request.user
 
-        # 检查更新频率限制（1周）
+        # 检查更新频率限制（1小时）
         if user.updated_at:
             time_since_last_update = timezone.now() - user.updated_at
-            minimum_interval = timedelta(weeks=1)
+            minimum_interval = timedelta(hours=1)
 
             if time_since_last_update < minimum_interval:
                 remaining_time = minimum_interval - time_since_last_update
                 remain_days = int(remaining_time.total_seconds() / 86400)
-                remain_hours = int(remaining_time.total_seconds() / 3600)
-                remaining_minutes = int(remaining_time.total_seconds() / 60)
+                remain_hours = int(remaining_time.total_seconds() % 86400 / 3600)
+                remaining_minutes = int(remaining_time.total_seconds() % 3600 / 60)
 
                 return ApiResponse.error(
                     message=f"更新频率过快，请在{remain_days}天{remain_hours}小时{remaining_minutes}分后再试",
-                    status_code=429,
+                    status_code=400,
                 )
 
         serializer = UserProfileSerializer(
@@ -309,6 +312,66 @@ def get_user_total_info_by_id(request, user_id):
 
     except User.DoesNotExist:
         return ApiResponse.not_found(message="User not found")
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
+
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def get_user_list(request):
+    """
+    获取用户列表，支持分页和搜索功能。
+    只有管理员可以访问。
+    """
+    try:
+        serializer = UserListRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return ApiResponse.error(message="无效的请求参数", data=serializer.errors)
+
+        page_index = serializer.validated_data["page_index"]
+        page_size = serializer.validated_data["page_size"]
+        search_term = serializer.validated_data.get("search", "")
+
+        # 构建查询
+        users_query = User.objects.all().order_by("-date_joined")
+
+        # 如果有搜索词，进行搜索
+        if search_term:
+            users_query = users_query.filter(
+                Q(username__icontains=search_term)
+                | Q(nick_name__icontains=search_term)
+                | Q(email__icontains=search_term)
+            )
+
+        # 分页
+        paginator = Paginator(users_query, page_size)
+
+        if page_index > paginator.num_pages:
+            return ApiResponse.not_found(
+                message="请求的页码超出范围",
+                data={
+                    "total_pages": paginator.num_pages,
+                    "page_index": page_index,
+                },
+            )
+
+        page_users = paginator.page(page_index)
+        users_serializer = UserListSerializer(page_users, many=True)
+
+        response_data = {
+            "total_pages": paginator.num_pages,
+            "page_index": page_index,
+            "total_users": paginator.count,
+            "users": users_serializer.data,
+        }
+
+        return ApiResponse.success(
+            data=response_data,
+            message="用户列表获取成功",
+        )
 
     except Exception as e:
         return ApiResponse.error(

@@ -98,4 +98,24 @@ export const userAPI = {
     clearAuth();
     return response;
   },
+
+  // 获取用户完整信息（管理员专用）
+  getUserTotalInfo: async (user_id, config = {}) => {
+    const response = await api.get(`users/${user_id}/info/`, config);
+    return response;
+  },
+
+  // 获取用户列表（管理员专用）
+  getUserList: async (page_index, page_size, search = "", config = {}) => {
+    const response = await api.post(
+      "users/list/",
+      {
+        page_index,
+        page_size,
+        search,
+      },
+      config,
+    );
+    return response;
+  },
 };

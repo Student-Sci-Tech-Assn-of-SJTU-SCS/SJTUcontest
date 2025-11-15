@@ -294,7 +294,7 @@ def update_team_by_id(request, team_id):
 
                 return ApiResponse.error(
                     message=f"更新频率过快，请在{remaining_minutes}分{remaining_seconds}秒后再试",
-                    status_code=429,
+                    status_code=400,
                 )
 
         serializer = TeamUpdateRequestSerializer(

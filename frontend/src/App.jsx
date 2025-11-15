@@ -1,8 +1,10 @@
 // App.jsx
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { HotkeysProvider } from "react-hotkeys-hook";
 import { SnackbarProvider } from "notistack";
 import { styleSnackbar } from "./styles/styles.jsx";
+import { ConfirmProvider } from "material-ui-confirm";
 import { Grow } from "@mui/material";
 import Login from "./pages/Login";
 import JAccount from "./pages/JAccount";
@@ -20,10 +22,11 @@ import AdminPanel from "./pages/admin/AdminPanel.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import CreateContest from "./pages/admin/CreateContest.jsx";
 import CreateUser from "./pages/admin/CreateUser.jsx";
+import UserList from "./pages/admin/UserList.jsx";
+import UserDetail from "./pages/admin/UserDetail.jsx";
 import ViewContests from "./pages/admin/ViewContests.jsx";
 import ContestEdit from "./pages/admin/EditContest.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
-import { HotkeysProvider } from "react-hotkeys-hook";
 
 const Router = createBrowserRouter([
   {
@@ -106,6 +109,14 @@ const Router = createBrowserRouter([
             element: <CreateUser />,
           },
           {
+            path: "user-list",
+            element: <UserList />,
+          },
+          {
+            path: "user-detail/:userId",
+            element: <UserDetail />,
+          },
+          {
             path: "view-contests",
             element: <ViewContests />,
           },
@@ -140,7 +151,9 @@ function App() {
           horizontal: "center",
         }}
       >
-        <RouterProvider router={Router} />
+        <ConfirmProvider defaultOptions={{ dialogProps: { maxWidth: "xs" } }}>
+          <RouterProvider router={Router} />
+        </ConfirmProvider>
       </SnackbarProvider>
     </HotkeysProvider>
   );

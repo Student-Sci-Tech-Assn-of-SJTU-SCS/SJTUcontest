@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Typography,
   Card,
@@ -24,8 +24,13 @@ const CreateUser = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("admin_create_user")) {
+      setFormData(JSON.parse(sessionStorage.getItem("admin_create_user")));
+    }
+  }, []);
 
   const makeValidator = (regex, message) => ({
     method: (value) => regex.test(value),
@@ -49,6 +54,13 @@ const CreateUser = () => {
 
   const handleInputChange = (field) => (event) => {
     setFormData({ ...formData, [field]: event.target.value.trim() });
+    sessionStorage.setItem(
+      "admin_create_user",
+      JSON.stringify({
+        ...formData,
+        [field]: event.target.value.trim(),
+      }),
+    );
   };
 
   const handleTogglePassword = () => {
@@ -86,6 +98,7 @@ const CreateUser = () => {
         email: "",
         password: "",
       });
+      sessionStorage.removeItem("admin_create_user");
     } catch (error) {
       if (axios.isCancel(error)) return;
       showMessage(
