@@ -1,3 +1,6 @@
+# os
+.DS_Store
+
 # Python
 *.pyc
 __pycache__/
@@ -20,3 +23,11 @@ build/
 
 # jetbrains
 .idea/
+
+.env
+
+.venv/
+
+# 日志
+backend/logs/
+!backend/logs/.gitkeep

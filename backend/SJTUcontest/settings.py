@@ -11,21 +11,38 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+from datetime import timedelta
+
+# Helpers
+def _env_flag(value: str | None, default: bool) -> bool:
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "t", "yes", "y", "on"}
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ibweg87++k^+(9^#@4m*nqypeux(ra1+qo1d3x#0n8m#k!#m@6"
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-ibweg87++k^+(9^#@4m*nqypeux(ra1+qo1d3x#0n8m#k!#m@6",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = _env_flag(os.getenv("DJANGO_DEBUG"), False)
 
-ALLOWED_HOSTS = []
+_allowed_hosts = os.getenv(
+    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0"
+)
+ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts.split(",") if host.strip()]
 
 
 # Application definition
@@ -34,16 +51,25 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
+    "django.contrib.sessions",  # 保留用于Django Admin
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
+    "contests",
+    "users",
+    "teams",
+    "news",
+    "rest_framework",
+    "rest_framework_simplejwt",  # 添加JWT支持
+    "rest_framework_simplejwt.token_blacklist",  # JWT黑名单支持
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",  # 保留用于Django Admin
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",  # 已注释，API使用JWT代替CSRF
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -75,8 +101,12 @@ WSGI_APPLICATION = "SJTUcontest.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -121,3 +151,99 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = "users.User"
+
+# CORS 配置 - 允许前端访问后端API
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # 在开发环境下允许所有来源
+CORS_ALLOWED_ORIGINS = []
+
+# 允许的请求头 - 已移除CSRF相关头部，专注于JWT
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",  # JWT Token
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-requested-with",
+]
+
+# 允许的HTTP方法
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+# 使用JWT不需要携带Cookie
+CORS_ALLOW_CREDENTIALS = False
+
+# Django REST Framework 配置 - 仅使用JWT认证
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+}
+
+# JWT 配置
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),  # 访问令牌1小时有效
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 刷新令牌7天有效
+    "ROTATE_REFRESH_TOKENS": True,  # 刷新时轮换刷新令牌
+    "BLACKLIST_AFTER_ROTATION": True,  # 轮换后加入黑名单
+    "UPDATE_LAST_LOGIN": True,  # 更新最后登录时间
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.CustomTokenObtainSerializer",
+    "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+    "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
+    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
+    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
+    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
+}
+
+# jAccount OAuth2.0 配置
+JACCOUNT_CLIENT_ID = os.getenv("JACCOUNT_CLIENT_ID")
+JACCOUNT_CLIENT_SECRET = os.getenv("JACCOUNT_CLIENT_SECRET")
+JACCOUNT_SCOPE = os.getenv("JACCOUNT_SCOPE")
+JACCOUNT_ISSUER = "https://jaccount.sjtu.edu.cn/oauth2/"
+JACCOUNT_AUTHORIZATION_URL = "https://jaccount.sjtu.edu.cn/oauth2/authorize"
+JACCOUNT_TOKEN_URL = "https://jaccount.sjtu.edu.cn/oauth2/token"
+JACCOUNT_LOGOUT_URL = "https://jaccount.sjtu.edu.cn/oauth2/logout"
+JACCOUNT_PROFILE_URL = "https://api.sjtu.edu.cn/v1/me/profile"
+JACCOUNT_REDIRECT_URI = os.getenv("JACCOUNT_REDIRECT_BASE_URI") + "/auth/jaccount/callback"
+JACCOUNT_LOGOUT_REDIRECT_URI = os.getenv("JACCOUNT_REDIRECT_BASE_URI") + "/"
+
+# 阿里云内容机审配置
+ALIBABA_CLOUD_ACCESS_KEY_ID = os.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")
+ALIBABA_CLOUD_ACCESS_KEY_SECRET = os.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")
+ALIBABA_CLOUD_REGION_ID = "cn-shanghai"
+ALIBABA_CLOUD_ENDPOINT = "green-cip.cn-shanghai.aliyuncs.com"
