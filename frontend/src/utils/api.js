@@ -1,23 +1,10 @@
 import axios from "axios";
 import { getAccessToken, getRefreshToken, saveTokens, logout } from "./auth.js";
 
-const defaultApiBase = "http://localhost/api/";
-const configuredApiBase = import.meta.env.VITE_API_BASE_URL;
-const apiBaseUrl = (() => {
-  if (typeof configuredApiBase === "string" && configuredApiBase.trim()) {
-    return configuredApiBase.endsWith("/")
-      ? configuredApiBase
-      : `${configuredApiBase}/`;
-  }
-  return defaultApiBase;
-})();
-
 const api = axios.create({
-  baseURL: apiBaseUrl,
+  baseURL: "http://localhost:8000/api/",
   timeout: 10000,
 });
-
-const refreshEndpoint = `${apiBaseUrl.replace(/\/$/, "")}/users/token/refresh/`;
 
 // 请求拦截器 - 自动添加access token到请求头
 api.interceptors.request.use(
@@ -56,9 +43,12 @@ api.interceptors.response.use(
 
       try {
         // 尝试使用refresh token获取新的access token
-        const refreshResponse = await axios.post(refreshEndpoint, {
-          refresh: refreshToken,
-        });
+        const refreshResponse = await axios.post(
+          "http://localhost:8000/api/users/token/refresh/",
+          {
+            refresh: refreshToken,
+          },
+        );
 
         const newAccessToken = refreshResponse.data.access;
         const newRefreshToken = refreshResponse.data.refresh;

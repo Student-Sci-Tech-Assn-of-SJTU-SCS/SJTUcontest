@@ -15,12 +15,6 @@ from dotenv import load_dotenv
 import os
 from datetime import timedelta
 
-# Helpers
-def _env_flag(value: str | None, default: bool) -> bool:
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "t", "yes", "y", "on"}
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,12 +31,9 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = _env_flag(os.getenv("DJANGO_DEBUG"), False)
+DEBUG = True
 
-_allowed_hosts = os.getenv(
-    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0"
-)
-ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts.split(",") if host.strip()]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 
 # Application definition
@@ -55,13 +46,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
-    "contests",
-    "users",
-    "teams",
-    "news",
     "rest_framework",
     "rest_framework_simplejwt",  # 添加JWT支持
     "rest_framework_simplejwt.token_blacklist",  # JWT黑名单支持
+    "users",
+    "contests",
+    "teams",
+    "news",
 ]
 
 MIDDLEWARE = [
@@ -156,7 +147,12 @@ AUTH_USER_MODEL = "users.User"
 
 # CORS 配置 - 允许前端访问后端API
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # 在开发环境下允许所有来源
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React 默认端口
+    "http://localhost:5173",  # Vite 默认端口
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+]
 
 # 允许的请求头 - 已移除CSRF相关头部，专注于JWT
 CORS_ALLOW_HEADERS = [
@@ -239,8 +235,8 @@ JACCOUNT_AUTHORIZATION_URL = "https://jaccount.sjtu.edu.cn/oauth2/authorize"
 JACCOUNT_TOKEN_URL = "https://jaccount.sjtu.edu.cn/oauth2/token"
 JACCOUNT_LOGOUT_URL = "https://jaccount.sjtu.edu.cn/oauth2/logout"
 JACCOUNT_PROFILE_URL = "https://api.sjtu.edu.cn/v1/me/profile"
-JACCOUNT_REDIRECT_URI = os.getenv("JACCOUNT_REDIRECT_BASE_URI") + "/auth/jaccount/callback"
-JACCOUNT_LOGOUT_REDIRECT_URI = os.getenv("JACCOUNT_REDIRECT_BASE_URI") + "/"
+JACCOUNT_REDIRECT_URI = "http://localhost:5173/auth/jaccount/callback"
+JACCOUNT_LOGOUT_REDIRECT_URI = "http://localhost:5173/"
 
 # 阿里云内容机审配置
 ALIBABA_CLOUD_ACCESS_KEY_ID = os.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")
