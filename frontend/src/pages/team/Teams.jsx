@@ -285,6 +285,22 @@ const Teams = () => {
               />
             </Box>
           )}
+
+          <Box
+            sx={{
+              mt: 4,
+              mb: 2,
+              display: "flex",
+              alignItems: "center",
+              color: "text.secondary",
+            }}
+          >
+            <Divider sx={{ flex: 1 }} />
+            <Typography sx={{ mx: 2, whiteSpace: "nowrap", fontSize: 14 }}>
+              仅显示招募未截止且未满员的队伍
+            </Typography>
+            <Divider sx={{ flex: 1 }} />
+          </Box>
         </>
       )}
 
