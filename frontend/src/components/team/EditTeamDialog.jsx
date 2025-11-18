@@ -119,12 +119,22 @@ const EditTeamDialog = ({
         onClose?.();
       }
     } catch (e) {
-      setError(
-        e?.response?.data?.message ||
-          e?.response?.data?.detail ||
-          e?.message ||
-          "提交失败",
-      );
+      const resp = e?.response?.data;
+      let msg = "";
+
+      if (resp && resp.data && typeof resp.data === "object") {
+        const firstKey = Object.keys(resp.data)[0];
+        const firstVal = resp.data[firstKey];
+        if (Array.isArray(firstVal) && firstVal.length > 0) {
+          msg = firstVal[0];
+        }
+      }
+
+      if (!msg) {
+        msg = resp?.message || resp?.detail || e?.message || "提交失败";
+      }
+
+      setError(msg);
       setSubmitting(false);
     }
   };

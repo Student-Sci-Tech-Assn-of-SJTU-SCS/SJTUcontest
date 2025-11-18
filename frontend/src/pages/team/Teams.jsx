@@ -161,11 +161,22 @@ const Teams = () => {
 
       return null;
     } catch (e) {
-      const msg =
-        e?.response?.data?.message ||
-        e?.response?.data?.detail ||
-        e?.message ||
-        "创建失败";
+      const resp = e?.response?.data;
+      let msg = "";
+
+      // 自定义 ApiResponse: { success: false, message: "...", data: {...} }
+      if (resp && resp.data && typeof resp.data === "object") {
+        const firstKey = Object.keys(resp.data)[0];
+        const firstVal = resp.data[firstKey];
+        if (Array.isArray(firstVal) && firstVal.length > 0) {
+          msg = firstVal[0];  // ⬅️ 获取队伍名称包含敏感内容，请修改
+        }
+      }
+
+      if (!msg) {
+        msg = resp?.message || e?.message || "创建失败";
+      }
+
       return msg;
     }
   };
