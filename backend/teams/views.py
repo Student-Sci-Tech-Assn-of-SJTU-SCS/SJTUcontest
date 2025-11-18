@@ -284,7 +284,11 @@ def update_team_by_id(request, team_id):
             return ApiResponse.forbidden(message="只有队长可以更新队伍信息")
 
         # 检查更新频率限制（10分钟）
-        if team.updated_at:
+        # 判断是否为首次更新：如果 updated_at 和 created_at 的差值小于 3 秒，视为首次更新
+        time_diff = (team.updated_at - team.created_at).total_seconds()
+        is_first_update = abs(time_diff) < 3
+
+        if not is_first_update:
             time_since_last_update = timezone.now() - team.updated_at
             minimum_interval = timedelta(minutes=10)
 
