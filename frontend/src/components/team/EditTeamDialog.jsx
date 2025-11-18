@@ -23,7 +23,7 @@ const EditTeamDialog = ({
   onClose,
   onSubmit,
   title = "编辑队伍",
-  confirmText = "保存",
+  confirmText = "保存修改",
   cancelText = "取消",
 }) => {
   const confirm = useConfirm();
@@ -83,9 +83,13 @@ const EditTeamDialog = ({
   };
 
   const handleConfirm = async () => {
-    const { confirmed, reason } = await confirm({
-      title: "确认保存",
-      description: `确定要保存修改吗？每10分钟仅能修改一次。`,
+    const isCreate = confirmText === "创建";
+
+    const { confirmed} = await confirm({
+      title: isCreate?"确认创建":"确认保存",
+      description: isCreate
+      ? "确定要创建吗？每10分钟仅能修改一次。"
+      : "确定要保存修改吗？每10分钟仅能修改一次。",
       confirmationText: "保存",
       cancellationText: "取消",
     });
@@ -112,7 +116,6 @@ const EditTeamDialog = ({
         setError(maybeError);
         setSubmitting(false);
       } else {
-        // 成功后由父组件决定是否刷新数据；这里直接关闭
         onClose?.();
       }
     } catch (e) {
