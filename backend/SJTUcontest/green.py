@@ -6,6 +6,7 @@ from alibabacloud_green20220302.client import Client
 from alibabacloud_green20220302 import models
 from alibabacloud_tea_openapi.models import Config
 from datetime import datetime
+from pathlib import Path
 import json
 
 config = Config(
@@ -27,9 +28,12 @@ detection_type = [
     "team.introduction",
 ]
 
+LOG_FILE = Path(settings.BASE_DIR) / "logs" / "content_detection_risks.log"
+LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+
 
 def write_detection_log(content):
-    with open("content_detection_risks_log.txt", "a") as f:
+    with LOG_FILE.open("a", encoding="utf-8") as f:
         f.write("====================\n")
         f.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S\n"))
         f.write(content)
@@ -38,7 +42,6 @@ def write_detection_log(content):
 
 def detect_content(content, user_id, type):
     """内容审核"""
-    return True
     if type not in detection_type:
         return False
 

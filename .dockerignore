@@ -1,0 +1,18 @@
+# Global ignores for Docker build contexts
+.git
+.gitignore
+README.md
+LICENSE
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache/
+backend/.env*
+backend/logs/
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+**/.DS_Store
+.vscode/
+.idea/
