@@ -92,46 +92,46 @@ const Teams = () => {
       setError("");
 
       try {
-        const filters = {
-          status: selectedStatus ? [selectedStatus] : [],
-        };
+        let res;
 
-        const res = contest_id
+      if (search.trim()) {
+        res = await teamAPI.searchTeamsByName(
+          search.trim(),
+          pageIndex,
+          pageSize
+        );
+      } else {
+        res = contest_id
           ? await teamAPI.getRecruitingTeamsOfContest(
               contest_id,
               pageIndex,
-              pageSize,
-              filters,
+              pageSize
             )
-          : await teamAPI.getRecruitingTeams(pageIndex, pageSize, filters);
-
-        if (res.success) {
-          setTeams(res.data.teams || []);
-          setPageCount(res.data.total_pages);
-
-          const myTeam = (res.data.teams || []).find((team) =>
-            team.members?.some((m) => m.id === myId && m.is_leader),
-          );
-
-          sethaveCreatedTeam(myTeam || null);
-        } else {
-          setError(res.message || "获取队伍列表失败");
-        }
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setError("网络错误，请稍后重试");
-          console.error("获取队伍列表出错:", err);
-        }
-      } finally {
-        setLoading(false);
+          : await teamAPI.getRecruitingTeams(
+              pageIndex,
+              pageSize
+            );
       }
 
-      return () => controller.abort();
-    };
+      if (res.success) {
+        setTeams(res.data.teams || []);
+        setPageCount(res.data.total_pages);
+      } else {
+        setError(res.message || "获取队伍列表失败");
+      }
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        setError("网络错误，请稍后重试");
+      }
+    } finally {
+      setLoading(false);
+    }
 
-    fetchTeams();
-  }, [contest_id, pageIndex, pageSize, search, selectedStatus]);
+    return () => controller.abort();
+  };
 
+  fetchTeams();
+}, [contest_id, pageIndex, pageSize, search]);
   const handleCreateTeam = async (form) => {
     try {
       const resp = await teamAPI.createTeam({
@@ -209,7 +209,7 @@ const Teams = () => {
       >
         <Stack direction="row" spacing={1}>
           <TextField
-            label="搜索队伍名称"
+            label="搜索队伍"
             size="small"
             value={search}
             onChange={(e) => {
