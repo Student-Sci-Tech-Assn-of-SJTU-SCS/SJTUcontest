@@ -15,12 +15,15 @@ import {
   Stack,
   Tooltip,
   TextField,
+  Grid,
+  useTheme,
+  alpha,
 } from "@mui/material";
 
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import { useMediaQuery } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
+import { createFadeInAnim } from "../../styles/animations";
 
 import { teamAPI } from "../../services/TeamServices";
 import EditTeamDialog from "../../components/team/EditTeamDialog";
@@ -42,10 +45,12 @@ function getNowDateTimeString() {
 
 const Teams = () => {
   const { contest_id } = useParams();
+  const theme = useTheme();
+  const navigate = useNavigate();
+
   const [teams, setTeams] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState(null);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -53,14 +58,14 @@ const Teams = () => {
   const currentUser = getCurrentUser();
   const myId = currentUser?.id;
   const [haveCreatedTeam, sethaveCreatedTeam] = useState(null);
-
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const navigate = useNavigate();
-
-  const theme = createTheme();
   const sm = useMediaQuery(theme.breakpoints.down("md"));
-  const pageSize = sm ? 6 : 12;
+  const md = useMediaQuery(theme.breakpoints.between("md", "lg"));
+
+  const pageColumns = sm ? 1 : 2;
+  const pageRows = 5;
+  const pageSize = pageColumns * pageRows;
 
   const handleSubmitEdit = async (editForm) => {
     const isoDeadline = new Date(editForm.recruitment_deadline).toISOString();
@@ -94,44 +99,41 @@ const Teams = () => {
       try {
         let res;
 
-      if (search.trim()) {
-        res = await teamAPI.searchTeamsByName(
-          search.trim(),
-          pageIndex,
-          pageSize
-        );
-      } else {
-        res = contest_id
-          ? await teamAPI.getRecruitingTeamsOfContest(
-              contest_id,
-              pageIndex,
-              pageSize
-            )
-          : await teamAPI.getRecruitingTeams(
-              pageIndex,
-              pageSize
-            );
+        if (search.trim()) {
+          res = await teamAPI.searchTeamsByName(
+            search.trim(),
+            pageIndex,
+            pageSize,
+          );
+        } else {
+          res = contest_id
+            ? await teamAPI.getRecruitingTeamsOfContest(
+                contest_id,
+                pageIndex,
+                pageSize,
+              )
+            : await teamAPI.getRecruitingTeams(pageIndex, pageSize);
+        }
+
+        if (res.success) {
+          setTeams(res.data.teams || []);
+          setPageCount(res.data.total_pages);
+        } else {
+          setError(res.message || "获取队伍列表失败");
+        }
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setError("网络错误，请稍后重试");
+        }
+      } finally {
+        setLoading(false);
       }
 
-      if (res.success) {
-        setTeams(res.data.teams || []);
-        setPageCount(res.data.total_pages);
-      } else {
-        setError(res.message || "获取队伍列表失败");
-      }
-    } catch (err) {
-      if (err.name !== "AbortError") {
-        setError("网络错误，请稍后重试");
-      }
-    } finally {
-      setLoading(false);
-    }
+      return () => controller.abort();
+    };
 
-    return () => controller.abort();
-  };
-
-  fetchTeams();
-}, [contest_id, pageIndex, pageSize, search]);
+    fetchTeams();
+  }, [contest_id, pageIndex, pageSize, search]);
   const handleCreateTeam = async (form) => {
     try {
       const resp = await teamAPI.createTeam({
@@ -169,7 +171,7 @@ const Teams = () => {
         const firstKey = Object.keys(resp.data)[0];
         const firstVal = resp.data[firstKey];
         if (Array.isArray(firstVal) && firstVal.length > 0) {
-          msg = firstVal[0];  // ⬅️ 获取队伍名称包含敏感内容，请修改
+          msg = firstVal[0]; // ⬅️ 获取队伍名称包含敏感内容，请修改
         }
       }
 
@@ -184,8 +186,9 @@ const Teams = () => {
   return (
     <Box
       sx={{
+        minHeight: "100vh",
+        py: 6,
         px: { xs: 2, sm: 5 },
-        py: 5,
         transition: "width 0.5s ease",
       }}
     >
@@ -193,39 +196,77 @@ const Teams = () => {
         variant="h4"
         fontWeight={700}
         gutterBottom
-        sx={{ letterSpacing: 1, color: "#222", textAlign: "center" }}
+        sx={{
+          letterSpacing: 2,
+          textAlign: "center",
+          background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          mb: 1,
+          textShadow: `0 2px 10px ${alpha(theme.palette.primary.main, 0.12)}`,
+          animation: "fadeInDown 1s ease-out",
+          ...createFadeInAnim({
+            name: "fadeInDown",
+            direction: "down",
+          }),
+        }}
       >
         {contest_id ? "赛事队伍" : "队伍列表"}
       </Typography>
-      <Divider sx={{ mb: 4, mx: "auto", width: 120, borderColor: "#1976d2" }} />
+      <Divider
+        sx={{
+          mb: 4,
+          mx: "auto",
+          width: 120,
+          height: 4,
+          borderRadius: 2,
+          background: `linear-gradient(90deg, ${theme.palette.primary.light}, ${theme.palette.secondary.main})`,
+          animation: "fadeInLeft 1s ease-out",
+          ...createFadeInAnim({
+            name: "fadeInLeft",
+            direction: "left",
+            distance: 60,
+          }),
+        }}
+      />
 
-      {/* 搜索和筛选控制区域 */}
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        spacing={2}
-        sx={{ mb: 3 }}
-        justifyContent="flex-end"
-        alignItems="center"
+      {/* 搜索栏 */}
+      <Box
+        sx={{
+          mb: 4,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 2,
+        }}
       >
-        <Stack direction="row" spacing={1}>
+        <Box sx={{ flex: 1 }} />
+        <Stack direction="row" spacing={1} alignItems="center">
           <TextField
             label="搜索队伍"
             size="small"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setPageIndex(1); // 输入时重置分页
+              setPageIndex(1);
             }}
             placeholder="请输入队伍名称"
-            sx={{ width: 200 }}
+            sx={{
+              width: 200,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              },
+            }}
           />
 
           {contest_id ? (
-            // 正常显示创建队伍/编辑队伍逻辑
             haveCreatedTeam ? (
               <Button
                 variant="outlined"
                 onClick={() => setShowCreateForm(true)}
+                sx={{ borderRadius: 2 }}
               >
                 编辑已创建的队伍
               </Button>
@@ -233,12 +274,12 @@ const Teams = () => {
               <Button
                 variant="contained"
                 onClick={() => setShowCreateForm(true)}
+                sx={{ borderRadius: 2 }}
               >
                 创建新队伍
               </Button>
             )
           ) : (
-            // 非赛事页面：显示问号按钮
             <Tooltip title="查看帮助">
               <IconButton onClick={() => setHelpOpen(true)} color="primary">
                 <HelpOutlineIcon />
@@ -246,12 +287,12 @@ const Teams = () => {
             </Tooltip>
           )}
         </Stack>
-      </Stack>
+      </Box>
 
       {/* 队伍列表 */}
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
-          <CircularProgress />
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+          <CircularProgress size={20} value={25} />
         </Box>
       ) : error ? (
         <Typography color="error" align="center" sx={{ mt: 5 }}>
@@ -259,20 +300,84 @@ const Teams = () => {
         </Typography>
       ) : (
         <>
-          <Box>
+          <Grid
+            container
+            spacing={3}
+            justifyContent="space-between"
+            alignItems="stretch"
+            sx={{
+              transition: "all ease-in-out 0.5s",
+            }}
+          >
             {teams.length === 0 ? (
-              <Typography align="center" color="text.secondary" sx={{ py: 6 }}>
-                "当前没有正在招募的队伍"
-              </Typography>
+              <Grid size={{ xs: 12 }}>
+                <Box
+                  sx={{
+                    mt: 2,
+                    height: 150,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 5,
+                    bgcolor: alpha(theme.palette.primary.light, 0.08),
+                    boxShadow: `0 2px 12px ${alpha(theme.palette.primary.main, 0.08)}`,
+                  }}
+                >
+                  <Typography
+                    color="text.secondary"
+                    align="center"
+                    sx={{
+                      fontSize: "1.1rem",
+                      animation: "fadeIn 0.8s ease-out",
+                      ...createFadeInAnim({ name: "fadeIn" }),
+                    }}
+                  >
+                    当前没有正在招募的队伍
+                  </Typography>
+                </Box>
+              </Grid>
             ) : (
-              teams.map((team) => {
+              teams.map((team, idx) => {
                 const isMeInTeam = team.members?.some((m) => m.id === myId);
                 return (
-                  <TeamCard key={team.id} team={team} highlight={isMeInTeam} />
+                  <Grid
+                    key={team.id}
+                    size={{ sm: 12, md: 6 }}
+                    display="flex"
+                    justifyContent="center"
+                    sx={{
+                      animation: `${
+                        idx % pageColumns === 0
+                          ? "cardFadeInLeft"
+                          : idx % pageColumns === pageColumns - 1
+                            ? "cardFadeInRight"
+                            : "cardFadeInUp"
+                      } 0.7s ease-out forwards`,
+                      animationDelay: `${idx * 0.08 + 0.2}s`,
+                      opacity: 0,
+                      ...createFadeInAnim({
+                        name: "cardFadeInLeft",
+                        direction: "left",
+                        distance: 60,
+                      }),
+                      ...createFadeInAnim({
+                        name: "cardFadeInRight",
+                        direction: "right",
+                        distance: 60,
+                      }),
+                      ...createFadeInAnim({
+                        name: "cardFadeInUp",
+                        direction: "up",
+                        distance: 30,
+                      }),
+                    }}
+                  >
+                    <TeamCard team={team} highlight={isMeInTeam} />
+                  </Grid>
                 );
               })
             )}
-          </Box>
+          </Grid>
 
           {pageCount > 1 && (
             <Box display="flex" justifyContent="center" mt={4}>
@@ -282,25 +387,14 @@ const Teams = () => {
                 onChange={(_, value) => setPageIndex(value)}
                 color="primary"
                 shape="rounded"
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    borderRadius: 3,
+                  },
+                }}
               />
             </Box>
           )}
-
-          <Box
-            sx={{
-              mt: 4,
-              mb: 2,
-              display: "flex",
-              alignItems: "center",
-              color: "text.secondary",
-            }}
-          >
-            <Divider sx={{ flex: 1 }} />
-            <Typography sx={{ mx: 2, whiteSpace: "nowrap", fontSize: 14 }}>
-              仅显示招募未截止且未满员的队伍
-            </Typography>
-            <Divider sx={{ flex: 1 }} />
-          </Box>
         </>
       )}
 

@@ -6,7 +6,7 @@ export const teamAPI = {
   getRecruitingTeams: async (page_index, page_size, config) => {
     const response = await api.post(
       "teams/",
-      { page_index, page_size,},
+      { page_index, page_size },
       config,
     );
     return response;
@@ -34,11 +34,10 @@ export const teamAPI = {
     const response = await api.post(
       "teams/search/",
       { team_name, page_index, page_size },
-      config
+      config,
     );
     return response;
   },
-
 
   // 获取队伍详情
   getTeamDetail: async (team_id, config = {}) => {

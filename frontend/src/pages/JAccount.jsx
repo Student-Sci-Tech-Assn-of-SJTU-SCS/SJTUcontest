@@ -38,6 +38,7 @@ const JAccount = () => {
   return (
     <div className="callback-container">
       <h2>正在处理jAccount登录...</h2>
+      <h3>首次登录耗时较长，请稍后...</h3>
       <div className="spinner"></div>
     </div>
   );

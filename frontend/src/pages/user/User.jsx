@@ -147,7 +147,7 @@ export default function User() {
           {
             signal: controller.signal,
             validateStatus(status) {
-              return status >= 200 && status < 300 || status === 429;
+              return (status >= 200 && status < 300) || status === 429;
             },
           },
         );

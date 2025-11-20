@@ -226,7 +226,7 @@ const Contests = () => {
           }),
         }}
       >
-        比赛
+        赛事列表
       </Typography>
       <Divider
         sx={{

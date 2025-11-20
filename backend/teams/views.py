@@ -370,8 +370,7 @@ def search_teams_by_name(request):
 
         # 根据队伍名称进行模糊查询，按更新时间倒序排列
         teams = Team.objects.filter(
-            Q(name__icontains=team_name) |
-            Q(introduction__icontains=team_name)
+            Q(name__icontains=team_name) | Q(introduction__icontains=team_name)
         ).order_by("-updated_at")
 
         # 分页处理

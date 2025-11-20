@@ -7,6 +7,7 @@
 3. 执行`npm run dev`, 即可在 **5173** 端口上访问前端页面.
 
 **在`frontend/`目录下创建`.env`并配置以下字段：**
+
 ```
 # 开发环境无需改动该值
 VITE_API_BASE_URL=http://localhost:8000/api/

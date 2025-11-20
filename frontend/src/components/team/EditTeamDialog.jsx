@@ -85,11 +85,11 @@ const EditTeamDialog = ({
   const handleConfirm = async () => {
     const isCreate = confirmText === "创建";
 
-    const { confirmed} = await confirm({
-      title: isCreate?"确认创建":"确认保存",
+    const { confirmed } = await confirm({
+      title: isCreate ? "确认创建" : "确认保存",
       description: isCreate
-      ? "确定要创建吗？每10分钟仅能修改一次。"
-      : "确定要保存修改吗？每10分钟仅能修改一次。",
+        ? "确定要创建吗？每10分钟仅能修改一次。"
+        : "确定要保存修改吗？每10分钟仅能修改一次。",
       confirmationText: "保存",
       cancellationText: "取消",
     });

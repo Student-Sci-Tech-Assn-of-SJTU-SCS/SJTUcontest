@@ -332,7 +332,7 @@ const MainLayout = () => {
                 transition: "all 0.3s ease",
               }}
             >
-              赛事列表
+              赛事
             </Button>
             <Button
               color="inherit"
@@ -441,7 +441,7 @@ const MainLayout = () => {
                   transition: "all 0.3s ease",
                 }}
               >
-                管理员面板
+                管理员
               </Button>
             )}
           </Box>
