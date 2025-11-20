@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import SearchIcon from "@mui/icons-material/Search";
 
 import { useMediaQuery } from "@mui/material";
 import { createFadeInAnim } from "../../styles/animations";
@@ -50,7 +51,8 @@ const Teams = () => {
 
   const [teams, setTeams] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [pageIndex, setPageIndex] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -99,9 +101,9 @@ const Teams = () => {
       try {
         let res;
 
-        if (search.trim()) {
+        if (searchQuery.trim()) {
           res = await teamAPI.searchTeamsByName(
-            search.trim(),
+            searchQuery.trim(),
             pageIndex,
             pageSize,
           );
@@ -133,7 +135,7 @@ const Teams = () => {
     };
 
     fetchTeams();
-  }, [contest_id, pageIndex, pageSize, search]);
+  }, [contest_id, pageIndex, pageSize, searchQuery]);
   const handleCreateTeam = async (form) => {
     try {
       const resp = await teamAPI.createTeam({
@@ -180,6 +182,17 @@ const Teams = () => {
       }
 
       return msg;
+    }
+  };
+
+  const handleSearch = () => {
+    setSearchQuery(searchInput);
+    setPageIndex(1);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
     }
   };
 
@@ -247,11 +260,9 @@ const Teams = () => {
           <TextField
             label="搜索队伍"
             size="small"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPageIndex(1);
-            }}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder="请输入队伍名称"
             sx={{
               width: 200,
@@ -260,6 +271,18 @@ const Teams = () => {
               },
             }}
           />
+          <IconButton
+            color="primary"
+            onClick={handleSearch}
+            sx={{
+              bgcolor: alpha(theme.palette.primary.main, 0.1),
+              "&:hover": {
+                bgcolor: alpha(theme.palette.primary.main, 0.2),
+              },
+            }}
+          >
+            <SearchIcon />
+          </IconButton>
 
           {contest_id ? (
             haveCreatedTeam ? (
