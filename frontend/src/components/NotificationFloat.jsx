@@ -163,7 +163,7 @@ const NotificationFloat = () => {
             variant="contained"
             fullWidth
             endIcon={<ArrowForwardIcon sx={{ fontSize: 16 }} />}
-            onClick={() => window.open("https://www.baidu.com", "_blank")}
+            onClick={() => window.open("https://ssc.sjtu.edu.cn/dashboard/0a33e467", "_blank")}
             sx={{
               borderRadius: 20,
               py: 0.8,

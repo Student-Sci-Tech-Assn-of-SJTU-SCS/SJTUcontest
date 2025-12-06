@@ -16,6 +16,7 @@ const levelTags = {
     REGIONAL: new TagClass("regional", "省市级", categories.LEVEL),
     NATIONAL: new TagClass("national", "国家级", categories.LEVEL),
     INTERNATIONAL: new TagClass("international", "国际级", categories.LEVEL),
+    OTHERS: new TagClass("others", "其他", categories.LEVEL),
   },
   qualityTags = {
     TOP: new TagClass("top", "专项赛事", categories.QUAL),
@@ -23,6 +24,7 @@ const levelTags = {
     B_LEVEL: new TagClass("B_level", "B类赛事", categories.QUAL),
     C_LEVEL: new TagClass("C_level", "C类赛事", categories.QUAL),
     D_LEVEL: new TagClass("D_level", "D类赛事", categories.QUAL),
+    OTHERS: new TagClass("others", "其他", categories.QUAL),
   },
   keywordTags = {
     CS: new TagClass("CS", "计算机科学", categories.KWORD),
