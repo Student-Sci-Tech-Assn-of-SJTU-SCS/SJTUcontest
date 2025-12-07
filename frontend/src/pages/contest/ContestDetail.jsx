@@ -127,14 +127,9 @@ export default function ContestDetail() {
           <Box sx={{ textAlign: "center", mb: 4 }}>
             <Typography
               variant="h4"
+              title={contest.name}
               sx={{
                 fontWeight: "bold",
-                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                letterSpacing: 2,
-                textShadow: `0 4px 20px ${alpha(theme.palette.primary.main, 0.15)}`,
                 mb: 2,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -144,7 +139,7 @@ export default function ContestDetail() {
               {contest.name}
             </Typography>
             <Button
-              variant="contained"
+              variant="outlined"
               size="large"
               sx={{
                 borderRadius: 20,
@@ -152,7 +147,6 @@ export default function ContestDetail() {
                 py: 1.5,
                 fontWeight: 600,
                 fontSize: "1.05rem",
-                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
                 boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.18)}`,
                 transition: "all 0.3s",
                 "&:hover": {
@@ -167,7 +161,7 @@ export default function ContestDetail() {
           </Box>
 
           {/* 赛事主要信息 */}
-          <Grid container spacing={3} sx={{ mb: 6 }}>
+          <Grid container spacing={3} sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>
                 <strong>报名时间：</strong>{" "}
@@ -220,7 +214,7 @@ export default function ContestDetail() {
               variant="body2"
               sx={{
                 lineHeight: 1.7,
-                fontSize: "1.08rem",
+                fontSize: "1.0rem",
                 color: alpha(theme.palette.text.primary, 0.95),
                 mb: 1,
               }}
@@ -240,7 +234,7 @@ export default function ContestDetail() {
                 underline="hover"
                 sx={{
                   fontWeight: 500,
-                  fontSize: "1.05rem",
+                  fontSize: "1.0rem",
                   color: theme.palette.primary.main,
                   wordBreak: "break-all",
                   "&:hover": {
