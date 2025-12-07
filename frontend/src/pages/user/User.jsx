@@ -13,7 +13,7 @@ import {
   Tooltip,
   Typography,
   useTheme,
-  alpha
+  alpha,
 } from "@mui/material";
 import { InfoOutline } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
@@ -316,12 +316,10 @@ export default function User() {
                 placeholder="空空如也……"
                 onChange={(e) => setExperience(e.target.value)}
                 onFocus={() => {
-                  if (userIdentity === "me")
-                    setExpTooltipOpen(true);
+                  if (userIdentity === "me") setExpTooltipOpen(true);
                 }}
                 onBlur={() => {
-                  if (userIdentity === "me")
-                    setExpTooltipOpen(false);
+                  if (userIdentity === "me") setExpTooltipOpen(false);
                 }}
                 multiline
                 minRows={3}
@@ -335,7 +333,7 @@ export default function User() {
                   },
                   htmlInput: {
                     maxLength: 500,
-                  }
+                  },
                 }}
                 sx={{
                   borderRadius: 3,
@@ -381,12 +379,10 @@ export default function User() {
                 placeholder="空空如也……"
                 onChange={(e) => setSpecialty(e.target.value)}
                 onFocus={() => {
-                  if (userIdentity === "me")
-                    setSpecTooltipOpen(true);
+                  if (userIdentity === "me") setSpecTooltipOpen(true);
                 }}
                 onBlur={() => {
-                  if (userIdentity === "me")
-                    setSpecTooltipOpen(false);
+                  if (userIdentity === "me") setSpecTooltipOpen(false);
                 }}
                 multiline
                 minRows={3}
@@ -400,7 +396,7 @@ export default function User() {
                   },
                   htmlInput: {
                     maxLength: 500,
-                  }
+                  },
                 }}
                 sx={{
                   borderRadius: 3,
@@ -457,7 +453,9 @@ export default function User() {
               />
 
               <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
+                >
                   <Typography
                     variant="h5"
                     sx={{

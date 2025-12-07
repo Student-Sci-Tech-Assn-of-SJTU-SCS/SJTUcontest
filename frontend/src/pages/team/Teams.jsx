@@ -459,7 +459,6 @@ const Teams = () => {
               underline="hover"
               onClick={() => navigate("/contests")}
               sx={{
-                
                 color: theme.palette.primary.main,
                 textDecoration: "none",
                 fontWeight: 600,
