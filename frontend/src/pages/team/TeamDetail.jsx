@@ -27,6 +27,7 @@ import { teamAPI } from "../../services/TeamServices";
 import { contestAPI } from "../../services/ContestServices";
 
 import EditTeamDialog from "../../components/team/EditTeamDialog";
+import showMessage from "../../utils/message";
 
 const TeamDetail = () => {
   const { team_id } = useParams();
@@ -53,11 +54,11 @@ const TeamDetail = () => {
     recruitment_deadline: "",
   });
 
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "info",
-  });
+  // const [snackbar, setSnackbar] = useState({
+  //   open: false,
+  //   message: "",
+  //   severity: "info",
+  // });
 
   const formatDatetimeLocal = (isoString) => {
     const date = new Date(isoString);
@@ -97,11 +98,12 @@ const TeamDetail = () => {
       setIsMember(memberFlag);
       setIsLeader(leaderFlag);
     } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "加载队伍信息失败",
-        severity: "error",
-      });
+      showMessage("加载队伍信息失败", "error");
+      // setSnackbar({
+      //   open: true,
+      //   message: "加载队伍信息失败",
+      //   severity: "error",
+      // });
     } finally {
       setLoading(false);
     }
@@ -114,21 +116,25 @@ const TeamDetail = () => {
   const handleJoin = async () => {
     try {
       await teamAPI.joinTeam(team_id, inputCode);
-      setSnackbar({ open: true, message: "成功加入队伍", severity: "success" });
+      showMessage("成功加入队伍", "success");
+      // setSnackbar({ open: true, message: "成功加入队伍", severity: "success" });
       await fetchTeamData();
     } catch (error) {
-      setSnackbar({ open: true, message: "加入队伍失败", severity: "error" });
+      showMessage("加入队伍失败", "error");
+      // setSnackbar({ open: true, message: "加入队伍失败", severity: "error" });
     }
   };
 
   const handleQuit = async () => {
     try {
       await teamAPI.leaveTeam(team_id);
-      setSnackbar({ open: true, message: "已退出队伍", severity: "success" });
+      showMessage("已退出队伍", "success");
+      // setSnackbar({ open: true, message: "已退出队伍", severity: "success" });
       setIsMember(false);
       await fetchTeamData();
     } catch (error) {
-      setSnackbar({ open: true, message: "退出失败", severity: "error" });
+      showMessage("退出失败", "error");
+      // setSnackbar({ open: true, message: "退出失败", severity: "error" });
     }
   };
 
@@ -136,7 +142,8 @@ const TeamDetail = () => {
     try {
       setDeleting(true);
       await teamAPI.deleteTeam(team_id);
-      setSnackbar({ open: true, message: "队伍已删除", severity: "success" });
+      showMessage("队伍已删除", "success");
+      // setSnackbar({ open: true, message: "队伍已删除", severity: "success" });
       const target = team?.contest
         ? `/contests/${team.contest}/teams`
         : "/teams";
@@ -147,7 +154,8 @@ const TeamDetail = () => {
         error?.response?.data?.detail ||
         error?.message ||
         "删除失败";
-      setSnackbar({ open: true, message: msg, severity: "error" });
+      showMessage(msg, "error");
+      // setSnackbar({ open: true, message: msg, severity: "error" });
     } finally {
       setDeleting(false);
       setDeleteOpen(false);
@@ -165,11 +173,12 @@ const TeamDetail = () => {
       isoDeadline,
     );
 
-    setSnackbar({
-      open: true,
-      message: "更新成功",
-      severity: "success",
-    });
+    showMessage("更新成功", "success");
+    // setSnackbar({
+    //   open: true,
+    //   message: "更新成功",
+    //   severity: "success",
+    // });
 
     const updated = await teamAPI.getTeamDetail(team_id);
     setTeam(updated.data);
@@ -177,7 +186,7 @@ const TeamDetail = () => {
     return null;
   };
 
-  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
+  // const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
   const handleFetchInvitationCode = async () => {
     try {
@@ -185,21 +194,23 @@ const TeamDetail = () => {
       setInvitationCode(res.data?.invitation_code || "");
       setDialogOpen(true);
     } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "获取邀请码失败",
-        severity: "error",
-      });
+      showMessage("获取邀请码失败", "error");
+      // setSnackbar({
+      //   open: true,
+      //   message: "获取邀请码失败",
+      //   severity: "error",
+      // });
     }
   };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(invitationCode);
-    setSnackbar({
-      open: true,
-      message: "邀请码已复制",
-      severity: "success",
-    });
+    showMessage("邀请码已复制到剪贴板", "success");
+    // setSnackbar({
+    //   open: true,
+    //   message: "邀请码已复制",
+    //   severity: "success",
+    // });
   };
 
   if (loading) {
@@ -542,7 +553,7 @@ const TeamDetail = () => {
       />
 
       {/* 提示框 */}
-      <Snackbar
+      {/* <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
@@ -555,7 +566,7 @@ const TeamDetail = () => {
         >
           {snackbar.message}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </Box>
   );
 };

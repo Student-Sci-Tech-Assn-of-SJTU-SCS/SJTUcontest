@@ -30,6 +30,7 @@ import { teamAPI } from "../../services/TeamServices";
 import EditTeamDialog from "../../components/team/EditTeamDialog";
 import TeamCard from "../../components/team/TeamCard";
 import { getCurrentUser } from "../../utils/auth";
+import showMessage from "../../utils/message";
 
 function getNowDateTimeString() {
   const now = new Date();
@@ -80,11 +81,12 @@ const Teams = () => {
       isoDeadline,
     );
 
-    setSnackbar({
-      open: true,
-      message: "更新成功",
-      severity: "success",
-    });
+    showMessage("更新成功", "success");
+    // setSnackbar({
+    //   open: true,
+    //   message: "更新成功",
+    //   severity: "success",
+    // });
 
     const updated = await teamAPI.getTeamDetail(team_id);
     setTeam(updated.data);
@@ -121,12 +123,13 @@ const Teams = () => {
           setTeams(res.data.teams || []);
           setPageCount(res.data.total_pages);
         } else {
+          showMessage(`获取比赛列表失败`, "error");
           setError(res.message || "获取队伍列表失败");
         }
       } catch (err) {
-        if (err.name !== "AbortError") {
-          setError("网络错误，请稍后重试");
-        }
+        if (axios.isCancel(err)) return;
+        showMessage(`获取队伍列表失败：网络错误`, "error");
+        setError("网络错误，请稍后重试");
       } finally {
         setLoading(false);
       }
