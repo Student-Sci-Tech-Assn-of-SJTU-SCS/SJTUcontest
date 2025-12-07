@@ -16,6 +16,7 @@ import {
   Tooltip,
   TextField,
   Grid,
+  Link,
   useTheme,
   alpha,
 } from "@mui/material";
@@ -453,8 +454,25 @@ const Teams = () => {
         <DialogTitle>提示</DialogTitle>
         <DialogContent>
           <Typography>
-            队伍列表无法创建队伍，请在「赛事列表 →
-            寻找参赛团队」中创建您的队伍。
+            如果需要创建队伍，请前往
+            <Link
+              underline="hover"
+              onClick={() => navigate("/contests")}
+              sx={{
+                
+                color: theme.palette.primary.main,
+                textDecoration: "none",
+                fontWeight: 600,
+                mx: 0.5,
+                cursor: "pointer",
+                "&:hover": {
+                  color: theme.palette.primary.main,
+                },
+              }}
+            >
+              赛事列表
+            </Link>
+            选择您需要参加的比赛，并进入对应的「寻找参赛团队」页面。
           </Typography>
         </DialogContent>
         <DialogActions>
