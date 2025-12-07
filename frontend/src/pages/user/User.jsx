@@ -10,6 +10,7 @@ import {
   Grid,
   Pagination,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
@@ -38,6 +39,10 @@ export default function User() {
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // 受控 tooltip 状态（focus 显示，blur 隐藏）
+  const [expTooltipOpen, setExpTooltipOpen] = useState(false);
+  const [specTooltipOpen, setSpecTooltipOpen] = useState(false);
 
   useEffect(() => {
     if (user_id == getCurrentUser().id) {
@@ -124,7 +129,7 @@ export default function User() {
   const handleSave = async () => {
     const { confirmed, reason } = await confirm({
       title: "确认保存",
-      description: `确定要保存修改吗？每周仅能修改一次。`,
+      description: `确定要保存修改吗？每 1 小时仅能修改一次。`,
       confirmationText: "保存",
       cancellationText: "取消",
     });
@@ -147,7 +152,7 @@ export default function User() {
           {
             signal: controller.signal,
             validateStatus(status) {
-              return (status >= 200 && status < 300) || status === 429;
+              return (status >= 200 && status < 300) || status === 400;
             },
           },
         );
@@ -228,7 +233,7 @@ export default function User() {
                 textShadow: `0 2px 10px ${alpha(theme.palette.primary.main, 0.12)}`,
               }}
             >
-              个人主页
+              {userIdentity === "me" ? "个人" : "用户"}主页
             </Typography>
             <Divider
               sx={{
@@ -272,54 +277,136 @@ export default function User() {
                 background: alpha(theme.palette.primary.main, 0.02),
               }}
             />
-            <TextField
-              label="参赛经历 / 所获奖项"
-              value={userExperience || ""}
-              placeholder={
-                userIdentity === "me"
-                  ? "在这里填写您的参赛经历吧！"
-                  : "空空如也……"
+            <Tooltip
+              title={
+                <Box
+                  component="div"
+                  sx={{
+                    display: "block",
+                    whiteSpace: "pre-line",
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  在这里填写您的参赛经历和获奖情况吧！
+                  {"\n"}
+                  已输入 {userExperience?.length || 0}/500 字
+                </Box>
               }
-              onChange={(e) => setExperience(e.target.value)}
-              multiline
-              minRows={3}
-              maxRows={10}
-              variant="outlined"
-              fullWidth
+              placement="right"
+              arrow
+              enterDelay={0}
+              disableHoverListener
+              disableTouchListener
               slotProps={{
-                input: {
-                  readOnly: userIdentity !== "me",
+                popper: {
+                  modifiers: [
+                    { name: "flip", enabled: false },
+                    { name: "preventOverflow", options: { padding: 8 } },
+                  ],
                 },
               }}
-              sx={{
-                borderRadius: 3,
-                background: alpha(theme.palette.primary.main, 0.02),
-                ...styleInnerScrollBar(theme),
-              }}
-            />
-            <TextField
-              label="特长"
-              value={userSpecialty || ""}
-              placeholder={
-                userIdentity === "me" ? "在这里填写您的特长吧！" : "空空如也……"
+              open={expTooltipOpen}
+            >
+              <TextField
+                label="参赛经历 / 获奖情况"
+                value={userExperience || ""}
+                placeholder="空空如也……"
+                onChange={(e) => setExperience(e.target.value)}
+                onFocus={() => {
+                  if (userIdentity === "me")
+                    setExpTooltipOpen(true);
+                }}
+                onBlur={() => {
+                  if (userIdentity === "me")
+                    setExpTooltipOpen(false);
+                }}
+                multiline
+                minRows={3}
+                maxRows={10}
+                variant="outlined"
+                fullWidth
+                // disabled={userIdentity !== "me"}
+                slotProps={{
+                  input: {
+                    readOnly: userIdentity !== "me",
+                  },
+                  htmlInput: {
+                    maxLength: 500,
+                  }
+                }}
+                sx={{
+                  borderRadius: 3,
+                  background: alpha(theme.palette.primary.main, 0.02),
+                  ...styleInnerScrollBar(theme),
+                }}
+              />
+            </Tooltip>
+            <Tooltip
+              title={
+                <Box
+                  component="div"
+                  sx={{
+                    display: "block",
+                    whiteSpace: "pre-line",
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  在这里展示您的优势和特长吧！
+                  {"\n"}
+                  已输入 {userSpecialty?.length || 0}/500 字
+                </Box>
               }
-              onChange={(e) => setSpecialty(e.target.value)}
-              multiline
-              minRows={2}
-              maxRows={8}
-              variant="outlined"
-              fullWidth
+              placement="right"
+              arrow
+              enterDelay={0}
+              disableHoverListener
+              disableTouchListener
               slotProps={{
-                input: {
-                  readOnly: userIdentity !== "me",
+                popper: {
+                  modifiers: [
+                    { name: "flip", enabled: false },
+                    { name: "preventOverflow", options: { padding: 8 } },
+                  ],
                 },
               }}
-              sx={{
-                borderRadius: 3,
-                background: alpha(theme.palette.primary.main, 0.02),
-                ...styleInnerScrollBar(theme),
-              }}
-            />
+              open={specTooltipOpen}
+            >
+              <TextField
+                label="特长"
+                value={userSpecialty || ""}
+                placeholder="空空如也……"
+                onChange={(e) => setSpecialty(e.target.value)}
+                onFocus={() => {
+                  if (userIdentity === "me")
+                    setSpecTooltipOpen(true);
+                }}
+                onBlur={() => {
+                  if (userIdentity === "me")
+                    setSpecTooltipOpen(false);
+                }}
+                multiline
+                minRows={3}
+                maxRows={10}
+                variant="outlined"
+                fullWidth
+                // disabled={userIdentity !== "me"}
+                slotProps={{
+                  input: {
+                    readOnly: userIdentity !== "me",
+                  },
+                  htmlInput: {
+                    maxLength: 500,
+                  }
+                }}
+                sx={{
+                  borderRadius: 3,
+                  background: alpha(theme.palette.primary.main, 0.02),
+                  ...styleInnerScrollBar(theme),
+                }}
+              />
+            </Tooltip>
 
             {/* 保存按钮 */}
             {userIdentity === "me" && (
