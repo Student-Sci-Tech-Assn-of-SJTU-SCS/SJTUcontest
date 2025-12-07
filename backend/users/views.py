@@ -67,12 +67,28 @@ def update_user_profile(request):
 
             if time_since_last_update < minimum_interval:
                 remaining_time = minimum_interval - time_since_last_update
-                remain_days = int(remaining_time.total_seconds() / 86400)
-                remain_hours = int(remaining_time.total_seconds() % 86400 / 3600)
+                message = "更新频率过快，请在"
+                remaining_days = int(remaining_time.total_seconds() / 86400)
+                if remaining_days != 0:
+                    message += f" {remaining_days} 天"
+                remaining_hours = int(remaining_time.total_seconds() % 86400 / 3600)
+                if remaining_hours != 0:
+                    message += f" {remaining_hours} 小时"
                 remaining_minutes = int(remaining_time.total_seconds() % 3600 / 60)
+                if remaining_minutes != 0:
+                    message += f" {remaining_minutes} 分"
+                # 一天之内的时间段显示分钟数和秒数
+                # 后面跟秒的时候用“请在...分...秒后再试”
+                if remaining_days == 0 and remaining_hours == 0:
+                    remaining_seconds = int(remaining_time.total_seconds() % 60)
+                    message += f" {remaining_seconds} 秒"
+                else:
+                    # 后面不跟秒的时候用“请在...分钟后再试”
+                    message += "钟"
+                message += "后再试"
 
                 return ApiResponse.error(
-                    message=f"更新频率过快，请在{remain_days}天{remain_hours}小时{remaining_minutes}分后再试",
+                    message=message,
                     status_code=400,
                 )
 
