@@ -138,13 +138,13 @@ function App() {
   return (
     <HotkeysProvider initiallyActiveScopes={["global"]}>
       <SnackbarProvider
-        // Components={{
-        //   success: styleSnackbar,
-        //   error: styleSnackbar,
-        //   warning: styleSnackbar,
-        //   info: styleSnackbar,
-        //   default: styleSnackbar,
-        // }}
+        Components={{
+          success: styleSnackbar,
+          error: styleSnackbar,
+          warning: styleSnackbar,
+          info: styleSnackbar,
+          default: styleSnackbar,
+        }}
         TransitionComponent={Grow}
         anchorOrigin={{
           vertical: "top",
