@@ -135,7 +135,7 @@ const UserDetail = () => {
 
       <Grid container spacing={3}>
         {/* 基本信息卡片 */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom color="primary">
@@ -211,7 +211,7 @@ const UserDetail = () => {
         </Grid>
 
         {/* 个人资料卡片 */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom color="primary">
@@ -253,7 +253,7 @@ const UserDetail = () => {
         </Grid>
 
         {/* 队伍信息卡片 */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
@@ -267,7 +267,7 @@ const UserDetail = () => {
               {userInfo.teams && userInfo.teams.length > 0 ? (
                 <Grid container spacing={2}>
                   {userInfo.teams.map((team) => (
-                    <Grid item xs={12} sm={6} md={4} key={team.id}>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={team.id}>
                       <Paper variant="outlined" sx={{ p: 2 }}>
                         <Typography variant="subtitle1" fontWeight="bold">
                           {team.name}

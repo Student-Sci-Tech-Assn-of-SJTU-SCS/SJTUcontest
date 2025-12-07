@@ -167,8 +167,8 @@ export default function ContestDetail() {
           </Box>
 
           {/* 赛事主要信息 */}
-          <Grid container spacing={3} sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={6}>
+          <Grid container spacing={3} sx={{ mb: 6 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>
                 <strong>报名时间：</strong>{" "}
                 {getRegTime(
@@ -177,18 +177,18 @@ export default function ContestDetail() {
                 )}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>
                 <strong>地点：</strong> {contest.place}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>
                 <strong>赛事级别：</strong>{" "}
                 {nameToTag(contest.level).description}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>
                 <strong>素拓等级：</strong>{" "}
                 {nameToTag(contest.quality).description}
