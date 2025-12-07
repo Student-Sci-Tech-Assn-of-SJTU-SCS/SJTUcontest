@@ -12,9 +12,11 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useTheme,
+  alpha
 } from "@mui/material";
+import { InfoOutline } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import { useTheme, alpha } from "@mui/material";
 import { useConfirm } from "material-ui-confirm";
 import { userAPI } from "../../services/UserServices";
 import { getCurrentUser } from "../../utils/auth";
@@ -455,31 +457,59 @@ export default function User() {
               />
 
               <Box sx={{ mb: 3 }}>
-                <Typography
-                  variant="h5"
-                  sx={{
-                    fontWeight: 700,
-                    mb: 2,
-                    background: `linear-gradient(135deg, 
-                      ${theme.palette.primary.main} 0%, 
-                      ${theme.palette.secondary.main} 100%)`,
-                    backgroundClip: "text",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                >
-                  我参加的队伍
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 700,
+                      background: `linear-gradient(135deg, 
+                        ${theme.palette.primary.main} 0%, 
+                        ${theme.palette.secondary.main} 100%)`,
+                      backgroundClip: "text",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    我参加的队伍
+                  </Typography>
+                  <Tooltip title="仅自己可见" placement="right">
+                    <InfoOutline
+                      sx={{
+                        fontSize: "1.3rem",
+                        color: theme.palette.primary.main,
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        "&:hover": {
+                          color: theme.palette.secondary.main,
+                          transform: "scale(1.15)",
+                        },
+                      }}
+                    />
+                  </Tooltip>
+                </Box>
                 <Grid container spacing={3}>
                   {userTeams.length === 0 ? (
                     <Grid size={{ xs: 12 }}>
-                      <Typography
-                        color="text.secondary"
-                        align="center"
-                        sx={{ mt: 8, fontSize: "1.1rem" }}
+                      <Box
+                        sx={{
+                          mt: 2,
+                          height: 150,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: 5,
+                          bgcolor: alpha(theme.palette.primary.light, 0.08),
+                          boxShadow: `0 2px 12px ${alpha(theme.palette.primary.main, 0.08)}`,
+                        }}
                       >
-                        没有参加的队伍
-                      </Typography>
+                        <Typography
+                          color="text.secondary"
+                          align="center"
+                          sx={{ fontSize: "1.1rem" }}
+                        >
+                          没有参加的队伍
+                        </Typography>
+                      </Box>
                     </Grid>
                   ) : (
                     userTeams.map((team) => (
