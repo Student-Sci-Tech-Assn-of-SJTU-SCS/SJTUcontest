@@ -37,7 +37,7 @@ export default function User() {
   const [userTeams, setUserTeams] = useState([]);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageCount, setPageCount] = useState(0);
-  const pageSize = 10;
+  const pageSize = 3;
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);

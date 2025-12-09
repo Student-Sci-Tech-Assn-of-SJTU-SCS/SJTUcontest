@@ -170,7 +170,8 @@ def join_team_by_id(request, team_id):
             # 邀请码合法：is_valid and 未过期
             if (
                 not team.is_invitation_code_valid
-                or (timezone.now() - team.invitation_code_created_at) >= timedelta(days=1)
+                or (timezone.now() - team.invitation_code_created_at)
+                >= timedelta(days=1)
                 or team.invitation_code != invitation_code
             ):
                 return ApiResponse.forbidden(message="非法的邀请码")
