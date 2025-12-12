@@ -157,6 +157,8 @@ const EditTeamDialog = ({
             onChange={(e) => setValues((s) => ({ ...s, name: e.target.value }))}
             required
             fullWidth
+            inputProps={{ maxLength: 50 }}
+            helperText={`${values.name?.length || 0}/50`}
           />
 
           <TextField
@@ -168,6 +170,8 @@ const EditTeamDialog = ({
             fullWidth
             multiline
             minRows={4}
+            inputProps={{ maxLength: 500 }}
+            helperText={`${values.introduction?.length || 0}/500`}
             placeholder={`按Tab键确认：
           - 项目方向：XXX
           - 希望招募：前端、视觉设计、网络安全
