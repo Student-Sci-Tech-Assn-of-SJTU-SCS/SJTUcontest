@@ -29,6 +29,7 @@ const CONTEST_LEVELS = [
   { value: "regional", label: "省市级" },
   { value: "national", label: "国家级" },
   { value: "international", label: "世界级" },
+  { value: "others", label: "其他" },
 ];
 
 const CONTEST_QUALITIES = [
@@ -37,6 +38,7 @@ const CONTEST_QUALITIES = [
   { value: "B_level", label: "B类项目" },
   { value: "C_level", label: "C类项目" },
   { value: "D_level", label: "D类项目" },
+  { value: "others", label: "其他" },
 ];
 
 const CONTEST_KEYWORDS = [

@@ -8,6 +8,7 @@ class ContestLevel(models.TextChoices):
     REGIONAL = "regional", "regional"  # 省市级
     NATIONAL = "national", "national"  # 国家级
     INTERNATIONAL = "international", "international"  # 世界级
+    OTHERS = "others", "others"  # 其他
 
 
 class ContestQuality(models.TextChoices):
@@ -16,6 +17,7 @@ class ContestQuality(models.TextChoices):
     B_LEVEL = "B_level", "B_level"  # B类项目
     C_LEVEL = "C_level", "C_level"  # C类项目
     D_LEVEL = "D_level", "D_level"  # D类项目
+    OTHERS = "others", "others"  # 其他
 
 
 class ContestKeywords(models.TextChoices):

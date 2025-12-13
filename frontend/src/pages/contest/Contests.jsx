@@ -118,13 +118,11 @@ const Contests = () => {
           setContests(res.data.matches || []);
           setPageCount(res.data.total_pages);
         } else {
-          showMessage(`获取比赛失败：${res.message || "未知错误。"}`, "error");
+          showMessage(`获取比赛列表失败`, "error");
         }
       } catch (err) {
         if (axios.isCancel(err)) return;
-        console.log(selectedTags);
-        console.log(categories);
-        showMessage(`获取比赛失败：网络错误，${err}`, "error");
+        showMessage(`获取比赛列表失败：网络错误`, "error");
       } finally {
         setLoading(false);
       }
@@ -226,7 +224,7 @@ const Contests = () => {
           }),
         }}
       >
-        比赛
+        赛事列表
       </Typography>
       <Divider
         sx={{

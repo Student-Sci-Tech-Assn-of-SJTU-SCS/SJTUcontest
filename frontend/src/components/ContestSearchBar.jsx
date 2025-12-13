@@ -27,6 +27,7 @@ export default function ContestSearchBar({
   onTagClick = () => {},
   onClearAll = () => {},
 }) {
+  const [searchInput, setSearchInput] = useState(search);
   const theme = useTheme();
 
   const [expanded, setExpanded] = useState(false);
@@ -37,6 +38,10 @@ export default function ContestSearchBar({
       setExpanded(true);
     }
   }, []);
+
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
 
   useHotkeys(
     "/",
@@ -65,6 +70,16 @@ export default function ContestSearchBar({
     { useKey: true, enableOnFormTags: ["INPUT", "TEXTAREA"] },
     [],
   );
+
+  const handleSearch = () => {
+    onSearchChange(searchInput);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <Box
@@ -95,9 +110,10 @@ export default function ContestSearchBar({
           label="查询比赛"
           variant="outlined"
           size="small"
-          value={search}
+          value={searchInput}
           inputRef={inputRef}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyPress={handleKeyPress}
           sx={{
             width: { xs: "90vw", sm: "clamp(250px, 400px, 30%)" },
             background: alpha(theme.palette.primary.main, 0.04),
@@ -108,6 +124,25 @@ export default function ContestSearchBar({
             },
           }}
         />
+        <Button
+          onClick={handleSearch}
+          variant="outlined"
+          size="medium"
+          sx={{
+            height: "40px",
+            minWidth: "40px",
+            p: 1,
+            borderRadius: 3,
+            borderColor: theme.palette.primary.main,
+            color: theme.palette.primary.main,
+            "&:hover": {
+              borderColor: theme.palette.primary.dark,
+              bgcolor: alpha(theme.palette.primary.main, 0.08),
+            },
+          }}
+        >
+          <SearchIcon />
+        </Button>
         <Button
           onClick={() =>
             setExpanded((prev) => {

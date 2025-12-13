@@ -15,11 +15,13 @@ from dotenv import load_dotenv
 import os
 from datetime import timedelta
 
+
 # Helpers
 def _env_flag(value: str | None, default: bool) -> bool:
     if value is None:
         return default
     return value.strip().lower() in {"1", "true", "t", "yes", "y", "on"}
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,9 +41,7 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = _env_flag(os.getenv("DJANGO_DEBUG"), False)
 
-_allowed_hosts = os.getenv(
-    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0"
-)
+_allowed_hosts = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0")
 ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts.split(",") if host.strip()]
 
 
@@ -239,7 +239,9 @@ JACCOUNT_AUTHORIZATION_URL = "https://jaccount.sjtu.edu.cn/oauth2/authorize"
 JACCOUNT_TOKEN_URL = "https://jaccount.sjtu.edu.cn/oauth2/token"
 JACCOUNT_LOGOUT_URL = "https://jaccount.sjtu.edu.cn/oauth2/logout"
 JACCOUNT_PROFILE_URL = "https://api.sjtu.edu.cn/v1/me/profile"
-JACCOUNT_REDIRECT_URI = os.getenv("JACCOUNT_REDIRECT_BASE_URI") + "/auth/jaccount/callback"
+JACCOUNT_REDIRECT_URI = (
+    os.getenv("JACCOUNT_REDIRECT_BASE_URI") + "/auth/jaccount/callback"
+)
 JACCOUNT_LOGOUT_REDIRECT_URI = os.getenv("JACCOUNT_REDIRECT_BASE_URI") + "/"
 
 # 阿里云内容机审配置

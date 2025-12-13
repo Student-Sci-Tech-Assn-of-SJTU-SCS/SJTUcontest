@@ -23,7 +23,7 @@ const EditTeamDialog = ({
   onClose,
   onSubmit,
   title = "编辑队伍",
-  confirmText = "保存",
+  confirmText = "保存修改",
   cancelText = "取消",
 }) => {
   const confirm = useConfirm();
@@ -83,9 +83,13 @@ const EditTeamDialog = ({
   };
 
   const handleConfirm = async () => {
-    const { confirmed, reason } = await confirm({
-      title: "确认保存",
-      description: `确定要保存修改吗？每10分钟仅能修改一次。`,
+    const isCreate = confirmText === "创建";
+
+    const { confirmed } = await confirm({
+      title: isCreate ? "确认创建" : "确认保存",
+      description: isCreate
+        ? "确定要创建吗？每10分钟仅能修改一次。"
+        : "确定要保存修改吗？每10分钟仅能修改一次。",
       confirmationText: "保存",
       cancellationText: "取消",
     });
@@ -112,16 +116,25 @@ const EditTeamDialog = ({
         setError(maybeError);
         setSubmitting(false);
       } else {
-        // 成功后由父组件决定是否刷新数据；这里直接关闭
         onClose?.();
       }
     } catch (e) {
-      setError(
-        e?.response?.data?.message ||
-          e?.response?.data?.detail ||
-          e?.message ||
-          "提交失败",
-      );
+      const resp = e?.response?.data;
+      let msg = "";
+
+      if (resp && resp.data && typeof resp.data === "object") {
+        const firstKey = Object.keys(resp.data)[0];
+        const firstVal = resp.data[firstKey];
+        if (Array.isArray(firstVal) && firstVal.length > 0) {
+          msg = firstVal[0];
+        }
+      }
+
+      if (!msg) {
+        msg = resp?.message || resp?.detail || e?.message || "提交失败";
+      }
+
+      setError(msg);
       setSubmitting(false);
     }
   };
@@ -144,6 +157,8 @@ const EditTeamDialog = ({
             onChange={(e) => setValues((s) => ({ ...s, name: e.target.value }))}
             required
             fullWidth
+            inputProps={{ maxLength: 50 }}
+            helperText={`${values.name?.length || 0}/50`}
           />
 
           <TextField
@@ -155,10 +170,12 @@ const EditTeamDialog = ({
             fullWidth
             multiline
             minRows={4}
+            inputProps={{ maxLength: 500 }}
+            helperText={`${values.introduction?.length || 0}/500`}
             placeholder={`按Tab键确认：
-          - 联系方式：微信/邮箱/QQ/电话 
+          - 项目方向：XXX
           - 希望招募：前端、视觉设计、网络安全
-          - 项目方向：XXX`}
+          - 联系方式：微信/邮箱/QQ/电话`}
             InputProps={{
               style: {
                 fontStyle: values.introduction ? "normal" : "italic",
@@ -170,9 +187,9 @@ const EditTeamDialog = ({
                   e.preventDefault();
                   setValues((s) => ({
                     ...s,
-                    introduction: `联系方式：
+                    introduction: `项目方向：
 希望招募：
-项目方向：`,
+联系方式：`,
                   }));
                 }
               },

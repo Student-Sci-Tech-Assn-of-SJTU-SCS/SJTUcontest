@@ -2,6 +2,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.core.paginator import Paginator
 from django.db.models import F
+from django.db.models import Q
+from django.db import transaction
 from django.utils import timezone
 from datetime import timedelta
 
@@ -155,47 +157,49 @@ def join_team_by_id(request, team_id):
     """
     根据邀请码加入队伍
     """
-    try:
-        serializer = JoinTeamRequestSerializer(data=request.data)
-        if not serializer.is_valid():
-            return ApiResponse.error(message="Invalid data", data=serializer.errors)
+    with transaction.atomic():
+        try:
+            serializer = JoinTeamRequestSerializer(data=request.data)
+            if not serializer.is_valid():
+                return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
-        invitation_code = serializer.validated_data["invitation_code"]
+            invitation_code = serializer.validated_data["invitation_code"]
 
-        team = Team.objects.get(id=team_id)
+            team = Team.objects.select_for_update().get(id=team_id)
 
-        # 邀请码合法：is_valid and 未过期
-        if (
-            not team.is_invitation_code_valid
-            or (timezone.now() - team.invitation_code_created_at) >= timedelta(days=1)
-            or team.invitation_code != invitation_code
-        ):
-            return ApiResponse.forbidden(message="非法的邀请码")
+            # 邀请码合法：is_valid and 未过期
+            if (
+                not team.is_invitation_code_valid
+                or (timezone.now() - team.invitation_code_created_at)
+                >= timedelta(days=1)
+                or team.invitation_code != invitation_code
+            ):
+                return ApiResponse.forbidden(message="非法的邀请码")
 
-        # 检查用户是否已经在队伍中
-        if UserTeam.objects.filter(user=request.user, team=team).exists():
-            return ApiResponse.error(message="你已经在队伍中")
+            # 检查用户是否已经在队伍中
+            if UserTeam.objects.filter(user=request.user, team=team).exists():
+                return ApiResponse.error(message="你已经在队伍中")
 
-        if team.existing_members >= team.expected_members:
-            return ApiResponse.error(message="队伍人数已满，请联系队长扩容")
+            if team.existing_members >= team.expected_members:
+                return ApiResponse.error(message="队伍人数已满，请联系队长扩容")
 
-        UserTeam.objects.create(user=request.user, team=team, is_leader=False)
-        team.existing_members += 1
-        team.is_invitation_code_valid = False  # 使用后失效
-        team.save()
+            UserTeam.objects.create(user=request.user, team=team, is_leader=False)
+            team.existing_members += 1
+            team.is_invitation_code_valid = False  # 使用后失效
+            team.save()
 
-        return ApiResponse.success(
-            data=TeamResponseSerializer(team).data,
-            message="加入队伍成功",
-        )
+            return ApiResponse.success(
+                data=TeamResponseSerializer(team).data,
+                message="加入队伍成功",
+            )
 
-    except Team.DoesNotExist:
-        return ApiResponse.not_found(message="队伍不存在")
+        except Team.DoesNotExist:
+            return ApiResponse.not_found(message="队伍不存在")
 
-    except Exception as e:
-        return ApiResponse.error(
-            message=f"Internal server error: {str(e)}", status_code=500
-        )
+        except Exception as e:
+            return ApiResponse.error(
+                message=f"Internal server error: {str(e)}", status_code=500
+            )
 
 
 @api_view(["GET"])
@@ -243,29 +247,30 @@ def quit_team_by_id(request, team_id):
     """
     退出队伍
     """
-    try:
-        team = Team.objects.get(id=team_id)
+    with transaction.atomic():
+        try:
+            team = Team.objects.select_for_update().get(id=team_id)
 
-        member = UserTeam.objects.filter(user=request.user, team=team).first()
-        if not member:
-            return ApiResponse.error(message="你不在该队伍中")
+            member = UserTeam.objects.filter(user=request.user, team=team).first()
+            if not member:
+                return ApiResponse.error(message="你不在该队伍中")
 
-        if member.is_leader:
-            return ApiResponse.error(message="队长不能退出队伍")
+            if member.is_leader:
+                return ApiResponse.error(message="队长不能退出队伍")
 
-        member.delete()
-        team.existing_members -= 1
-        team.save()
+            member.delete()
+            team.existing_members -= 1
+            team.save()
 
-        return ApiResponse.success(message="退出队伍成功")
+            return ApiResponse.success(message="退出队伍成功")
 
-    except Team.DoesNotExist:
-        return ApiResponse.not_found(message="队伍不存在")
+        except Team.DoesNotExist:
+            return ApiResponse.not_found(message="队伍不存在")
 
-    except Exception as e:
-        return ApiResponse.error(
-            message=f"Internal server error: {str(e)}", status_code=500
-        )
+        except Exception as e:
+            return ApiResponse.error(
+                message=f"Internal server error: {str(e)}", status_code=500
+            )
 
 
 @api_view(["POST"])
@@ -283,7 +288,11 @@ def update_team_by_id(request, team_id):
             return ApiResponse.forbidden(message="只有队长可以更新队伍信息")
 
         # 检查更新频率限制（10分钟）
-        if team.updated_at:
+        # 判断是否为首次更新：如果 updated_at 和 created_at 的差值小于 3 秒，视为首次更新
+        time_diff = (team.updated_at - team.created_at).total_seconds()
+        is_first_update = abs(time_diff) < 3
+
+        if not is_first_update:
             time_since_last_update = timezone.now() - team.updated_at
             minimum_interval = timedelta(minutes=10)
 
@@ -364,7 +373,9 @@ def search_teams_by_name(request):
         page_size = serializer.validated_data["page_size"]
 
         # 根据队伍名称进行模糊查询，按更新时间倒序排列
-        teams = Team.objects.filter(name__icontains=team_name).order_by("-updated_at")
+        teams = Team.objects.filter(
+            Q(name__icontains=team_name) | Q(introduction__icontains=team_name)
+        ).order_by("-updated_at")
 
         # 分页处理
         paginator = Paginator(teams, page_size)

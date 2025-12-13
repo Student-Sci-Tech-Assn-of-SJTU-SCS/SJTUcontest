@@ -43,14 +43,16 @@ const UserDetail = () => {
       try {
         setLoading(true);
         const response = await userAPI.getUserTotalInfo(userId);
-        
+
         if (response.success) {
           setUserInfo(response.data);
         } else {
           setError(response.message || "获取用户信息失败");
         }
       } catch (err) {
-        setError(err.response?.data?.message || err.message || "获取用户信息失败");
+        setError(
+          err.response?.data?.message || err.message || "获取用户信息失败",
+        );
         showMessage("获取用户信息失败", "error");
       } finally {
         setLoading(false);
@@ -80,7 +82,12 @@ const UserDetail = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="400px"
+      >
         <CircularProgress />
       </Box>
     );
@@ -112,7 +119,12 @@ const UserDetail = () => {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h4" component="h1">
           用户详情
         </Typography>
@@ -123,14 +135,14 @@ const UserDetail = () => {
 
       <Grid container spacing={3}>
         {/* 基本信息卡片 */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom color="primary">
                 基本信息
               </Typography>
               <Divider sx={{ mb: 2 }} />
-              
+
               <Box display="flex" alignItems="center" mb={2}>
                 <Avatar sx={{ mr: 2, bgcolor: "primary.main" }}>
                   <PersonIcon />
@@ -187,7 +199,10 @@ const UserDetail = () => {
                 <ListItem>
                   <ListItemText
                     primary="状态"
-                    secondary={getStatusChip(userInfo.is_active, userInfo.is_staff)}
+                    secondary={getStatusChip(
+                      userInfo.is_active,
+                      userInfo.is_staff,
+                    )}
                   />
                 </ListItem>
               </List>
@@ -196,7 +211,7 @@ const UserDetail = () => {
         </Grid>
 
         {/* 个人资料卡片 */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom color="primary">
@@ -205,7 +220,11 @@ const UserDetail = () => {
               <Divider sx={{ mb: 2 }} />
 
               <Box mb={2}>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
                   参赛经历
                 </Typography>
                 <Paper variant="outlined" sx={{ p: 2, minHeight: 80 }}>
@@ -216,7 +235,11 @@ const UserDetail = () => {
               </Box>
 
               <Box>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
                   特长
                 </Typography>
                 <Paper variant="outlined" sx={{ p: 2, minHeight: 80 }}>
@@ -230,7 +253,7 @@ const UserDetail = () => {
         </Grid>
 
         {/* 队伍信息卡片 */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
@@ -244,12 +267,16 @@ const UserDetail = () => {
               {userInfo.teams && userInfo.teams.length > 0 ? (
                 <Grid container spacing={2}>
                   {userInfo.teams.map((team) => (
-                    <Grid item xs={12} sm={6} md={4} key={team.id}>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={team.id}>
                       <Paper variant="outlined" sx={{ p: 2 }}>
                         <Typography variant="subtitle1" fontWeight="bold">
                           {team.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 1 }}
+                        >
                           {team.introduction || "暂无介绍"}
                         </Typography>
                         <Box display="flex" gap={1} flexWrap="wrap">
