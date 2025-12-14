@@ -97,8 +97,17 @@ def update_user_profile(request):
         )
 
         if not serializer.is_valid():
+            # 提取第一个错误字段的错误信息作为 message
+            errors = serializer.errors
+            first_field = next(iter(errors))
+            first_error = errors[first_field]
+            if isinstance(first_error, list) and len(first_error) > 0:
+                error_message = str(first_error[0])
+            else:
+                error_message = str(first_error)
+            
             return ApiResponse.error(
-                message="Invalid data",
+                message=error_message,
                 data=serializer.errors,
             )
 
