@@ -6,7 +6,7 @@ import {
   Link,
   Divider,
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import TagGroup from "./TagGroup";
 import { nameToTag } from "./Tag";
 
@@ -22,6 +22,22 @@ export default function ContestCard({ contest }) {
   const [statusLabel, setStatusLabel] = useState(""); // 倒计时类型标签
   const [countdown, setCountdown] = useState(""); // 倒计时内容
   const [countdownColor, setCountdownColor] = useState(""); // 倒计时显示颜色
+
+  const titleContainerRef = useRef(null);
+  const titleTextRef = useRef(null);
+  const [isOverflow, setIsOverflow] = useState(false);
+
+  useEffect(() => {
+    const container = titleContainerRef.current;
+    const text = titleTextRef.current;
+    if (container && text) {
+      if (text.offsetWidth > container.offsetWidth) {
+        setIsOverflow(true);
+      } else {
+        setIsOverflow(false);
+      }
+    }
+  }, [contest.name]);
 
   useEffect(() => {
     if (contest.year && contest.months) {
@@ -171,23 +187,57 @@ export default function ContestCard({ contest }) {
           }}
         >
           {/* 名称 */}
-          <Typography
-            variant="h6"
-            title={contest.name}
+          <Box
+            ref={titleContainerRef}
             sx={{
-              display: "-webkit-box",
-              WebkitLineClamp: 1,
-              WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "normal",
-              fontWeight: 700,
-              color: "#222",
               mb: 1,
+              whiteSpace: "nowrap",
+              maskImage: isOverflow
+                ? "linear-gradient(to right, transparent, black 5%, black 95%, transparent)"
+                : "none",
             }}
           >
-            {contest.name}
-          </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                width: "fit-content",
+                animation: isOverflow ? "marquee 10s linear infinite" : "none",
+                "@keyframes marquee": {
+                  "0%": { transform: "translateX(0)" },
+                  "100%": { transform: "translateX(-50%)" },
+                },
+                "&:hover": {
+                  animationPlayState: "paused",
+                },
+              }}
+            >
+              <Typography
+                ref={titleTextRef}
+                variant="h6"
+                title={contest.name}
+                sx={{
+                  fontWeight: 700,
+                  color: "#222",
+                  pr: isOverflow ? 4 : 0,
+                }}
+              >
+                {contest.name}
+              </Typography>
+              {isOverflow && (
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    color: "#222",
+                    pr: 4,
+                  }}
+                >
+                  {contest.name}
+                </Typography>
+              )}
+            </Box>
+          </Box>
 
           <Divider sx={{ my: "5px", mx: "auto", width: "calc(100%)" }} />
 
