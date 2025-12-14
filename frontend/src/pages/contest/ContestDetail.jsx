@@ -13,11 +13,20 @@ import {
   alpha,
   useTheme,
   Container,
+  Chip,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import SchoolIcon from "@mui/icons-material/School";
+import LanguageIcon from "@mui/icons-material/Language";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
-import TagGroup from "../../components/TagGroup";
 import { nameToTag } from "../../components/Tag";
 import showMessage from "../../utils/message";
 
@@ -31,6 +40,66 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   WebkitTextFillColor: "transparent",
   letterSpacing: 1,
 }));
+
+const InfoCard = ({ icon, label, value, valueSx }) => {
+  const theme = useTheme();
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 2.5,
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        gap: 2,
+        borderRadius: 4,
+        bgcolor: alpha(theme.palette.primary.main, 0.04),
+        border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          transform: "translateY(-2px)",
+          boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.1)}`,
+          bgcolor: alpha(theme.palette.primary.main, 0.08),
+        },
+      }}
+    >
+      <Box
+        sx={{
+          p: 1.5,
+          borderRadius: "50%",
+          bgcolor: "background.paper",
+          color: "primary.main",
+          display: "flex",
+          boxShadow: `0 2px 8px ${alpha(theme.palette.primary.main, 0.15)}`,
+        }}
+      >
+        {icon}
+      </Box>
+      <Box>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{
+            fontWeight: 600,
+            letterSpacing: 0.5,
+            textTransform: "uppercase",
+          }}
+        >
+          {label}
+        </Typography>
+        <Typography
+          variant="body1"
+          component="div"
+          fontWeight="600"
+          color="text.primary"
+          sx={valueSx}
+        >
+          {value}
+        </Typography>
+      </Box>
+    </Paper>
+  );
+};
 
 export default function ContestDetail() {
   const { contest_id } = useParams();
@@ -50,7 +119,16 @@ export default function ContestDetail() {
     if (isNaN(start)) return `${getTimeStr(end)} 截止`;
     if (isNaN(end)) return `自 ${getTimeStr(start)} 起`;
     if (start.getTime() == end.getTime()) return "暂无";
-    return `${getTimeStr(start)} — ${getTimeStr(end)}`;
+    return (
+      <Box sx={{ lineHeight: 1.5 }}>
+        <Box component="span" display="block">
+          {getTimeStr(start)} 起
+        </Box>
+        <Box component="span" display="block">
+          {getTimeStr(end)} 止
+        </Box>
+      </Box>
+    );
   };
 
   useEffect(() => {
@@ -104,175 +182,246 @@ export default function ContestDetail() {
     <Box
       sx={{
         minHeight: "100vh",
-        py: 0 /*background: alpha(theme.palette.background.paper, 0.98)*/,
+        py: 4,
+        // background: `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.05)} 0%, ${theme.palette.background.default} 100%)`,
       }}
     >
-      <Container maxWidth="md">
-        <Paper
-          elevation={8}
-          sx={{
-            borderRadius: 6,
-            p: { xs: 2, sm: 4 },
-            mt: 8,
-            mb: 6,
-            boxShadow: `
-              0 10px 40px ${alpha(theme.palette.primary.main, 0.1)},
-              inset 0 1px 0 ${alpha(theme.palette.common.white, 0.5)}
-            `,
-            backdropFilter: "blur(10px)",
-            position: "relative",
-          }}
-        >
-          {/* 标题区 */}
-          <Box sx={{ textAlign: "center", mb: 4 }}>
-            <Typography
-              variant="h4"
-              title={contest.name}
-              sx={{
-                fontWeight: "bold",
-                mb: 2,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {contest.name}
-            </Typography>
-            <Button
-              variant="outlined"
-              size="large"
-              sx={{
-                borderRadius: 20,
-                px: 5,
-                py: 1.5,
-                fontWeight: 600,
-                fontSize: "1.05rem",
-                boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.18)}`,
-                transition: "all 0.3s",
-                "&:hover": {
-                  transform: "translateY(-2px) scale(1.03)",
-                  boxShadow: `0 12px 32px ${alpha(theme.palette.primary.main, 0.25)}`,
-                },
-              }}
-              onClick={() => navigate(`/contests/${contest.id}/teams`)}
-            >
-              寻找参赛团队
-            </Button>
-          </Box>
+      <Container maxWidth="lg">
+        {/* 顶部导航 */}
+        <Box sx={{ mb: 4, display: "flex", alignItems: "center" }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+            sx={{
+              color: "text.secondary",
+              "&:hover": { color: "primary.main", bgcolor: "transparent" },
+            }}
+          >
+            返回
+          </Button>
+        </Box>
 
-          {/* 赛事主要信息 */}
-          <Grid container spacing={3} sx={{ mb: 3 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                <strong>报名时间：</strong>{" "}
-                {getRegTime(
-                  contest.registration_start,
-                  contest.registration_end,
-                )}
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                <strong>地点：</strong> {contest.place}
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                <strong>赛事级别：</strong>{" "}
-                {nameToTag(contest.level).description}
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                <strong>素拓等级：</strong>{" "}
-                {nameToTag(contest.quality).description}
-              </Typography>
-            </Grid>
+        <Grid container spacing={4}>
+          {/* 左侧主要内容 */}
+          <Grid size={{ xs: 12, md: 8 }}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 4,
+                borderRadius: 4,
+                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                boxShadow: `0 4px 24px ${alpha(theme.palette.common.black, 0.02)}`,
+              }}
+            >
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h5"
+                  component="h1"
+                  sx={{
+                    fontWeight: 800,
+                    mb: 2,
+                    color: "text.primary",
+                  }}
+                >
+                  {contest.name}
+                </Typography>
+
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  flexWrap="wrap"
+                  useFlexGap
+                  sx={{ mt: 2 }}
+                >
+                  {contest.keywords.map((keyword) => (
+                    <Chip
+                      key={keyword}
+                      label={nameToTag(keyword).description}
+                      size="small"
+                      sx={{
+                        bgcolor: alpha(theme.palette.primary.main, 0.1),
+                        color: "primary.main",
+                        fontWeight: 600,
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </Box>
+
+              <Divider sx={{ my: 4 }} />
+
+              <Box sx={{ mb: 4 }}>
+                <SectionTitle
+                  variant="h6"
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  <MenuBookIcon fontSize="small" /> 简介
+                </SectionTitle>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    lineHeight: 1.8,
+                    color: "text.secondary",
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
+                  {contest.description}
+                </Typography>
+              </Box>
+
+              {contest.materials.length > 0 && (
+                <Box>
+                  <SectionTitle
+                    variant="h6"
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    <SchoolIcon fontSize="small" /> 参考资料
+                  </SectionTitle>
+                  <Stack spacing={2} sx={{ mt: 2 }}>
+                    {contest.materials.map((m) => (
+                      <Paper
+                        key={m.url}
+                        component={Link}
+                        href={m.url}
+                        target="_blank"
+                        rel="noopener"
+                        underline="none"
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 2,
+                          bgcolor: alpha(theme.palette.background.default, 0.5),
+                          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                          borderRadius: 2,
+                          transition: "all 0.2s",
+                          "&:hover": {
+                            bgcolor: alpha(theme.palette.primary.main, 0.04),
+                            borderColor: "primary.main",
+                            transform: "translateX(4px)",
+                          },
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            p: 1,
+                            borderRadius: 1,
+                            bgcolor: alpha(theme.palette.secondary.main, 0.1),
+                            color: "secondary.main",
+                            display: "flex",
+                          }}
+                        >
+                          <MenuBookIcon fontSize="small" />
+                        </Box>
+                        <Typography fontWeight="500" color="text.primary">
+                          {m.name}
+                        </Typography>
+                      </Paper>
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+            </Paper>
           </Grid>
 
-          <Divider
-            sx={{
-              my: 3,
-              borderColor: alpha(theme.palette.primary.main, 0.15),
-            }}
-          />
-
-          {/* 关键词区 */}
-          <Box sx={{ mb: 3 }}>
-            <SectionTitle variant="h6">关键词</SectionTitle>
-            <Box sx={{ width: "fit-content" }}>
-              <TagGroup
-                tags={contest.keywords.map((keyword) => nameToTag(keyword))}
-              />
-            </Box>
-          </Box>
-
-          {/* 简介区 */}
-          <Box sx={{ mb: 3 }}>
-            <SectionTitle variant="h6">简介</SectionTitle>
-            <Typography
-              variant="body2"
-              sx={{
-                lineHeight: 1.7,
-                fontSize: "1.0rem",
-                color: alpha(theme.palette.text.primary, 0.95),
-                mb: 1,
-              }}
-            >
-              {contest.description}
-            </Typography>
-          </Box>
-
-          {/* 官网链接 */}
-          {contest.website && (
-            <Box sx={{ mb: 3 }}>
-              <SectionTitle variant="h6">官网链接</SectionTitle>
-              <Link
-                href={contest.website}
-                target="_blank"
-                rel="noopener"
-                underline="hover"
+          {/* 右侧侧边栏 */}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Stack spacing={3}>
+              {/* 行动卡片 */}
+              <Button
+                fullWidth
+                variant="contained"
+                size="large"
+                startIcon={<GroupAddIcon />}
+                onClick={() => navigate(`/contests/${contest.id}/teams`)}
                 sx={{
-                  fontWeight: 500,
-                  fontSize: "1.0rem",
-                  color: theme.palette.primary.main,
-                  wordBreak: "break-all",
-                  "&:hover": {
-                    textDecoration: "underline",
-                    color: theme.palette.secondary.main,
-                  },
+                  py: 1.5,
+                  borderRadius: 4,
+                  fontWeight: "bold",
+                  fontSize: "1.1rem",
+                  boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.25)}`,
                 }}
               >
-                {contest.website}
-              </Link>
-            </Box>
-          )}
+                寻找参赛团队
+              </Button>
 
-          {/* 学习资料 */}
-          {contest.materials.length > 0 && (
-            <Box sx={{ mb: 3 }}>
-              <SectionTitle variant="h6">学习资料</SectionTitle>
-              <Stack spacing={1}>
-                {contest.materials.map((m) => (
+              {/* 信息网格 */}
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12 }}>
+                  <InfoCard
+                    icon={<CalendarTodayIcon />}
+                    label="报名时间"
+                    value={getRegTime(
+                      contest.registration_start,
+                      contest.registration_end,
+                    )}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <InfoCard
+                    icon={<LocationOnIcon />}
+                    label="地点"
+                    value={contest.place}
+                  />
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <InfoCard
+                    icon={<WorkspacePremiumIcon />}
+                    label="赛事级别"
+                    value={nameToTag(contest.level).description}
+                  />
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <InfoCard
+                    icon={<AutoAwesomeIcon />}
+                    label="素拓等级"
+                    value={nameToTag(contest.quality).description}
+                    valueSx={{ fontSize: "0.875rem" }}
+                  />
+                </Grid>
+              </Grid>
+
+              {/* 官网链接 */}
+              {contest.website && (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    borderRadius: 4,
+                    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
+                    fontWeight="bold"
+                  >
+                    官方网站
+                  </Typography>
                   <Link
-                    key={m.url}
-                    href={m.url}
+                    href={contest.website}
                     target="_blank"
                     rel="noopener"
-                    underline="hover"
+                    underline="none"
                     sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      color: "primary.main",
                       fontWeight: 500,
-                      color: theme.palette.secondary.main,
-                      "&:hover": { color: theme.palette.primary.main },
+                      "&:hover": { textDecoration: "underline" },
                     }}
                   >
-                    {m.name}
+                    <LanguageIcon fontSize="small" />
+                    <Typography noWrap>{contest.website}</Typography>
                   </Link>
-                ))}
-              </Stack>
-            </Box>
-          )}
-        </Paper>
+                </Paper>
+              )}
+            </Stack>
+          </Grid>
+        </Grid>
       </Container>
     </Box>
   );
