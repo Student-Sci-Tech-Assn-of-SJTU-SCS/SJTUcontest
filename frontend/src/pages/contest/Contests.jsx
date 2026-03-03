@@ -7,7 +7,9 @@ import {
   CircularProgress,
   useTheme,
   alpha,
+  Button,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import ContestSearchBar from "../../components/ContestSearchBar";
 import ContestCard from "../../components/ContestCard";
 import { useState, useEffect } from "react";
@@ -63,15 +65,9 @@ const Contests = () => {
   const pageColumns = sm ? 1 : 2;
   const pageRows = 5;
   const pageSize = pageColumns * pageRows;
-  // const pageSize = sm ? 3 : md ? 6 : lg ? 9 : 12;
-  // const pageSize = 1; // 调试用
 
   const [contests, setContests] = useState([]);
 
-  /**
-   * 恢复时出现的问题：初始化值和恢复值导致了两次后端查询，初始化值查询的响应晚于恢复值，故覆盖了后者
-   * 使用 initReady 标志位来避免这个问题
-   */
   useEffect(() => {
     if (sessionStorage.getItem("contests_search")) {
       setSearch(sessionStorage.getItem("contests_search"));
@@ -79,21 +75,17 @@ const Contests = () => {
     if (sessionStorage.getItem("contests_selectedTags")) {
       setSelectedTags(loadSelectedTagsFromSession());
     }
-    // 只有当列数（布局）不变时才恢复页码
     if (sessionStorage.getItem("contests_pageColumns")) {
       const cols = parseInt(sessionStorage.getItem("contests_pageColumns"), 10);
       if (pageColumns === cols) {
         if (sessionStorage.getItem("contests_pageIndex")) {
-          setPageIndex(
-            parseInt(sessionStorage.getItem("contests_pageIndex"), 10),
-          );
+          setPageIndex(parseInt(sessionStorage.getItem("contests_pageIndex"), 10));
         }
       }
     }
     setInitReady(true);
   }, []);
 
-  // 后端请求
   useEffect(() => {
     const fetchContests = async () => {
       const controller = new AbortController();
@@ -146,12 +138,7 @@ const Contests = () => {
     const category = tag.category;
     setSelectedTags((prev) => {
       const cur = prev[category];
-      const upd = cur.includes(tag)
-        ? cur.filter((t) => t !== tag)
-        : [...cur, tag];
-      console.log(
-        `Before: ${cur.map((tag) => tag.description)}; After: ${upd.map((tag) => tag.description)}`,
-      );
+      const upd = cur.includes(tag) ? cur.filter((t) => t !== tag) : [...cur, tag];
       return { ...prev, [category]: upd };
     });
     setPageIndex(1);
@@ -197,10 +184,6 @@ const Contests = () => {
         minHeight: "100vh",
         py: 6,
         px: { xs: 2, sm: 5 },
-        // background: `linear-gradient(180deg,
-        //   ${theme.palette.background.paper} 0%,
-        //   ${alpha(theme.palette.primary.main, 0.03)} 50%,
-        //   ${theme.palette.background.paper} 100%)`,
         transition: "width 0.5s ease",
       }}
     >
@@ -218,10 +201,7 @@ const Contests = () => {
           mb: 1,
           textShadow: `0 2px 10px ${alpha(theme.palette.primary.main, 0.12)}`,
           animation: "fadeInDown 1s ease-out",
-          ...createFadeInAnim({
-            name: "fadeInDown",
-            direction: "down",
-          }),
+          ...createFadeInAnim({ name: "fadeInDown", direction: "down" }),
         }}
       >
         赛事列表
@@ -235,11 +215,7 @@ const Contests = () => {
           borderRadius: 2,
           background: `linear-gradient(90deg, ${theme.palette.primary.light}, ${theme.palette.secondary.main})`,
           animation: "fadeInLeft 1s ease-out",
-          ...createFadeInAnim({
-            name: "fadeInLeft",
-            direction: "left",
-            distance: 60,
-          }),
+          ...createFadeInAnim({ name: "fadeInLeft", direction: "left", distance: 60 }),
         }}
       />
 
@@ -262,12 +238,10 @@ const Contests = () => {
             spacing={3}
             justifyContent="space-between"
             alignItems="stretch"
-            sx={{
-              transition: "all ease-in-out 0.5s",
-            }}
+            sx={{ transition: "all ease-in-out 0.5s" }}
           >
             {contests.length === 0 ? (
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <Box
                   sx={{
                     mt: 2,
@@ -283,11 +257,7 @@ const Contests = () => {
                   <Typography
                     color="text.secondary"
                     align="center"
-                    sx={{
-                      fontSize: "1.1rem",
-                      animation: "fadeIn 0.8s ease-out",
-                      ...createFadeInAnim({ name: "fadeIn" }),
-                    }}
+                    sx={{ fontSize: "1.1rem", animation: "fadeIn 0.8s ease-out", ...createFadeInAnim({ name: "fadeIn" }) }}
                   >
                     暂无符合条件的比赛
                   </Typography>
@@ -297,7 +267,9 @@ const Contests = () => {
               contests.map((contest, idx) => (
                 <Grid
                   key={contest.id}
-                  size={{ sm: 12, md: 6 }}
+                  item
+                  xs={12}
+                  md={6}
                   display="flex"
                   justifyContent="center"
                   sx={{
@@ -310,21 +282,9 @@ const Contests = () => {
                     } 0.7s ease-out forwards`,
                     animationDelay: `${idx * 0.08 + 0.2}s`,
                     opacity: 0,
-                    ...createFadeInAnim({
-                      name: "cardFadeInLeft",
-                      direction: "left",
-                      distance: 60,
-                    }),
-                    ...createFadeInAnim({
-                      name: "cardFadeInRight",
-                      direction: "right",
-                      distance: 60,
-                    }),
-                    ...createFadeInAnim({
-                      name: "cardFadeInUp",
-                      direction: "up",
-                      distance: 30,
-                    }),
+                    ...createFadeInAnim({ name: "cardFadeInLeft", direction: "left", distance: 60 }),
+                    ...createFadeInAnim({ name: "cardFadeInRight", direction: "right", distance: 60 }),
+                    ...createFadeInAnim({ name: "cardFadeInUp", direction: "up", distance: 30 }),
                   }}
                 >
                   <ContestCard contest={contest} />
@@ -341,14 +301,50 @@ const Contests = () => {
                 onChange={(_, value) => setPageIndex(value)}
                 color="primary"
                 shape="rounded"
-                sx={{
-                  "& .MuiPaginationItem-root": {
-                    borderRadius: 3,
-                  },
-                }}
+                sx={{ "& .MuiPaginationItem-root": { borderRadius: 3 } }}
               />
             </Box>
           )}
+
+          <Box display="flex" justifyContent="center" mt={6} mb={2}>
+            <Button
+              variant="outlined"
+              onClick={() => window.open('https://ssc.sjtu.edu.cn/dashboard/9030a6d6', '_blank')}
+              sx={{
+                borderRadius: 3,
+                px: 2,
+                py: 0.7,
+                fontWeight: 500,
+                color: theme.palette.primary.main,
+                border: `1px solid ${theme.palette.primary.main}`,
+                background: 'none',
+                transition: 'all 0.2s',
+                fontFamily: '"Segoe UI", "Helvetica Neue", Arial, sans-serif',
+                fontSize: '0.98rem',
+                minWidth: 0,
+                '&:hover': {
+                  background: alpha(theme.palette.primary.main, 0.08),
+                  color: theme.palette.primary.dark,
+                  transform: 'scale(1.04)'
+                },
+                gap: 0.5,
+              }}
+              startIcon={
+                <AddIcon
+                  sx={{
+                    fontSize: 28,
+                    color: theme.palette.primary.main,
+                    border: `1px solid ${theme.palette.primary.main}`,
+                    borderRadius: '50%',
+                    p: 0.4,
+                    boxShadow: 'none',
+                  }}
+                />
+              }
+            >
+              没有找到想要的比赛？点此补充！
+            </Button>
+          </Box>
         </>
       )}
     </Box>
