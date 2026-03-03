@@ -7,7 +7,9 @@ import {
   CircularProgress,
   useTheme,
   alpha,
+  Button,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import ContestSearchBar from "../../components/ContestSearchBar";
 import ContestCard from "../../components/ContestCard";
 import { useState, useEffect } from "react";
@@ -333,6 +335,8 @@ const Contests = () => {
             )}
           </Grid>
 
+          {/* debug: always log pageCount so we can see why pagination/button render */}
+          {console.log(`pageCount=${pageCount}`)}
           {pageCount > 1 && (
             <Box display="flex" justifyContent="center" mt={4}>
               <Pagination
@@ -349,6 +353,45 @@ const Contests = () => {
               />
             </Box>
           )}
+          <Box display="flex" justifyContent="center" mt={6} mb={2}>
+            <Button
+              variant="outlined"
+              onClick={() => window.open('https://ssc.sjtu.edu.cn/dashboard/9030a6d6', '_blank')}
+              sx={{
+                borderRadius: 3,
+                px: 2,
+                py: 0.7,
+                fontWeight: 500,
+                color: theme.palette.primary.main,
+                border: `1px solid ${theme.palette.primary.main}`,
+                background: 'none',
+                transition: 'all 0.2s',
+                fontFamily: '"Segoe UI", "Helvetica Neue", Arial, sans-serif',
+                fontSize: '0.98rem',
+                minWidth: 0,
+                '&:hover': {
+                  background: alpha(theme.palette.primary.main, 0.08),
+                  color: theme.palette.primary.dark,
+                  transform: 'scale(1.04)'
+                },
+                gap: 0.5,
+              }}
+              startIcon={
+                <AddIcon
+                  sx={{
+                    fontSize: 28,
+                    color: theme.palette.primary.main,
+                    border: `1px solid ${theme.palette.primary.main}`,
+                    borderRadius: '50%',
+                    p: 0.4,
+                    boxShadow: 'none',
+                  }}
+                />
+              }
+            >
+              没有找到想要的比赛？点此补充！
+            </Button>
+          </Box>
         </>
       )}
     </Box>
