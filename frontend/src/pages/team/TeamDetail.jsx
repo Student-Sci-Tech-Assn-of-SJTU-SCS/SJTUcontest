@@ -279,13 +279,7 @@ const TeamDetail = () => {
   }
 
   return (
-    <Box
-      maxWidth="lg"
-      mx="auto"
-      mt={4}
-      mb={6}
-      px={{ xs: 2, sm: 3 }}
-    >
+    <Box maxWidth="lg" mx="auto" mt={4} mb={6} px={{ xs: 2, sm: 3 }}>
       {/* 页面头部 - 队伍名称和操作按钮 */}
       <Fade in timeout={500}>
         <Paper
@@ -294,7 +288,8 @@ const TeamDetail = () => {
             p: { xs: 3, sm: 4 },
             mb: 3,
             borderRadius: 4,
-            background: "linear-gradient(135deg, rgba(25, 118, 210, 0.12), rgba(156, 39, 176, 0.08))",
+            background:
+              "linear-gradient(135deg, rgba(25, 118, 210, 0.12), rgba(156, 39, 176, 0.08))",
             border: "1px solid",
             borderColor: "primary.light",
             position: "relative",
@@ -475,7 +470,9 @@ const TeamDetail = () => {
                   label={contestName || team.contest || "未知比赛"}
                   variant="outlined"
                   color="primary"
-                  onClick={() => team.contest && navigate(`/contests/${team.contest}`)}
+                  onClick={() =>
+                    team.contest && navigate(`/contests/${team.contest}`)
+                  }
                   sx={{
                     maxWidth: "100%",
                     height: "auto",
@@ -494,7 +491,12 @@ const TeamDetail = () => {
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 1 }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    mb: 1,
+                  }}
                 >
                   <PeopleIcon fontSize="small" />
                   招募进度
@@ -533,7 +535,12 @@ const TeamDetail = () => {
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 0.5 }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    mb: 0.5,
+                  }}
                 >
                   <EventIcon fontSize="small" />
                   招募截止日期
@@ -547,7 +554,7 @@ const TeamDetail = () => {
                       day: "numeric",
                       hour: "2-digit",
                       minute: "2-digit",
-                    }
+                    },
                   )}
                   size="small"
                   color={isDeadlinePassed() ? "error" : "success"}
@@ -618,9 +625,11 @@ const TeamDetail = () => {
                         borderRadius: 2,
                         px: 3,
                         whiteSpace: "nowrap",
-                        background: "linear-gradient(135deg, #4db6ac 0%, #26a69a 100%)",
+                        background:
+                          "linear-gradient(135deg, #4db6ac 0%, #26a69a 100%)",
                         "&:hover": {
-                          background: "linear-gradient(135deg, #3d9e94 0%, #1e8e82 100%)",
+                          background:
+                            "linear-gradient(135deg, #3d9e94 0%, #1e8e82 100%)",
                         },
                       }}
                     >
@@ -675,7 +684,9 @@ const TeamDetail = () => {
                         gap: 2,
                         cursor: "pointer",
                         border: "1px solid",
-                        borderColor: member.is_leader ? "primary.light" : "grey.200",
+                        borderColor: member.is_leader
+                          ? "primary.light"
+                          : "grey.200",
                         bgcolor: member.is_leader ? "primary.50" : "grey.50",
                         transition: "all 0.2s ease",
                         "&:hover": {
@@ -687,16 +698,14 @@ const TeamDetail = () => {
                     >
                       <Avatar
                         sx={{
-                          bgcolor: member.is_leader ? "primary.main" : "grey.400",
+                          bgcolor: member.is_leader
+                            ? "primary.main"
+                            : "grey.400",
                           width: 40,
                           height: 40,
                         }}
                       >
-                        {member.is_leader ? (
-                          <StarIcon />
-                        ) : (
-                          <PersonIcon />
-                        )}
+                        {member.is_leader ? <StarIcon /> : <PersonIcon />}
                       </Avatar>
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography

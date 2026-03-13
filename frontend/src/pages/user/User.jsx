@@ -49,10 +49,10 @@ export default function User() {
   useEffect(() => {
     if (user_id == getCurrentUser().id) {
       setUserIdentity("me");
-      console.log(`This is me.`);
+      // console.log(`This is me.`);
     } else {
       setUserIdentity("other");
-      console.log(`This is someone else.`);
+      // console.log(`This is someone else.`);
     }
   }, [user_id]);
 
@@ -106,9 +106,9 @@ export default function User() {
 
         if (res.success) {
           setUserTeams(res.data.teams || []);
-          console.log(userTeams);
+          // console.log(userTeams);
           setPageCount(res.data.total_pages);
-          console.log(pageCount);
+          // console.log(pageCount);
         } else {
           showMessage(
             `获取用户队伍失败：${res.message || "未知错误。"}`,
@@ -137,10 +137,10 @@ export default function User() {
     });
 
     if (!confirmed) {
-      console.log("用户取消保存");
+      // console.log("用户取消保存");
       return;
     }
-    console.log("用户确认保存");
+    // console.log("用户确认保存");
 
     const updateProfile = async () => {
       const controller = new AbortController();
@@ -158,7 +158,7 @@ export default function User() {
             },
           },
         );
-        console.log(res.message);
+        // console.log(res.message);
         if (res.success) {
           const storedUser = localStorage.getItem("user");
           if (storedUser) {

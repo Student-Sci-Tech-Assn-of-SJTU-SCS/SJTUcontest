@@ -151,9 +151,9 @@ const Contests = () => {
       const upd = cur.includes(tag)
         ? cur.filter((t) => t !== tag)
         : [...cur, tag];
-      console.log(
-        `Before: ${cur.map((tag) => tag.description)}; After: ${upd.map((tag) => tag.description)}`,
-      );
+      // console.log(
+      //   `Before: ${cur.map((tag) => tag.description)}; After: ${upd.map((tag) => tag.description)}`,
+      // );
       return { ...prev, [category]: upd };
     });
     setPageIndex(1);
@@ -190,7 +190,7 @@ const Contests = () => {
   }, [pageSize]);
 
   useEffect(() => {
-    console.log(`Contests count=${contests.length}`);
+    // console.log(`Contests count=${contests.length}`);
   }, [contests]);
 
   return (
@@ -336,7 +336,7 @@ const Contests = () => {
           </Grid>
 
           {/* debug: always log pageCount so we can see why pagination/button render */}
-          {console.log(`pageCount=${pageCount}`)}
+          {/* {// console.log(`pageCount=${pageCount}`)} */}
           {pageCount > 1 && (
             <Box display="flex" justifyContent="center" mt={4}>
               <Pagination
@@ -356,7 +356,12 @@ const Contests = () => {
           <Box display="flex" justifyContent="center" mt={6} mb={2}>
             <Button
               variant="outlined"
-              onClick={() => window.open('https://ssc.sjtu.edu.cn/dashboard/9030a6d6', '_blank')}
+              onClick={() =>
+                window.open(
+                  "https://ssc.sjtu.edu.cn/dashboard/9030a6d6",
+                  "_blank",
+                )
+              }
               sx={{
                 borderRadius: 3,
                 px: 2,
@@ -364,15 +369,15 @@ const Contests = () => {
                 fontWeight: 500,
                 color: theme.palette.primary.main,
                 border: `1px solid ${theme.palette.primary.main}`,
-                background: 'none',
-                transition: 'all 0.2s',
+                background: "none",
+                transition: "all 0.2s",
                 fontFamily: '"Segoe UI", "Helvetica Neue", Arial, sans-serif',
-                fontSize: '0.98rem',
+                fontSize: "0.98rem",
                 minWidth: 0,
-                '&:hover': {
+                "&:hover": {
                   background: alpha(theme.palette.primary.main, 0.08),
                   color: theme.palette.primary.dark,
-                  transform: 'scale(1.04)'
+                  transform: "scale(1.04)",
                 },
                 gap: 0.5,
               }}
@@ -382,9 +387,9 @@ const Contests = () => {
                     fontSize: 28,
                     color: theme.palette.primary.main,
                     border: `1px solid ${theme.palette.primary.main}`,
-                    borderRadius: '50%',
+                    borderRadius: "50%",
                     p: 0.4,
-                    boxShadow: 'none',
+                    boxShadow: "none",
                   }}
                 />
               }
