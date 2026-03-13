@@ -1,6 +1,6 @@
 import Tag, { nameToTag } from "./Tag";
 import { Box, Stack, Tooltip } from "@mui/material";
-import { useState, useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef, useEffect, useMemo } from "react";
 
 export default function TagGroup({
   tags,
@@ -11,7 +11,20 @@ export default function TagGroup({
 }) {
   const containerRef = useRef(null);
   const hiddenRef = useRef(null);
-  const [visibleTags, setVisibleTags] = useState(tags);
+
+  const filteredTags = useMemo(() => {
+    const nonOthers = tags.filter((t) => t.description !== "其他");
+
+    // console.log(`TagGroup: tags=${tags.map((t) => t.description).join(",")} nonOthers=${nonOthers.map((t) => t.description).join(",")}`);
+
+    if (nonOthers.length === 0) {
+      return [tags.find((t) => t.description === "其他")];
+    } else {
+      return nonOthers;
+    }
+  }, [tags]);
+
+  const [visibleTags, setVisibleTags] = useState(filteredTags);
   const [hiddenTags, setHiddenTags] = useState([]);
 
   function computeVisibleTags() {
@@ -34,7 +47,7 @@ export default function TagGroup({
     // console.log(`firstWidth=${allTagNodes[0].offsetWidth} totalWidth=${totalWidth}`);
 
     if (!isToTruncate) {
-      setVisibleTags(tags);
+      setVisibleTags(filteredTags);
       setHiddenTags([]);
       return;
     }
@@ -51,20 +64,20 @@ export default function TagGroup({
 
     // console.log(`lastVisibleIndex=${lastVisible}`);
 
-    setVisibleTags([...tags.slice(0, lastVisible), nameToTag("…")]);
-    setHiddenTags(tags.slice(lastVisible));
+    setVisibleTags([...filteredTags.slice(0, lastVisible), nameToTag("…")]);
+    setHiddenTags(filteredTags.slice(lastVisible));
   }
 
   useLayoutEffect(() => {
     if (!truncate) {
-      setVisibleTags(tags);
+      setVisibleTags(filteredTags);
       return;
     }
     computeVisibleTags();
     const ro = new ResizeObserver(computeVisibleTags);
     ro.observe(containerRef.current);
     return () => ro.disconnect();
-  }, [tags, truncate]);
+  }, [filteredTags, truncate]);
 
   return (
     <>
@@ -78,7 +91,7 @@ export default function TagGroup({
           overflow: "hidden",
         }}
       >
-        {tags.map((tag) => (
+        {filteredTags.map((tag) => (
           <Tag key={tag.description} tag={tag} />
         ))}
       </div>
