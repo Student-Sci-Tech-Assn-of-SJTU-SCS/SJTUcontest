@@ -46,7 +46,7 @@ export default function ContestSearchBar({
   useHotkeys(
     "/",
     (e) => {
-      console.log(`‘/’ triggered. expanded=${expanded}`);
+      // console.log(`‘/’ triggered. expanded=${expanded}`);
       e.preventDefault();
       setExpanded(true);
       if (inputRef.current) {
@@ -60,7 +60,7 @@ export default function ContestSearchBar({
   useHotkeys(
     "esc",
     (e) => {
-      console.log(`‘Esc’ triggered. expanded=${expanded}`);
+      // console.log(`‘Esc’ triggered. expanded=${expanded}`);
       e.preventDefault();
       setExpanded(false);
       if (inputRef.current) {

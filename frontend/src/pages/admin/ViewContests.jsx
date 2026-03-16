@@ -52,7 +52,7 @@ const ViewContests = () => {
       }
     };
     fetchContests();
-    console.log(contests);
+    // console.log(contests);
   }, [pageIndex, pageSize]);
 
   // 删除所选比赛
@@ -67,10 +67,10 @@ const ViewContests = () => {
     });
 
     if (!confirmed) {
-      console.log("管理员取消删除。");
+      // console.log("管理员取消删除。");
       return;
     }
-    console.log("管理员确认删除。");
+    // console.log("管理员确认删除。");
 
     const controller = new AbortController();
 

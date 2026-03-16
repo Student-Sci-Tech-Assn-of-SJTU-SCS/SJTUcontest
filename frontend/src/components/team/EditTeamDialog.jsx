@@ -95,10 +95,10 @@ const EditTeamDialog = ({
     });
 
     if (!confirmed) {
-      console.log("用户取消保存");
+      // console.log("用户取消保存");
       return;
     }
-    console.log("用户确认保存");
+    // console.log("用户确认保存");
 
     const v = validate();
     if (v) {

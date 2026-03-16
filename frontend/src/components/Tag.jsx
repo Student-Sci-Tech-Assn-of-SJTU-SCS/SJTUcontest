@@ -16,7 +16,7 @@ const levelTags = {
     REGIONAL: new TagClass("regional", "省市级", categories.LEVEL),
     NATIONAL: new TagClass("national", "国家级", categories.LEVEL),
     INTERNATIONAL: new TagClass("international", "国际级", categories.LEVEL),
-    OTHERS: new TagClass("others", "其他", categories.LEVEL),
+    OTHERS: new TagClass("others", "其他", categories.UNDEF),
   },
   qualityTags = {
     TOP: new TagClass("top", "专项赛事", categories.QUAL),
@@ -24,7 +24,7 @@ const levelTags = {
     B_LEVEL: new TagClass("B_level", "B类赛事", categories.QUAL),
     C_LEVEL: new TagClass("C_level", "C类赛事", categories.QUAL),
     D_LEVEL: new TagClass("D_level", "D类赛事", categories.QUAL),
-    OTHERS: new TagClass("others", "其他", categories.QUAL),
+    OTHERS: new TagClass("others", "其他", categories.UNDEF),
   },
   keywordTags = {
     CS: new TagClass("CS", "计算机科学", categories.KWORD),
@@ -33,7 +33,7 @@ const levelTags = {
     IS: new TagClass("IS", "信息安全", categories.KWORD),
     EE: new TagClass("EE", "电气工程", categories.KWORD),
     INNOVATION: new TagClass("innovation", "创新创业", categories.KWORD),
-    OTHERS: new TagClass("others", "其他", categories.KWORD),
+    OTHERS: new TagClass("others", "其他", categories.UNDEF),
   },
   yearTags = genYearTags(),
   monthTags = genMonthTags();
