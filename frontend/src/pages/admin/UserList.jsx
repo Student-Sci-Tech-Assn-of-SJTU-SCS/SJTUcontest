@@ -12,6 +12,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  TablePagination,
   Chip,
   Avatar,
   IconButton,
@@ -41,7 +42,10 @@ const UserList = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [page, setPage] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
   const searchInputRef = useRef(null);
+  const rowsPerPage = 10;
 
   // 防抖处理
   useEffect(() => {
@@ -61,10 +65,15 @@ const UserList = () => {
           setLoading(true);
         }
 
-        const response = await userAPI.getUserList(1, 20, debouncedSearchTerm);
+        const response = await userAPI.getUserList(
+          page + 1,
+          rowsPerPage,
+          debouncedSearchTerm,
+        );
 
         if (response.success) {
           setUsers(response.data.users);
+          setTotalUsers(response.data.total_users || 0);
           setError(null);
         } else {
           setError(response.message || "获取用户列表失败");
@@ -80,20 +89,13 @@ const UserList = () => {
         }
       }
     },
-    [debouncedSearchTerm],
+    [debouncedSearchTerm, page],
   );
 
-  // 初始加载
+  // 初始加载和分页、搜索变化时重新获取数据
   useEffect(() => {
-    fetchUsers(false);
-  }, []);
-
-  // 搜索时重新获取数据
-  useEffect(() => {
-    if (debouncedSearchTerm !== undefined) {
-      fetchUsers(true);
-    }
-  }, [debouncedSearchTerm]);
+    fetchUsers(page > 0 || !!debouncedSearchTerm);
+  }, [fetchUsers, page, debouncedSearchTerm]);
 
   // 搜索完成后恢复焦点
   useEffect(() => {
@@ -136,6 +138,11 @@ const UserList = () => {
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
+    setPage(0);
+  };
+
+  const handlePageChange = (_event, newPage) => {
+    setPage(newPage);
   };
 
   if (loading) {
@@ -159,12 +166,15 @@ const UserList = () => {
     <Box>
       <Box
         display="flex"
-        justifyContent="space-between"
-        alignItems="center"
+        flexDirection="column"
+        alignItems="flex-start"
         mb={3}
       >
         <Typography variant="h4" component="h1">
           用户管理
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          总用户数：{totalUsers}
         </Typography>
       </Box>
 
@@ -241,6 +251,22 @@ const UserList = () => {
                 ))}
               </TableBody>
             </Table>
+            <TablePagination
+              component="div"
+              count={totalUsers}
+              page={page}
+              onPageChange={handlePageChange}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[10]}
+              labelRowsPerPage="每页条数"
+              labelDisplayedRows={({ count, page }) => {
+                const totalPages = Math.max(
+                  1,
+                  Math.ceil((count === -1 ? 0 : count) / rowsPerPage),
+                );
+                return `第${page + 1}页 共${totalPages}页`;
+              }}
+            />
           </TableContainer>
 
           {users.length === 0 && (
