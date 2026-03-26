@@ -15,11 +15,13 @@ import {
   Announcement as AnnouncementIcon,
   ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { isAuthenticated } from "../utils/auth";
 
 const NotificationFloat = () => {
   const theme = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   const [showNotification, setShowNotification] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
@@ -163,12 +165,16 @@ const NotificationFloat = () => {
             variant="contained"
             fullWidth
             endIcon={<ArrowForwardIcon sx={{ fontSize: 16 }} />}
-            onClick={() =>
-              window.open(
-                "https://ssc.sjtu.edu.cn/dashboard/0a33e467",
-                "_blank",
-              )
-            }
+            onClick={() => {
+              if (!isAuthenticated()) {
+                navigate("/login", { state: { from: location } });
+              } else {
+                window.open(
+                  "https://ssc.sjtu.edu.cn/dashboard/0a33e467",
+                  "_blank",
+                );
+              }
+            }}
             sx={{
               borderRadius: 20,
               py: 0.8,

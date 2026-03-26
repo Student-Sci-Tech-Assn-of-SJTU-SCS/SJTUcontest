@@ -13,11 +13,13 @@ import AddIcon from "@mui/icons-material/Add";
 import ContestSearchBar from "../../components/ContestSearchBar";
 import ContestCard from "../../components/ContestCard";
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { categories, nameToTag } from "../../components/Tag";
 import { useMediaQuery } from "@mui/material";
 import { createFadeInAnim } from "../../styles/animations";
 import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
+import { isAuthenticated } from "../../utils/auth";
 import showMessage from "../../utils/message";
 
 function saveSelectedTagsToSession(selectedTags) {
@@ -44,6 +46,8 @@ function loadSelectedTagsFromSession() {
 
 const Contests = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState({
     [categories.LEVEL]: [],
@@ -356,12 +360,16 @@ const Contests = () => {
           <Box display="flex" justifyContent="center" mt={6} mb={2}>
             <Button
               variant="outlined"
-              onClick={() =>
-                window.open(
-                  "https://ssc.sjtu.edu.cn/dashboard/9030a6d6",
-                  "_blank",
-                )
-              }
+              onClick={() => {
+                if (!isAuthenticated()) {
+                  navigate("/login", { state: { from: location } });
+                } else {
+                  window.open(
+                    "https://ssc.sjtu.edu.cn/dashboard/9030a6d6",
+                    "_blank",
+                  );
+                }
+              }}
               sx={{
                 borderRadius: 3,
                 px: 2,
