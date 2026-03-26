@@ -164,12 +164,7 @@ const UserList = () => {
 
   return (
     <Box>
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="flex-start"
-        mb={3}
-      >
+      <Box display="flex" flexDirection="column" alignItems="flex-start" mb={3}>
         <Typography variant="h4" component="h1">
           用户管理
         </Typography>
