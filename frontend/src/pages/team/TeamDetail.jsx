@@ -414,10 +414,6 @@ const TeamDetail = () => {
                 lineHeight: 1.8,
                 whiteSpace: "pre-wrap",
                 wordBreak: "break-word",
-                overflow: "hidden",
-                display: "-webkit-box",
-                WebkitLineClamp: 4,
-                WebkitBoxOrient: "vertical",
               }}
             >
               {team.introduction || "暂无队伍简介"}
