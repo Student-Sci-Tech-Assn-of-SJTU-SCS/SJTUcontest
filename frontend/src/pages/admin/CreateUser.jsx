@@ -83,9 +83,14 @@ const CreateUser = () => {
     setLoading(true);
 
     try {
-      const res = await userAPI.register(formData, {
-        signal: controller.signal,
-      });
+      const res = await userAPI.register(
+        formData.username,
+        formData.email,
+        formData.password,
+        {
+          signal: controller.signal,
+        },
+      );
 
       if (res.success) {
         showMessage("用户创建成功！", "success");
@@ -101,8 +106,12 @@ const CreateUser = () => {
       sessionStorage.removeItem("admin_create_user");
     } catch (error) {
       if (axios.isCancel(error)) return;
+      const responseData = error.response?.data;
+      const fieldErrors = responseData?.data;
+      const firstField = fieldErrors && Object.keys(fieldErrors)[0];
+      const firstError = firstField ? fieldErrors[firstField]?.[0] : null;
       showMessage(
-        `创建用户失败：${error.response?.data?.detail || error.message}`,
+        `创建用户失败：${firstError || responseData?.message || responseData?.detail || error.message}`,
         "error",
       );
     } finally {

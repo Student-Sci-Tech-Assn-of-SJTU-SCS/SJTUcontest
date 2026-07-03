@@ -249,3 +249,60 @@ def get_match_teams(request, match_id):
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
         )
+
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def get_match_registration_teams(request, match_id):
+    """
+    管理员查看某个比赛当前正在报名/招募的队伍。
+    """
+    try:
+        contest = Contest.objects.get(id=match_id)
+
+        serializer = ContestTeamsRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return ApiResponse.error(message="Invalid data", data=serializer.errors)
+
+        teams = contest.teams.filter(
+            recruitment_deadline__gt=timezone.now(),
+            existing_members__lt=F("expected_members"),
+        ).order_by("-updated_at")
+
+        page_index = serializer.validated_data["page_index"]
+        page_size = serializer.validated_data["page_size"]
+
+        paginator = Paginator(teams, page_size)
+
+        if page_index > paginator.num_pages:
+            return ApiResponse.not_found(
+                message="Too large page index",
+                data={
+                    "total_pages": paginator.num_pages,
+                    "page_index": page_index,
+                },
+            )
+
+        page_teams = paginator.page(page_index)
+        teams_serializer = TeamResponseSerializer(page_teams, many=True)
+
+        response_data = {
+            "contest": ContestResponseSerializer(contest).data,
+            "total_pages": paginator.num_pages,
+            "page_index": page_index,
+            "team_num": len(teams_serializer.data),
+            "teams": teams_serializer.data,
+        }
+
+        return ApiResponse.success(
+            data=response_data,
+            message="Contest registration teams retrieved successfully",
+        )
+
+    except Contest.DoesNotExist:
+        return ApiResponse.not_found(message="Contest not found")
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )

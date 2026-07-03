@@ -9,6 +9,7 @@ from .views import (
     join_team_by_id,
     quit_team_by_id,
     update_team_by_id,
+    update_official_registration_by_id,
     delete_team_by_id,
     search_teams_by_name,
 )
@@ -26,5 +27,10 @@ urlpatterns = [
     ),
     path("<uuid:team_id>/quit/", quit_team_by_id, name="quit_team_by_id"),
     path("<uuid:team_id>/update/", update_team_by_id, name="update_team_by_id"),
+    path(
+        "<uuid:team_id>/official-registration/",
+        update_official_registration_by_id,
+        name="update_official_registration_by_id",
+    ),
     path("<uuid:team_id>/delete/", delete_team_by_id, name="delete_team_by_id"),
 ]

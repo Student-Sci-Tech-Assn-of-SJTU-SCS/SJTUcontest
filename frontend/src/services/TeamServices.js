@@ -91,6 +91,22 @@ export const teamAPI = {
     return response;
   },
 
+  // 更新是否已在比赛官网报名
+  updateOfficialRegistration: async (
+    team_id,
+    official_registration_completed,
+    config = {},
+  ) => {
+    const response = await api.post(
+      `teams/${team_id}/official-registration/`,
+      {
+        official_registration_completed,
+      },
+      config,
+    );
+    return response;
+  },
+
   // 退出队伍
   leaveTeam: async (team_id, config = {}) => {
     const response = await api.post(`teams/${team_id}/quit/`, {}, config);

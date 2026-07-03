@@ -100,15 +100,26 @@ const ViewContests = () => {
     {
       field: "actions",
       headerName: "操作",
-      width: 100,
+      width: 190,
       renderCell: (params) => (
-        <Button
-          size="small"
-          variant="contained"
-          onClick={() => navigate(`/admin/edit-contest/${params.row.id}`)}
-        >
-          编辑
-        </Button>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => navigate(`/admin/edit-contest/${params.row.id}`)}
+          >
+            编辑
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() =>
+              navigate(`/admin/contest-registration/${params.row.id}`)
+            }
+          >
+            报名详情
+          </Button>
+        </Box>
       ),
     },
   ];
