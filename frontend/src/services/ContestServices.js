@@ -49,6 +49,7 @@ export const contestAPI = {
     match_id,
     page_index,
     page_size,
+    options = {},
     config = {},
   ) => {
     const response = await api.post(
@@ -56,6 +57,7 @@ export const contestAPI = {
       {
         page_index,
         page_size,
+        options,
       },
       config,
     );

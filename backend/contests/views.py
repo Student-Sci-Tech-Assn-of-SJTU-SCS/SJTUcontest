@@ -10,6 +10,7 @@ from .serializers import (
     ContestResponseSerializer,
     ContestCreateRequestSerializer,
     ContestTeamsRequestSerializer,
+    ContestRegistrationTeamsRequestSerializer,
 )
 from teams.serializers import TeamResponseSerializer
 from SJTUcontest.utils import ApiResponse
@@ -260,14 +261,47 @@ def get_match_registration_teams(request, match_id):
     try:
         contest = Contest.objects.get(id=match_id)
 
-        serializer = ContestTeamsRequestSerializer(data=request.data)
+        serializer = ContestRegistrationTeamsRequestSerializer(data=request.data)
         if not serializer.is_valid():
             return ApiResponse.error(message="Invalid data", data=serializer.errors)
 
-        teams = contest.teams.filter(
+        all_teams = contest.teams.all()
+        active_teams = all_teams.filter(
             recruitment_deadline__gt=timezone.now(),
             existing_members__lt=F("expected_members"),
-        ).order_by("-updated_at")
+        )
+        active_teams_count = active_teams.count()
+        official_registered_teams = all_teams.filter(
+            official_registration_completed=True
+        ).count()
+        total_teams = all_teams.count()
+
+        teams = all_teams
+        options = serializer.validated_data.get("options") or {}
+        query = options.get("query")
+        official_status = options.get("official_status", "all")
+        member_status = options.get("member_status", "all")
+        deadline_status = options.get("deadline_status", "all")
+
+        if query:
+            teams = teams.filter(name__icontains=query)
+
+        if official_status == "completed":
+            teams = teams.filter(official_registration_completed=True)
+        elif official_status == "not_completed":
+            teams = teams.filter(official_registration_completed=False)
+
+        if member_status == "full":
+            teams = teams.filter(existing_members__gte=F("expected_members"))
+        elif member_status == "not_full":
+            teams = teams.filter(existing_members__lt=F("expected_members"))
+
+        if deadline_status == "active":
+            teams = teams.filter(recruitment_deadline__gt=timezone.now())
+        elif deadline_status == "expired":
+            teams = teams.filter(recruitment_deadline__lte=timezone.now())
+
+        teams = teams.order_by("-updated_at")
 
         page_index = serializer.validated_data["page_index"]
         page_size = serializer.validated_data["page_size"]
@@ -291,6 +325,9 @@ def get_match_registration_teams(request, match_id):
             "total_pages": paginator.num_pages,
             "page_index": page_index,
             "team_num": len(teams_serializer.data),
+            "active_teams": active_teams_count,
+            "total_teams": total_teams,
+            "official_registered_teams": official_registered_teams,
             "teams": teams_serializer.data,
         }
 

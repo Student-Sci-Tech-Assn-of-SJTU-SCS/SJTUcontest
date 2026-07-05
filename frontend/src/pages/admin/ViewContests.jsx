@@ -101,8 +101,18 @@ const ViewContests = () => {
       field: "actions",
       headerName: "操作",
       width: 190,
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => (
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Button
             size="small"
             variant="contained"

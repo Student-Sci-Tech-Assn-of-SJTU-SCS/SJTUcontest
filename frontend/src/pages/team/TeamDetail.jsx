@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -44,6 +44,75 @@ import { contestAPI } from "../../services/ContestServices";
 
 import EditTeamDialog from "../../components/team/EditTeamDialog";
 import showMessage from "../../utils/message";
+
+const ExpandableText = ({
+  text,
+  emptyText,
+  variant = "body1",
+  color = "text.secondary",
+  sx = {},
+}) => {
+  const textRef = useRef(null);
+  const [expanded, setExpanded] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
+  const displayText = text || emptyText;
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [displayText]);
+
+  useEffect(() => {
+    if (expanded) return undefined;
+
+    const measureOverflow = () => {
+      const el = textRef.current;
+      if (!el) return;
+      setOverflowing(el.scrollHeight > el.clientHeight + 1);
+    };
+
+    const timer = window.setTimeout(measureOverflow, 0);
+    window.addEventListener("resize", measureOverflow);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("resize", measureOverflow);
+    };
+  }, [displayText, expanded]);
+
+  return (
+    <Box>
+      <Typography
+        ref={textRef}
+        variant={variant}
+        color={color}
+        sx={{
+          whiteSpace: "pre-wrap",
+          overflowWrap: "anywhere",
+          wordBreak: "break-word",
+          ...(!expanded && {
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }),
+          ...sx,
+        }}
+      >
+        {displayText}
+      </Typography>
+      {overflowing && (
+        <Button
+          size="small"
+          variant="text"
+          onClick={() => setExpanded((prev) => !prev)}
+          sx={{ mt: 0.5, minWidth: 0, px: 0.5 }}
+        >
+          {expanded ? "收起" : "展开"}
+        </Button>
+      )}
+    </Box>
+  );
+};
 
 const TeamDetail = () => {
   const { team_id } = useParams();
@@ -447,18 +516,14 @@ const TeamDetail = () => {
             </Typography>
 
             {/* 队伍简介 */}
-            <Typography
-              variant="body1"
-              color="text.secondary"
+            <ExpandableText
+              text={team.introduction}
+              emptyText="暂无队伍简介"
               sx={{
                 maxWidth: "800px",
                 lineHeight: 1.8,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
               }}
-            >
-              {team.introduction || "暂无队伍简介"}
-            </Typography>
+            />
           </Box>
         </Paper>
       </Fade>
