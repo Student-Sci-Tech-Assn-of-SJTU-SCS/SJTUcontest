@@ -44,4 +44,23 @@ export const contestAPI = {
     const response = await api.delete(`matches/${match_id}/delete/`, config);
     return response;
   },
+
+  getContestRegistrationTeams: async (
+    match_id,
+    page_index,
+    page_size,
+    options = {},
+    config = {},
+  ) => {
+    const response = await api.post(
+      `matches/${match_id}/registration-teams/`,
+      {
+        page_index,
+        page_size,
+        options,
+      },
+      config,
+    );
+    return response;
+  },
 };

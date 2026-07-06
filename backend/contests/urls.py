@@ -3,6 +3,7 @@ from django.urls import path
 
 from .views import (
     get_match_teams,
+    get_match_registration_teams,
     get_matches,
     create_match,
     get_match_by_id,
@@ -17,4 +18,9 @@ urlpatterns = [
     path("<uuid:match_id>/update/", update_match_by_id, name="update_match"),
     path("<uuid:match_id>/delete/", delete_match_by_id, name="delete_match"),
     path("<uuid:match_id>/teams/", get_match_teams, name="get_match_teams"),
+    path(
+        "<uuid:match_id>/registration-teams/",
+        get_match_registration_teams,
+        name="get_match_registration_teams",
+    ),
 ]

@@ -124,7 +124,7 @@ def update_user_profile(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAdminUser])
 def register(request):
     """
     用户注册接口，仅供测试时使用！

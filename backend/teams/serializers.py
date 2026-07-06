@@ -21,10 +21,12 @@ class TeamSearchRequestSerializer(serializers.Serializer):
 class TeamMemberSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(source="user.id")
     nick_name = serializers.CharField(source="user.nick_name")
+    username = serializers.CharField(source="user.username")
+    email = serializers.EmailField(source="user.email")
 
     class Meta:
         model = UserTeam
-        fields = ["id", "nick_name", "is_leader"]
+        fields = ["id", "nick_name", "username", "email", "is_leader"]
 
 
 class TeamCreateRequestSerializer(serializers.ModelSerializer):
@@ -77,6 +79,7 @@ class TeamResponseSerializer(serializers.ModelSerializer):
             "existing_members",
             "recruitment_deadline",
             "contest",
+            "official_registration_completed",
             "members",  # 成员列表
         ]
 
@@ -101,6 +104,7 @@ class TeamUpdateRequestSerializer(serializers.ModelSerializer):
             "introduction",
             "expected_members",
             "recruitment_deadline",
+            "official_registration_completed",
         ]
 
     def validate(self, attrs):

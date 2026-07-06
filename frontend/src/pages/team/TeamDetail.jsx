@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -23,6 +23,8 @@ import {
   Tooltip,
   IconButton,
   Fade,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
@@ -43,6 +45,75 @@ import { contestAPI } from "../../services/ContestServices";
 import EditTeamDialog from "../../components/team/EditTeamDialog";
 import showMessage from "../../utils/message";
 
+const ExpandableText = ({
+  text,
+  emptyText,
+  variant = "body1",
+  color = "text.secondary",
+  sx = {},
+}) => {
+  const textRef = useRef(null);
+  const [expanded, setExpanded] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
+  const displayText = text || emptyText;
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [displayText]);
+
+  useEffect(() => {
+    if (expanded) return undefined;
+
+    const measureOverflow = () => {
+      const el = textRef.current;
+      if (!el) return;
+      setOverflowing(el.scrollHeight > el.clientHeight + 1);
+    };
+
+    const timer = window.setTimeout(measureOverflow, 0);
+    window.addEventListener("resize", measureOverflow);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("resize", measureOverflow);
+    };
+  }, [displayText, expanded]);
+
+  return (
+    <Box>
+      <Typography
+        ref={textRef}
+        variant={variant}
+        color={color}
+        sx={{
+          whiteSpace: "pre-wrap",
+          overflowWrap: "anywhere",
+          wordBreak: "break-word",
+          ...(!expanded && {
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }),
+          ...sx,
+        }}
+      >
+        {displayText}
+      </Typography>
+      {overflowing && (
+        <Button
+          size="small"
+          variant="text"
+          onClick={() => setExpanded((prev) => !prev)}
+          sx={{ mt: 0.5, minWidth: 0, px: 0.5 }}
+        >
+          {expanded ? "收起" : "展开"}
+        </Button>
+      )}
+    </Box>
+  );
+};
+
 const TeamDetail = () => {
   const { team_id } = useParams();
   const navigate = useNavigate();
@@ -59,6 +130,7 @@ const TeamDetail = () => {
   const [deleting, setDeleting] = useState(false);
   const [quitOpen, setQuitOpen] = useState(false);
   const [quitting, setQuitting] = useState(false);
+  const [registrationSaving, setRegistrationSaving] = useState(false);
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -90,6 +162,21 @@ const TeamDetail = () => {
     const date = new Date(isoString);
     const pad = (n) => String(n).padStart(2, "0");
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  };
+
+  const getErrorMessage = (error, fallback) => {
+    const resp = error?.response?.data;
+    if (resp?.data && typeof resp.data === "object") {
+      const firstKey = Object.keys(resp.data)[0];
+      const firstVal = resp.data[firstKey];
+      if (Array.isArray(firstVal) && firstVal.length > 0) {
+        return `${resp.message || fallback}：${firstVal[0]}`;
+      }
+      if (typeof firstVal === "string") {
+        return `${resp.message || fallback}：${firstVal}`;
+      }
+    }
+    return resp?.message || resp?.detail || error?.message || fallback;
   };
 
   const fetchTeamData = async () => {
@@ -210,6 +297,29 @@ const TeamDetail = () => {
     setTeam(updated.data);
 
     return null;
+  };
+
+  const handleOfficialRegistrationChange = async (event) => {
+    const nextValue = event.target.checked;
+    const previousTeam = team;
+
+    setRegistrationSaving(true);
+    setTeam((prev) =>
+      prev
+        ? { ...prev, official_registration_completed: nextValue }
+        : prev,
+    );
+
+    try {
+      const res = await teamAPI.updateOfficialRegistration(team_id, nextValue);
+      setTeam(res.data);
+      showMessage("官网报名状态已保存", "success");
+    } catch (error) {
+      setTeam(previousTeam);
+      showMessage(getErrorMessage(error, "官网报名状态保存失败"), "error");
+    } finally {
+      setRegistrationSaving(false);
+    }
   };
 
   // const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
@@ -406,18 +516,14 @@ const TeamDetail = () => {
             </Typography>
 
             {/* 队伍简介 */}
-            <Typography
-              variant="body1"
-              color="text.secondary"
+            <ExpandableText
+              text={team.introduction}
+              emptyText="暂无队伍简介"
               sx={{
                 maxWidth: "800px",
                 lineHeight: 1.8,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
               }}
-            >
-              {team.introduction || "暂无队伍简介"}
-            </Typography>
+            />
           </Box>
         </Paper>
       </Fade>
@@ -557,6 +663,62 @@ const TeamDetail = () => {
                   variant="filled"
                   sx={{ fontWeight: 500 }}
                 />
+              </Box>
+
+              {/* 比赛官网报名状态 */}
+              <Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: "block", mb: 0.5 }}
+                >
+                  比赛官网报名状态
+                </Typography>
+                {isLeader ? (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={Boolean(team.official_registration_completed)}
+                        onChange={handleOfficialRegistrationChange}
+                        disabled={registrationSaving}
+                        color="success"
+                      />
+                    }
+                    label="我们已在比赛官网中报名"
+                    sx={{
+                      m: 0,
+                      px: 1.5,
+                      py: 0.75,
+                      borderRadius: 2,
+                      border: "1px solid",
+                      borderColor: team.official_registration_completed
+                        ? "success.light"
+                        : "divider",
+                      bgcolor: team.official_registration_completed
+                        ? "rgba(46, 125, 50, 0.06)"
+                        : "grey.50",
+                    }}
+                  />
+                ) : (
+                  <Chip
+                    label={
+                      team.official_registration_completed
+                        ? "已在比赛官网报名"
+                        : "未标记官网报名"
+                    }
+                    color={
+                      team.official_registration_completed
+                        ? "success"
+                        : "default"
+                    }
+                    variant={
+                      team.official_registration_completed
+                        ? "filled"
+                        : "outlined"
+                    }
+                    size="small"
+                  />
+                )}
               </Box>
 
               {/* 队长获取邀请码 */}

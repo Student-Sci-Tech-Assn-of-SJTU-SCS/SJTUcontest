@@ -26,6 +26,7 @@ import UserList from "./pages/admin/UserList.jsx";
 import UserDetail from "./pages/admin/UserDetail.jsx";
 import ViewContests from "./pages/admin/ViewContests.jsx";
 import ContestEdit from "./pages/admin/EditContest.jsx";
+import ContestRegistrationDetail from "./pages/admin/ContestRegistrationDetail.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
 
 const Router = createBrowserRouter([
@@ -123,6 +124,10 @@ const Router = createBrowserRouter([
           {
             path: "edit-contest/:contest_id",
             element: <ContestEdit />,
+          },
+          {
+            path: "contest-registration/:contest_id",
+            element: <ContestRegistrationDetail />,
           },
           {
             path: "manage-news",

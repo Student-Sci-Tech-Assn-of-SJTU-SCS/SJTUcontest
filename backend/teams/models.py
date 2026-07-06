@@ -43,6 +43,10 @@ class Team(models.Model):
         default=True, help_text="邀请码是否有效"
     )
 
+    official_registration_completed = models.BooleanField(
+        default=False, help_text="是否已在比赛官网报名"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

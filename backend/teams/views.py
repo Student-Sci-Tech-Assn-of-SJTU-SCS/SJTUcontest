@@ -329,6 +329,50 @@ def update_team_by_id(request, team_id):
         )
 
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def update_official_registration_by_id(request, team_id):
+    """
+    更新队伍是否已在比赛官网报名。该状态只允许队长更新，且不受队伍信息编辑频率限制。
+    """
+    try:
+        team = Team.objects.get(id=team_id)
+
+        if not UserTeam.objects.filter(
+            user=request.user, team=team, is_leader=True
+        ).exists():
+            return ApiResponse.forbidden(message="只有队长可以更新官网报名状态")
+
+        if "official_registration_completed" not in request.data:
+            return ApiResponse.error(
+                message="Invalid data",
+                data={"official_registration_completed": ["该字段为必填项"]},
+            )
+
+        value = request.data.get("official_registration_completed")
+        if not isinstance(value, bool):
+            return ApiResponse.error(
+                message="Invalid data",
+                data={"official_registration_completed": ["必须为布尔值"]},
+            )
+
+        team.official_registration_completed = value
+        team.save(update_fields=["official_registration_completed", "updated_at"])
+
+        return ApiResponse.success(
+            data=TeamResponseSerializer(team).data,
+            message="官网报名状态更新成功",
+        )
+
+    except Team.DoesNotExist:
+        return ApiResponse.not_found(message="队伍不存在")
+
+    except Exception as e:
+        return ApiResponse.error(
+            message=f"Internal server error: {str(e)}", status_code=500
+        )
+
+
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def delete_team_by_id(request, team_id):

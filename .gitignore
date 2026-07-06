@@ -31,3 +31,8 @@ build/
 # 日志
 backend/logs/
 !backend/logs/.gitkeep
+
+.history/
+
+.vite/
+frontend/.vite/
