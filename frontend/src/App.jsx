@@ -28,6 +28,7 @@ import ViewContests from "./pages/admin/ViewContests.jsx";
 import ContestEdit from "./pages/admin/EditContest.jsx";
 import ContestRegistrationDetail from "./pages/admin/ContestRegistrationDetail.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
+import Resources from "./pages/resource/Resources.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -62,6 +63,14 @@ const Router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Teams />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "resources",
+        element: (
+          <PrivateRoute>
+            <Resources />
           </PrivateRoute>
         ),
       },

@@ -85,7 +85,7 @@ const Home = () => {
                 }),
               }}
             >
-              上海交通大学计算机学院
+              上海交通大学集成电路学院
             </Typography>
             <Typography
               variant="h3"
@@ -472,7 +472,7 @@ const Home = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 width: "100%",
-                maxWidth: 650, // 设置最大宽度限制
+                maxWidth: "100%",
               }}
             >
               {/* 左侧装饰 */}
@@ -529,6 +529,9 @@ const Home = () => {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
+                  width: "fit-content",
+                  maxWidth: "100%",
+                  boxSizing: "border-box",
                   boxShadow: `
                     0 20px 40px ${alpha(theme.palette.primary.main, 0.08)},
                     inset 0 1px 0 ${alpha(theme.palette.common.white, 0.5)}

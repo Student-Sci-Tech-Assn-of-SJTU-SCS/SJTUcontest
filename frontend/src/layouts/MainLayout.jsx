@@ -21,9 +21,10 @@ import {
   AdminPanelSettings as AdminIcon,
   EmojiEvents as ContestIcon,
   Groups as TeamsIcon,
+  Assignment as AssignmentIcon,
+  FolderShared as FolderSharedIcon,
 } from "@mui/icons-material";
 import { userAPI } from "../services/UserServices";
-import NotificationFloat from "../components/NotificationFloat";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -79,6 +80,11 @@ const MainLayout = () => {
     }
     return location.pathname.startsWith(path);
   };
+
+  const handleAwardReportClick = () => {
+    window.open("https://google.com", "_blank", "noopener,noreferrer");
+  };
+
   return (
     <Box
       sx={{
@@ -90,9 +96,6 @@ const MainLayout = () => {
       }}
     >
       <CssBaseline />
-
-      {/* 全局通知浮窗 */}
-      <NotificationFloat />
 
       {/* 顶部导航栏 */}
       <AppBar
@@ -241,6 +244,7 @@ const MainLayout = () => {
             py: 1,
             position: "relative",
             zIndex: 1,
+            minWidth: 0,
           }}
         >
           <Typography
@@ -256,6 +260,8 @@ const MainLayout = () => {
               display: "flex",
               alignItems: "center",
               gap: 1,
+              whiteSpace: "nowrap",
+              flexShrink: 0,
               "&:hover": {
                 color: alpha(theme.palette.common.white, 0.9),
                 transform: "scale(1.02)",
@@ -277,6 +283,14 @@ const MainLayout = () => {
               borderRadius: 10,
               background: alpha(theme.palette.common.white, 0.05),
               backdropFilter: "blur(10px)",
+              overflowX: "auto",
+              overflowY: "hidden",
+              maxWidth: { xs: "100%", md: "none" },
+              flexShrink: 1,
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+              scrollbarWidth: "none",
             }}
           >
             <Button
@@ -307,9 +321,9 @@ const MainLayout = () => {
                   left: isCurrentPage("/contests") ? 0 : "-100%",
                   width: "100%",
                   height: "100%",
-                  background: `linear-gradient(90deg, 
-                    transparent, 
-                    ${alpha(theme.palette.common.white, 0.1)}, 
+                  background: `linear-gradient(90deg,
+                    transparent,
+                    ${alpha(theme.palette.common.white, 0.1)},
                     transparent)`,
                   transition: "left 0.3s ease",
                 },
@@ -388,6 +402,96 @@ const MainLayout = () => {
               }}
             >
               组队
+            </Button>
+            <Button
+              color="inherit"
+              onClick={() => navigate("/resources")}
+              startIcon={<FolderSharedIcon />}
+              sx={{
+                borderRadius: 8,
+                px: 2.5,
+                py: 1,
+                textTransform: "none",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+                color: isCurrentPage("/resources")
+                  ? theme.palette.common.white
+                  : alpha(theme.palette.common.white, 0.9),
+                backgroundColor: isCurrentPage("/resources")
+                  ? alpha(theme.palette.common.white, 0.15)
+                  : "transparent",
+                border: isCurrentPage("/resources")
+                  ? `1px solid ${alpha(theme.palette.common.white, 0.3)}`
+                  : "1px solid transparent",
+                "&:hover": {
+                  backgroundColor: alpha(theme.palette.common.white, 0.1),
+                  transform: "translateY(-2px)",
+                  boxShadow: `0 4px 8px ${alpha(theme.palette.common.black, 0.2)}`,
+                },
+                "&:focus": {
+                  outline: "none",
+                  boxShadow: "none",
+                },
+                "&:focus-visible": {
+                  outline: "none",
+                  boxShadow: `0 0 0 2px ${alpha(theme.palette.secondary.main, 0.5)}`,
+                },
+                transition: "all 0.3s ease",
+              }}
+            >
+              资料分享
+            </Button>
+            <Button
+              color="inherit"
+              onClick={handleAwardReportClick}
+              startIcon={<AssignmentIcon />}
+              sx={{
+                borderRadius: 8,
+                px: 2.5,
+                py: 1,
+                textTransform: "none",
+                fontWeight: 500,
+                color: alpha(theme.palette.common.white, 0.9),
+                backgroundColor: "transparent",
+                border: "1px solid transparent",
+                position: "relative",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background: `linear-gradient(90deg,
+                    transparent,
+                    ${alpha(theme.palette.common.white, 0.1)},
+                    transparent)`,
+                  transition: "left 0.3s ease",
+                },
+                "&:hover": {
+                  backgroundColor: alpha(theme.palette.common.white, 0.1),
+                  transform: "translateY(-2px)",
+                  boxShadow: `0 4px 8px ${alpha(theme.palette.common.black, 0.2)}`,
+                  "&::before": {
+                    left: 0,
+                  },
+                },
+                "&:focus": {
+                  outline: "none",
+                  boxShadow: "none",
+                },
+                "&:focus-visible": {
+                  outline: "none",
+                  boxShadow: `0 0 0 2px ${alpha(theme.palette.secondary.main, 0.5)}`,
+                },
+                transition: "all 0.3s ease",
+              }}
+            >
+              竞赛获奖情况填报
             </Button>
             {user && user.is_staff && (
               <Button

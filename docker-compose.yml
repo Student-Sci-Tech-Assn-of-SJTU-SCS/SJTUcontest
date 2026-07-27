@@ -30,6 +30,7 @@ services:
     volumes:
       - ./backend/.env:/app/.env:ro
       - ./backend/logs:/app/logs
+      - resource_media:/app/media
     networks:
       - sjtu_contest_net
 
@@ -70,6 +71,7 @@ services:
 
 volumes:
   postgres_data:
+  resource_media:
 
 networks:
   sjtu_contest_net:

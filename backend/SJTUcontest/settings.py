@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "users",
     "teams",
     "news",
+    "resources",
     "rest_framework",
     "rest_framework_simplejwt",  # 添加JWT支持
     "rest_framework_simplejwt.token_blacklist",  # JWT黑名单支持
@@ -146,6 +147,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+
+# Uploaded resource attachments are deliberately not exposed through a public
+# URL route. Downloads are streamed by an authenticated API view instead.
+MEDIA_ROOT = BASE_DIR / "media"
+RESOURCE_MAX_UPLOAD_SIZE = 15 * 1024 * 1024
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

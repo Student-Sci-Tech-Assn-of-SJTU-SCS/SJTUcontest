@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Box, Slide, CircularProgress, Alert, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import axios from "axios";
 import { newsAPI } from "../services/NewsServices";
 import ContestCard from "./ContestCard";
 import showMessage from "../utils/message";
 
-const INTERVAL = 4000;
+const MAX_VISIBLE_CONTESTS = 3;
 
 export default function NewsCarousel() {
   const [newsItems, setNewsItems] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [show, setShow] = useState(true);
   const [loading, setLoading] = useState(true);
 
   // 获取新闻数据
   useEffect(() => {
-    const fetchNews = async () => {
-      const controller = new AbortController();
+    const controller = new AbortController();
 
+    const fetchNews = async () => {
       try {
         setLoading(true);
         const response = await newsAPI.getNews({ signal: controller.signal });
@@ -37,30 +35,16 @@ export default function NewsCarousel() {
         if (axios.isCancel(err)) return;
         showMessage(`网络错误，获取新闻失败：${err}`, "error");
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
-
-      return () => controller.abort();
     };
 
     fetchNews();
+
+    return () => controller.abort();
   }, []);
-
-  // 轮播效果
-  useEffect(() => {
-    if (newsItems.length === 0) return;
-
-    const timer = setInterval(() => {
-      setShow(false);
-
-      setTimeout(() => {
-        setIndex((prev) => (prev + 1) % newsItems.length);
-        setShow(true);
-      }, 500);
-    }, INTERVAL);
-
-    return () => clearInterval(timer);
-  }, [newsItems.length]);
 
   // 加载状态
   if (loading) {
@@ -68,6 +52,7 @@ export default function NewsCarousel() {
       <Box
         sx={{
           width: 550,
+          maxWidth: "100%",
           height: 320,
           display: "flex",
           alignItems: "center",
@@ -85,6 +70,7 @@ export default function NewsCarousel() {
       <Box
         sx={{
           width: 550,
+          maxWidth: "100%",
           height: 320,
           display: "flex",
           alignItems: "center",
@@ -102,54 +88,56 @@ export default function NewsCarousel() {
     );
   }
 
+  const hasOverflow = newsItems.length > MAX_VISIBLE_CONTESTS;
+
   return (
     <Box
       sx={{
-        width: 550,
-        height: 320,
-        position: "relative",
-        overflow: "hidden",
+        width: hasOverflow
+          ? {
+              xs: "100%",
+              sm: "calc(320px * 2 + 16px)",
+              md: "calc(340px * 3 + 32px)",
+            }
+          : "max-content",
+        maxWidth: "100%",
+        overflowX: "auto",
+        overflowY: "hidden",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: "stretch",
+        gap: 2,
+        px: 1,
+        py: 1.5,
+        scrollSnapType: "x proximity",
+        WebkitOverflowScrolling: "touch",
+        "&::-webkit-scrollbar": {
+          height: 8,
+        },
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "divider",
+          borderRadius: 999,
+        },
       }}
     >
-      {newsItems.map((contest, i) => (
-        <Slide
+      {newsItems.map((contest) => (
+        <Box
           key={contest.id}
-          direction="left"
-          in={show && i === index}
-          mountOnEnter
-          unmountOnExit
-          timeout={500}
+          sx={{
+            flex: {
+              xs: "0 0 280px",
+              sm: "0 0 320px",
+              md: "0 0 340px",
+            },
+            maxWidth: { xs: 280, sm: 320, md: 340 },
+            scrollSnapAlign: "start",
+            "& .MuiLink-root": {
+              m: 0,
+              height: 300,
+            },
+          }}
         >
-          <Box
-            sx={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Box
-              sx={{
-                width: 520,
-                height: 300,
-                // 禁用ContestCard的hover效果
-                "& .MuiCard-root": {
-                  "&:hover": {
-                    transform: "none !important",
-                    boxShadow: "0 2px 16px rgba(0,0,0,0.10) !important",
-                  },
-                },
-              }}
-            >
-              <ContestCard contest={contest} />
-            </Box>
-          </Box>
-        </Slide>
+          <ContestCard contest={contest} />
+        </Box>
       ))}
     </Box>
   );
