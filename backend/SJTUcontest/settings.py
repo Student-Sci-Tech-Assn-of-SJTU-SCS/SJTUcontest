@@ -147,6 +147,10 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# 管理员上传的比赛附件保存在服务端文件系统中，下载统一经过 Django 接口。
+MEDIA_ROOT = BASE_DIR / "media"
+CONTEST_ATTACHMENT_MAX_SIZE = 15 * 1024 * 1024
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
