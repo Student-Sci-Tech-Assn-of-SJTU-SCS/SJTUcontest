@@ -23,6 +23,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
 import showMessage from "../../utils/message";
+import ContestAttachmentManager from "../../components/contest/ContestAttachmentManager";
 
 // 枚举选项（和 CreateContest 一样）
 const CONTEST_LEVELS = [
@@ -88,6 +89,9 @@ const ContestEdit = () => {
   const [materialInput, setMaterialInput] = useState({ name: "", url: "" });
   const [loading, setLoading] = useState(false);
   const [logoPreview, setLogoPreview] = useState("");
+  const [attachments, setAttachments] = useState([]);
+  const [pendingAttachments, setPendingAttachments] = useState([]);
+  const [deletingAttachmentId, setDeletingAttachmentId] = useState(null);
 
   // 获取比赛详情
   useEffect(() => {
@@ -99,16 +103,23 @@ const ContestEdit = () => {
           signal: controller.signal,
         });
         if (res.success) {
+          const { attachments: fetchedAttachments = [], ...contestData } =
+            res.data;
           setFormData({
-            ...res.data,
-            registration_start: res.data.registration_start
-              ? new Date(res.data.registration_start).toISOString().slice(0, 16)
+            ...contestData,
+            registration_start: contestData.registration_start
+              ? new Date(contestData.registration_start)
+                  .toISOString()
+                  .slice(0, 16)
               : "",
-            registration_end: res.data.registration_end
-              ? new Date(res.data.registration_end).toISOString().slice(0, 16)
+            registration_end: contestData.registration_end
+              ? new Date(contestData.registration_end)
+                  .toISOString()
+                  .slice(0, 16)
               : "",
           });
-          setLogoPreview(res.data.logo || "");
+          setAttachments(fetchedAttachments);
+          setLogoPreview(contestData.logo || "");
         } else {
           showMessage(`获取比赛详情失败：${res.message}`, "error");
         }
@@ -176,6 +187,33 @@ const ContestEdit = () => {
     setLogoPreview("");
   };
 
+  const handleDeleteAttachment = async (attachment) => {
+    if (!window.confirm(`确定删除附件“${attachment.original_filename}”吗？`)) {
+      return;
+    }
+
+    try {
+      setDeletingAttachmentId(attachment.id);
+      const res = await contestAPI.deleteContestAttachment(
+        contest_id,
+        attachment.id,
+      );
+      if (res.success) {
+        setAttachments((current) =>
+          current.filter((item) => item.id !== attachment.id),
+        );
+        showMessage("附件删除成功", "success");
+      }
+    } catch (error) {
+      showMessage(
+        `附件删除失败：${error.response?.data?.message || error.message || "未知错误。"}`,
+        "error",
+      );
+    } finally {
+      setDeletingAttachmentId(null);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const controller = new AbortController();
@@ -196,15 +234,42 @@ const ContestEdit = () => {
         signal: controller.signal,
       });
 
-      if (res.success) {
-        showMessage("比赛更新成功！", "success");
-      } else {
+      if (!res.success) {
         showMessage(`比赛更新失败：${res.message || "未知错误。"}`, "error");
+        return;
+      }
+
+      const uploadResults = await Promise.allSettled(
+        pendingAttachments.map((file) =>
+          contestAPI.uploadContestAttachment(contest_id, file, {
+            signal: controller.signal,
+          }),
+        ),
+      );
+      const uploadedAttachments = uploadResults
+        .filter((result) => result.status === "fulfilled")
+        .map((result) => result.value.data);
+      const failedFiles = pendingAttachments.filter(
+        (_, index) => uploadResults[index]?.status === "rejected",
+      );
+
+      if (uploadedAttachments.length > 0) {
+        setAttachments((current) => [...current, ...uploadedAttachments]);
+      }
+      setPendingAttachments(failedFiles);
+
+      if (failedFiles.length > 0) {
+        showMessage(
+          `比赛已更新，但有 ${failedFiles.length} 个附件上传失败，请重试。`,
+          "warning",
+        );
+      } else {
+        showMessage("比赛更新成功！", "success");
       }
     } catch (error) {
       if (axios.isCancel(error)) return;
       showMessage(
-        `比赛更新失败：${error.response?.data?.detail || error.message}`,
+        `比赛更新失败：${error.response?.data?.message || error.response?.data?.detail || error.message}`,
         "error",
       );
     } finally {
@@ -477,6 +542,19 @@ const ContestEdit = () => {
                   </Box>
                 </Box>
               )}
+
+              {/* 附件文件 */}
+              <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
+                附件文件
+              </Typography>
+              <ContestAttachmentManager
+                existingAttachments={attachments}
+                pendingFiles={pendingAttachments}
+                onPendingFilesChange={setPendingAttachments}
+                onDeleteExisting={handleDeleteAttachment}
+                deletingAttachmentId={deletingAttachmentId}
+                disabled={loading}
+              />
             </Box>
 
             <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>

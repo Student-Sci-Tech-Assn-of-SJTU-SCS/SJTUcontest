@@ -25,6 +25,8 @@ import LanguageIcon from "@mui/icons-material/Language";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import DownloadIcon from "@mui/icons-material/Download";
 import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
 import { nameToTag } from "../../components/Tag";
@@ -101,6 +103,13 @@ const InfoCard = ({ icon, label, value, valueSx }) => {
   );
 };
 
+const formatFileSize = (size) => {
+  if (!Number.isFinite(size)) return "";
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+};
+
 export default function ContestDetail() {
   const { contest_id } = useParams();
   const [contest, setContest] = useState(null);
@@ -161,6 +170,27 @@ export default function ContestDetail() {
 
     fetchContestDetail();
   }, [contest_id]);
+
+  const handleDownloadAttachment = async (attachment) => {
+    try {
+      const blob = await contestAPI.downloadContestAttachment(
+        contest.id,
+        attachment.id,
+      );
+      const objectUrl = URL.createObjectURL(blob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = objectUrl;
+      downloadLink.download = attachment.original_filename;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      const message =
+        err.response?.data?.message || "附件下载失败，请稍后再试。";
+      showMessage(message, "error");
+    }
+  };
 
   if (loading) {
     return (
@@ -269,7 +299,8 @@ export default function ContestDetail() {
                 </Typography>
               </Box>
 
-              {contest.materials.length > 0 && (
+              {((contest.materials?.length ?? 0) > 0 ||
+                (contest.attachments?.length ?? 0) > 0) && (
                 <Box>
                   <SectionTitle
                     variant="h6"
@@ -278,7 +309,7 @@ export default function ContestDetail() {
                     <SchoolIcon fontSize="small" /> 参考资料
                   </SectionTitle>
                   <Stack spacing={2} sx={{ mt: 2 }}>
-                    {contest.materials.map((m) => (
+                    {(contest.materials ?? []).map((m) => (
                       <Paper
                         key={m.url}
                         component={Link}
@@ -317,6 +348,48 @@ export default function ContestDetail() {
                         <Typography fontWeight="500" color="text.primary">
                           {m.name}
                         </Typography>
+                      </Paper>
+                    ))}
+                    {(contest.attachments ?? []).map((attachment) => (
+                      <Paper
+                        key={attachment.id}
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 2,
+                          bgcolor: alpha(theme.palette.background.default, 0.5),
+                          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            p: 1,
+                            borderRadius: 1,
+                            bgcolor: alpha(theme.palette.primary.main, 0.1),
+                            color: "primary.main",
+                            display: "flex",
+                          }}
+                        >
+                          <AttachFileIcon fontSize="small" />
+                        </Box>
+                        <Box sx={{ minWidth: 0, flex: 1 }}>
+                          <Typography fontWeight="500" noWrap>
+                            {attachment.original_filename}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {formatFileSize(attachment.file_size)}
+                          </Typography>
+                        </Box>
+                        <Button
+                          size="small"
+                          startIcon={<DownloadIcon />}
+                          onClick={() => handleDownloadAttachment(attachment)}
+                        >
+                          下载
+                        </Button>
                       </Paper>
                     ))}
                   </Stack>

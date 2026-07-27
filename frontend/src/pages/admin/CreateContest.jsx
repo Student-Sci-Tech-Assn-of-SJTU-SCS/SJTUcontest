@@ -22,6 +22,7 @@ import {
 import axios from "axios";
 import { contestAPI } from "../../services/ContestServices";
 import showMessage from "../../utils/message";
+import ContestAttachmentManager from "../../components/contest/ContestAttachmentManager";
 
 // 从后端 choices.py 映射的选项
 const CONTEST_LEVELS = [
@@ -86,6 +87,7 @@ const CreateContest = () => {
   const [materialInput, setMaterialInput] = useState({ name: "", url: "" });
   const [loading, setLoading] = useState(false);
   const [logoPreview, setLogoPreview] = useState("");
+  const [pendingAttachments, setPendingAttachments] = useState([]);
 
   useEffect(() => {
     if (sessionStorage.getItem("admin_create_contest")) {
@@ -199,10 +201,29 @@ const CreateContest = () => {
         signal: controller.signal,
       });
 
-      if (res.success) {
-        showMessage("比赛创建成功！", "success");
-      } else {
+      if (!res.success) {
         showMessage(`创建比赛失败：${res.message || "未知错误。"}`, "error");
+        return;
+      }
+
+      const uploadResults = await Promise.allSettled(
+        pendingAttachments.map((file) =>
+          contestAPI.uploadContestAttachment(res.data.id, file, {
+            signal: controller.signal,
+          }),
+        ),
+      );
+      const failedUploadCount = uploadResults.filter(
+        (result) => result.status === "rejected",
+      ).length;
+
+      if (failedUploadCount > 0) {
+        showMessage(
+          `比赛已创建，但有 ${failedUploadCount} 个附件上传失败，可在编辑比赛时重新上传。`,
+          "warning",
+        );
+      } else {
+        showMessage("比赛创建成功！", "success");
       }
 
       // 重置表单
@@ -223,10 +244,11 @@ const CreateContest = () => {
       });
       sessionStorage.removeItem("admin_create_contest");
       setLogoPreview("");
+      setPendingAttachments([]);
     } catch (error) {
       if (axios.isCancel(error)) return;
       showMessage(
-        `创建比赛失败：${error.response?.data?.detail || error.message || "未知错误。"}`,
+        `创建比赛失败：${error.response?.data?.message || error.response?.data?.detail || error.message || "未知错误。"}`,
         "error",
       );
     } finally {
@@ -499,6 +521,16 @@ const CreateContest = () => {
                   </Box>
                 </Box>
               )}
+
+              {/* 附件文件 */}
+              <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
+                附件文件
+              </Typography>
+              <ContestAttachmentManager
+                pendingFiles={pendingAttachments}
+                onPendingFilesChange={setPendingAttachments}
+                disabled={loading}
+              />
 
               {/* 提交按钮 */}
               <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
