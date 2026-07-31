@@ -34,6 +34,7 @@ const MainLayout = () => {
   const theme = useTheme();
 
   const open = Boolean(anchorEl);
+  const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -655,9 +656,10 @@ const MainLayout = () => {
         }}
       >
         <Container
-          maxWidth="lg"
+          maxWidth={isHomePage ? false : "lg"}
+          disableGutters={isHomePage}
           sx={{
-            py: 4,
+            py: isHomePage ? 0 : 4,
             background: `radial-gradient(ellipse at center, 
               ${alpha(theme.palette.primary.light, 0.08)} 0%, 
               transparent 70%)`,
