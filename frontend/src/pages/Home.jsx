@@ -70,6 +70,28 @@ const Home = () => {
       >
         <Container maxWidth="lg">
           <Box sx={{ textAlign: "center" }}>
+            <Box
+              component="img"
+              src="/学院动图.gif"
+              alt="集成电路芯片动态展示"
+              loading="eager"
+              fetchPriority="high"
+              draggable={false}
+              sx={{
+                display: "block",
+                width: "100%",
+                height: "auto",
+                mx: "auto",
+                mb: 5,
+                borderRadius: 4,
+                boxShadow: `0 16px 40px ${alpha(
+                  theme.palette.primary.main,
+                  0.16,
+                )}`,
+                animation: "heroImageFadeIn 1s ease-out",
+                ...createFadeInAnim({ name: "heroImageFadeIn" }),
+              }}
+            />
             <Typography
               variant="h4"
               fontWeight="bold"
