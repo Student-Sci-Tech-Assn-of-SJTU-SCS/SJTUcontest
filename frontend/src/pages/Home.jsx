@@ -79,11 +79,11 @@ const Home = () => {
               draggable={false}
               sx={{
                 display: "block",
-                width: "100%",
+                width: "100vw",
+                maxWidth: "none",
                 height: "auto",
-                mx: "auto",
+                ml: "calc(50% - 50vw)",
                 mb: 5,
-                borderRadius: 4,
                 boxShadow: `0 16px 40px ${alpha(
                   theme.palette.primary.main,
                   0.16,
