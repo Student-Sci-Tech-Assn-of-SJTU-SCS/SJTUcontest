@@ -1,16 +1,28 @@
-from rest_framework.decorators import api_view, permission_classes
+import mimetypes
+from pathlib import Path
+
+from django.http import FileResponse
+from rest_framework.decorators import (
+    api_view,
+    parser_classes,
+    permission_classes,
+)
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from django.core.paginator import Paginator
 from django.db.models import Q, F
 from django.utils import timezone
 
-from .models import Contest
+from .models import Contest, ContestAttachment
 from .serializers import (
     ContestListRequestSerializer,
     ContestResponseSerializer,
     ContestCreateRequestSerializer,
     ContestTeamsRequestSerializer,
     ContestRegistrationTeamsRequestSerializer,
+    ContestAttachmentResponseSerializer,
+    ContestAttachmentUploadSerializer,
+    ContestDetailResponseSerializer,
 )
 from teams.serializers import TeamResponseSerializer
 from SJTUcontest.utils import ApiResponse
@@ -137,7 +149,7 @@ def get_match_by_id(request, match_id):
     try:
         contest = Contest.objects.get(id=match_id)
 
-        serializer = ContestResponseSerializer(contest)
+        serializer = ContestDetailResponseSerializer(contest)
         return ApiResponse.success(data=serializer.data, message="Contest found")
 
     except Contest.DoesNotExist:
@@ -147,6 +159,82 @@ def get_match_by_id(request, match_id):
         return ApiResponse.error(
             message=f"Internal server error: {str(e)}", status_code=500
         )
+
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+@parser_classes([MultiPartParser, FormParser])
+def upload_match_attachment(request, match_id):
+    try:
+        contest = Contest.objects.get(id=match_id)
+    except Contest.DoesNotExist:
+        return ApiResponse.not_found(message="Contest not found")
+
+    serializer = ContestAttachmentUploadSerializer(data=request.data)
+    if not serializer.is_valid():
+        return ApiResponse.error(
+            message="附件无效",
+            data=serializer.errors,
+        )
+
+    uploaded_file = serializer.validated_data["file"]
+    attachment = ContestAttachment.objects.create(
+        contest=contest,
+        file=uploaded_file,
+        original_filename=Path(uploaded_file.name).name[:255],
+        file_size=uploaded_file.size,
+        content_type=uploaded_file.content_type or "application/octet-stream",
+        uploaded_by=request.user,
+    )
+    return ApiResponse.success(
+        data=ContestAttachmentResponseSerializer(attachment).data,
+        message="附件上传成功",
+        status_code=201,
+    )
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def download_match_attachment(request, match_id, attachment_id):
+    try:
+        attachment = ContestAttachment.objects.get(
+            id=attachment_id,
+            contest_id=match_id,
+        )
+    except ContestAttachment.DoesNotExist:
+        return ApiResponse.not_found(message="附件不存在")
+
+    try:
+        file_handle = attachment.file.open("rb")
+    except FileNotFoundError:
+        return ApiResponse.not_found(message="附件文件不存在，请联系管理员")
+
+    content_type = (
+        attachment.content_type
+        or mimetypes.guess_type(attachment.original_filename)[0]
+        or "application/octet-stream"
+    )
+    return FileResponse(
+        file_handle,
+        as_attachment=True,
+        filename=attachment.original_filename,
+        content_type=content_type,
+    )
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_match_attachment(request, match_id, attachment_id):
+    try:
+        attachment = ContestAttachment.objects.get(
+            id=attachment_id,
+            contest_id=match_id,
+        )
+    except ContestAttachment.DoesNotExist:
+        return ApiResponse.not_found(message="附件不存在")
+
+    attachment.delete()
+    return ApiResponse.success(message="附件删除成功")
 
 
 @api_view(["POST"])

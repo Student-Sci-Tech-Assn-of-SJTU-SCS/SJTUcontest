@@ -1,13 +1,16 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
 from django.utils import timezone
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import timedelta
+import tempfile
 import uuid
 
-from .models import Contest
+from .models import Contest, ContestAttachment
 from teams.models import Team, UserTeam  # Assuming teams app structure is available
 from .choices import ContestLevel, ContestQuality, ContestKeywords
 
@@ -357,3 +360,108 @@ class ContestAPITestCase(TestCase):
         )
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()["message"], "Contest not found")
+
+
+class ContestAttachmentAPITestCase(TestCase):
+    def setUp(self):
+        self.media_directory = tempfile.TemporaryDirectory()
+        self.media_override = override_settings(MEDIA_ROOT=self.media_directory.name)
+        self.media_override.enable()
+        self.addCleanup(self.media_override.disable)
+        self.addCleanup(self.media_directory.cleanup)
+
+        self.admin_user = User.objects.create_superuser(
+            username="attachment-admin",
+            password="adminpassword",
+            nick_name="Attachment Admin",
+        )
+        self.user = User.objects.create_user(
+            username="attachment-user",
+            password="userpassword",
+            nick_name="Attachment User",
+        )
+        self.contest = Contest.objects.create(
+            name="Attachment Test Contest",
+            year=2026,
+            place="Shanghai",
+            level=ContestLevel.NATIONAL,
+            quality=ContestQuality.A_LEVEL,
+            months=[7],
+            keywords=[ContestKeywords.AI],
+        )
+        self.client = APIClient()
+
+    def authenticate(self, user):
+        access_token = RefreshToken.for_user(user).access_token
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
+
+    def upload_attachment(self, filename="guide.pdf", content=b"contest guide"):
+        return self.client.post(
+            f"/api/matches/{self.contest.id}/attachments/upload/",
+            {"file": SimpleUploadedFile(filename, content)},
+            format="multipart",
+        )
+
+    def test_admin_can_upload_and_public_can_list_and_download_attachment(self):
+        self.authenticate(self.admin_user)
+        upload_response = self.upload_attachment()
+
+        self.assertEqual(upload_response.status_code, 201)
+        attachment_data = upload_response.json()["data"]
+        attachment = ContestAttachment.objects.get(id=attachment_data["id"])
+        self.assertTrue(attachment.file.storage.exists(attachment.file.name))
+
+        self.client.credentials()
+        detail_response = self.client.get(f"/api/matches/{self.contest.id}/")
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertEqual(
+            detail_response.json()["data"]["attachments"][0]["original_filename"],
+            "guide.pdf",
+        )
+
+        download_response = self.client.get(
+            f"/api/matches/{self.contest.id}/attachments/{attachment.id}/download/"
+        )
+        self.assertEqual(download_response.status_code, 200)
+        self.assertEqual(b"".join(download_response.streaming_content), b"contest guide")
+        self.assertIn("attachment", download_response["Content-Disposition"])
+
+    def test_regular_user_cannot_upload_or_delete_attachment(self):
+        self.authenticate(self.admin_user)
+        upload_response = self.upload_attachment()
+        attachment_id = upload_response.json()["data"]["id"]
+
+        self.authenticate(self.user)
+        forbidden_upload = self.upload_attachment("another.pdf")
+        forbidden_delete = self.client.delete(
+            f"/api/matches/{self.contest.id}/attachments/{attachment_id}/delete/"
+        )
+
+        self.assertEqual(forbidden_upload.status_code, 403)
+        self.assertEqual(forbidden_delete.status_code, 403)
+        self.assertTrue(ContestAttachment.objects.filter(id=attachment_id).exists())
+
+    def test_admin_delete_removes_database_record_and_file(self):
+        self.authenticate(self.admin_user)
+        upload_response = self.upload_attachment()
+        attachment = ContestAttachment.objects.get(
+            id=upload_response.json()["data"]["id"]
+        )
+        storage = attachment.file.storage
+        stored_name = attachment.file.name
+
+        delete_response = self.client.delete(
+            f"/api/matches/{self.contest.id}/attachments/{attachment.id}/delete/"
+        )
+
+        self.assertEqual(delete_response.status_code, 200)
+        self.assertFalse(ContestAttachment.objects.filter(id=attachment.id).exists())
+        self.assertFalse(storage.exists(stored_name))
+
+    def test_upload_rejects_unsupported_file_type(self):
+        self.authenticate(self.admin_user)
+
+        response = self.upload_attachment("program.exe")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(ContestAttachment.objects.exists())
