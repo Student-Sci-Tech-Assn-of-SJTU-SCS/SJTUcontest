@@ -1,6 +1,10 @@
 from rest_framework import serializers
 
-from .models import Contest
+from pathlib import Path
+
+from django.conf import settings
+
+from .models import Contest, ContestAttachment
 from .choices import ContestLevel, ContestQuality, ContestKeywords
 
 
@@ -48,6 +52,61 @@ class ContestResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contest
         exclude = ["created_at", "updated_at"]
+
+
+class ContestAttachmentResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContestAttachment
+        fields = [
+            "id",
+            "original_filename",
+            "file_size",
+            "content_type",
+            "created_at",
+        ]
+
+
+class ContestDetailResponseSerializer(ContestResponseSerializer):
+    attachments = ContestAttachmentResponseSerializer(many=True, read_only=True)
+
+    class Meta(ContestResponseSerializer.Meta):
+        pass
+
+
+ALLOWED_ATTACHMENT_EXTENSIONS = {
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".ppt",
+    ".pptx",
+    ".xls",
+    ".xlsx",
+    ".txt",
+    ".md",
+    ".csv",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".zip",
+    ".rar",
+    ".7z",
+}
+
+
+class ContestAttachmentUploadSerializer(serializers.Serializer):
+    file = serializers.FileField(required=True)
+
+    def validate_file(self, value):
+        extension = Path(value.name).suffix.lower()
+        if extension not in ALLOWED_ATTACHMENT_EXTENSIONS:
+            allowed = "、".join(sorted(ALLOWED_ATTACHMENT_EXTENSIONS))
+            raise serializers.ValidationError(f"不支持该文件类型。允许：{allowed}")
+
+        max_size = settings.CONTEST_ATTACHMENT_MAX_SIZE
+        if value.size > max_size:
+            max_megabytes = max_size // (1024 * 1024)
+            raise serializers.ValidationError(f"文件大小不能超过 {max_megabytes} MB")
+        return value
 
 
 class ContestCreateRequestSerializer(serializers.ModelSerializer):

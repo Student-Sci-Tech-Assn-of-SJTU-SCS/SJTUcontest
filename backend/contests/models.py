@@ -2,9 +2,17 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import datetime
+from pathlib import Path
 import uuid
+from django.conf import settings
+from django.utils.text import get_valid_filename
 
 from .choices import ContestLevel, ContestQuality, ContestKeywords
+
+
+def contest_attachment_upload_path(instance, filename):
+    safe_name = get_valid_filename(Path(filename).name)
+    return f"contest_attachments/{instance.contest_id}/{instance.id}/{safe_name}"
 
 
 # Create your models here.
@@ -66,3 +74,35 @@ class Contest(models.Model):
     class Meta:
         verbose_name = "Contest"
         verbose_name_plural = "Contests"
+
+
+class ContestAttachment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    contest = models.ForeignKey(
+        Contest,
+        on_delete=models.CASCADE,
+        related_name="attachments",
+    )
+    file = models.FileField(upload_to=contest_attachment_upload_path, max_length=500)
+    original_filename = models.CharField(max_length=255)
+    file_size = models.PositiveBigIntegerField()
+    content_type = models.CharField(
+        max_length=150,
+        default="application/octet-stream",
+    )
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="uploaded_contest_attachments",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "contests_attachment"
+        ordering = ["created_at"]
+        verbose_name = "比赛附件"
+        verbose_name_plural = "比赛附件"
+
+    def __str__(self):
+        return f"{self.contest.name} - {self.original_filename}"

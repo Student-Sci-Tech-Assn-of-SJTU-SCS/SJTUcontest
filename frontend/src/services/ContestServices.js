@@ -39,6 +39,33 @@ export const contestAPI = {
     return response;
   },
 
+  uploadContestAttachment: async (match_id, file, config = {}) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return api.post(
+      `matches/${match_id}/attachments/upload/`,
+      formData,
+      config,
+    );
+  },
+
+  deleteContestAttachment: async (match_id, attachment_id, config = {}) => {
+    return api.delete(
+      `matches/${match_id}/attachments/${attachment_id}/delete/`,
+      config,
+    );
+  },
+
+  downloadContestAttachment: async (match_id, attachment_id, config = {}) => {
+    return api.get(
+      `matches/${match_id}/attachments/${attachment_id}/download/`,
+      {
+        ...config,
+        responseType: "blob",
+      },
+    );
+  },
+
   // 删除比赛
   deleteContest: async (match_id, config = {}) => {
     const response = await api.delete(`matches/${match_id}/delete/`, config);

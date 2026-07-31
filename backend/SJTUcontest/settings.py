@@ -152,6 +152,7 @@ STATIC_URL = "static/"
 # URL route. Downloads are streamed by an authenticated API view instead.
 MEDIA_ROOT = BASE_DIR / "media"
 RESOURCE_MAX_UPLOAD_SIZE = 15 * 1024 * 1024
+CONTEST_ATTACHMENT_MAX_SIZE = 15 * 1024 * 1024
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
