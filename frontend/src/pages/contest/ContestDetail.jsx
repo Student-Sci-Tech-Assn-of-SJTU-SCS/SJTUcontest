@@ -293,6 +293,8 @@ export default function ContestDetail() {
                     lineHeight: 1.8,
                     color: "text.secondary",
                     whiteSpace: "pre-wrap",
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word",
                   }}
                 >
                   {contest.description}
