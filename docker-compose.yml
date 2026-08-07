@@ -28,7 +28,6 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
     volumes:
-      - ./backend/.env:/app/.env:ro
       - ./backend/logs:/app/logs
       - resource_media:/app/media
     networks:
