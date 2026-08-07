@@ -1,7 +1,10 @@
 import axios from "axios";
 import { getAccessToken, getRefreshToken, saveTokens, logout } from "./auth.js";
 
-const defaultApiBase = "http://localhost/api/";
+// Use the same origin in production so requests flow through the frontend
+// Nginx reverse proxy. VITE_API_BASE_URL can still override this for local
+// development or an explicitly separate API host.
+const defaultApiBase = "/api/";
 const configuredApiBase = import.meta.env.VITE_API_BASE_URL;
 const apiBaseUrl = (() => {
   if (typeof configuredApiBase === "string" && configuredApiBase.trim()) {

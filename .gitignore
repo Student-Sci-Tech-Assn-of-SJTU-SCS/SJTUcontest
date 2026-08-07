@@ -17,6 +17,7 @@ env/
 # Node.js
 node_modules/
 build/
+frontend/dist/
 
 # VSCode
 .vscode/
