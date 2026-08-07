@@ -360,7 +360,7 @@ const Login = () => {
                 fontWeight: 400,
               }}
             >
-              登录 SCS 科创平台
+              登录 ICISEE 科创平台
             </Typography>
           </Box>
 
