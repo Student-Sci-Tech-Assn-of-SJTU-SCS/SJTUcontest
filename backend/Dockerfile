@@ -21,7 +21,7 @@ COPY backend/docker-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh /app/cron-entrypoint.sh
 
 RUN adduser --disabled-password --gecos "" appuser \
-    && mkdir -p /app/logs /app/media \
+    && mkdir -p /app/logs /app/media /app/staticfiles \
     && chown -R appuser:appuser /app /entrypoint.sh /app/cron-entrypoint.sh
 USER appuser
 

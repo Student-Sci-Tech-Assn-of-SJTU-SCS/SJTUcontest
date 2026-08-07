@@ -11,6 +11,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    logging: &default-logging
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "5"
     networks:
       - sjtu_contest_net
 
@@ -30,6 +35,18 @@ services:
     volumes:
       - ./backend/logs:/app/logs
       - resource_media:/app/media
+      - static_files:/app/staticfiles
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/users/jaccount/auth/url/', timeout=5)\"",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    logging: *default-logging
     networks:
       - sjtu_contest_net
 
@@ -49,9 +66,9 @@ services:
       DB_PORT: 5432
       TZ: Asia/Shanghai
     volumes:
-      - ./backend/.env:/app/.env:ro
       - ./backend/logs:/app/logs
     entrypoint: ["/app/cron-entrypoint.sh"]
+    logging: *default-logging
     networks:
       - sjtu_contest_net
 
@@ -62,15 +79,19 @@ services:
     restart: unless-stopped
     depends_on:
       backend:
-        condition: service_started
+        condition: service_healthy
     ports:
       - "80:80"
+    volumes:
+      - static_files:/usr/share/nginx/django-static:ro
+    logging: *default-logging
     networks:
       - sjtu_contest_net
 
 volumes:
   postgres_data:
   resource_media:
+  static_files:
 
 networks:
   sjtu_contest_net:

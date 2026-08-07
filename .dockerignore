@@ -10,6 +10,7 @@ LICENSE
 **/.pytest_cache/
 backend/.env*
 backend/logs/
+backend/staticfiles/
 frontend/node_modules/
 frontend/dist/
 frontend/.env*

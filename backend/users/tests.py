@@ -105,10 +105,11 @@ class UserAPITestCase(TestCase):
     # 1. Test Register API
     def test_register_success(self):
         """测试成功注册 (Test successful registration)"""
+        self.client.force_authenticate(user=self.superuser)
         url = reverse("register")
         data = {
             "username": "newuser",
-            "password": "newpassword123",
+            "password": "NewPassword123!",
             "email": "new@test.com",
         }
         response = self.client.post(url, data, format="json")
@@ -118,10 +119,11 @@ class UserAPITestCase(TestCase):
 
     def test_register_duplicate_username(self):
         """测试重复用户名注册 (Test registration with duplicate username)"""
+        self.client.force_authenticate(user=self.superuser)
         url = reverse("register")
         data = {
             "username": "testuser1",  # Existing username
-            "password": "newpassword123",
+            "password": "NewPassword123!",
             "email": "new@test.com",
         }
         response = self.client.post(url, data, format="json")

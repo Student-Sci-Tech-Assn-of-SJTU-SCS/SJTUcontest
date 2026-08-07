@@ -70,7 +70,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",  # 保留用于Django Admin
     "django.middleware.common.CommonMiddleware",
-    # "django.middleware.csrf.CsrfViewMiddleware",  # 已注释，API使用JWT代替CSRF
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -146,13 +146,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Uploaded resource attachments are deliberately not exposed through a public
 # URL route. Downloads are streamed by an authenticated API view instead.
 MEDIA_ROOT = BASE_DIR / "media"
 RESOURCE_MAX_UPLOAD_SIZE = 15 * 1024 * 1024
 CONTEST_ATTACHMENT_MAX_SIZE = 15 * 1024 * 1024
+
+# HTTPS is terminated by the trusted SJTU reverse proxy before requests reach
+# this container. Preserve the original scheme for Django security checks.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

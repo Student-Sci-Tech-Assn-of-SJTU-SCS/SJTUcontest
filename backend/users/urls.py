@@ -28,7 +28,7 @@ urlpatterns = [
     path("jaccount/auth/url/", get_jaccount_auth_url, name="get_jaccount_auth_url"),
     path("jaccount/login/", login_by_jaccount, name="login_by_jaccount"),
     path("my/teams/", get_user_teams, name="get_user_teams"),
-    path("<uuid:user_id>/forbid/", forbid_user_by_id, name="forbid_user_by_id"),
+    path("<uuid:user_id>/forbid/", forbid_user_by_id, name="forbid_user"),
     path(
         "<uuid:user_id>/info/",
         get_user_total_info_by_id,

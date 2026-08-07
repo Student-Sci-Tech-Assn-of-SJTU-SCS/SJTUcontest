@@ -33,6 +33,7 @@ frontend/dist/
 backend/logs/
 !backend/logs/.gitkeep
 backend/media/
+backend/staticfiles/
 
 .history/
 

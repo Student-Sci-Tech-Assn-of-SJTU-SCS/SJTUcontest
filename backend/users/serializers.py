@@ -17,6 +17,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ("username", "email", "password")
 
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("该用户名已存在。")
+        return value
+
     def validate_password(self, value):
         """
         自定义密码强度验证

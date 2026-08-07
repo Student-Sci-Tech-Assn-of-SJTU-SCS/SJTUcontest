@@ -8,6 +8,7 @@ if [ ! -f "$LOG_FILE" ]; then
   touch "$LOG_FILE"
 fi
 
+python manage.py collectstatic --noinput
 python manage.py migrate --noinput
 
 exec "$@"
