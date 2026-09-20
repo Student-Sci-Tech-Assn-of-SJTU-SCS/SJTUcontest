@@ -257,8 +257,8 @@ const MainLayout = () => {
             title="上海交通大学集成电路学院官网"
             sx={{
               ml: { xs: 0.5, sm: 2, md: 4 },
-              width: { xs: 38, sm: 44 },
-              height: { xs: 38, sm: 44 },
+              width: { xs: 210, sm: 280, md: 360, lg: 420 },
+              height: { xs: 30, sm: 34, md: 38 },
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -298,7 +298,7 @@ const MainLayout = () => {
               fontWeight: "bold",
               color: "white",
               textShadow: `0 2px 4px ${alpha(theme.palette.common.black, 0.2)}`,
-              display: "flex",
+              display: { xs: "none", lg: "flex" },
               alignItems: "center",
               gap: 1,
               whiteSpace: "nowrap",
