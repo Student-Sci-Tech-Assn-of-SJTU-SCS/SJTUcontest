@@ -292,8 +292,8 @@ const MainLayout = () => {
             variant="h5"
             component="div"
             sx={{
-              ml: { xs: 1, sm: 1.5 },
-              mr: { xs: 1.5, sm: 3, md: 4 },
+              ml: { xs: 2.5, sm: 3 },
+              mr: { xs: 0, sm: 1.5, md: 2.5 },
               cursor: "pointer",
               fontWeight: "bold",
               color: "white",
