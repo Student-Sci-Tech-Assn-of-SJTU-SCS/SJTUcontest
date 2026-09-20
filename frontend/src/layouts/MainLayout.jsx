@@ -311,7 +311,7 @@ const MainLayout = () => {
             }}
             onClick={() => navigate("/")}
           >
-            科创平台
+            科创交流平台
           </Typography>
 
           <Box
