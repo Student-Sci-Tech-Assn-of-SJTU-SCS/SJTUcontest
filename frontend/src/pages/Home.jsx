@@ -109,7 +109,7 @@ const Home = () => {
                 }),
               }}
             >
-              上海交通大学集成电路学院
+              上海交通大学集成电路学院（信息与电子工程学院）
             </Typography>
             <Typography
               variant="h3"

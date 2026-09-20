@@ -248,12 +248,52 @@ const MainLayout = () => {
             minWidth: 0,
           }}
         >
+          <Box
+            component="a"
+            href="https://icisee.sjtu.edu.cn/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="访问上海交通大学集成电路学院官网"
+            title="上海交通大学集成电路学院官网"
+            sx={{
+              ml: { xs: 0.5, sm: 2, md: 4 },
+              width: { xs: 38, sm: 44 },
+              height: { xs: 38, sm: 44 },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              borderRadius: 1.5,
+              transition: "transform 0.2s ease, background-color 0.2s ease",
+              "&:hover": {
+                transform: "scale(1.06)",
+                backgroundColor: alpha(theme.palette.common.white, 0.1),
+              },
+              "&:focus-visible": {
+                outline: `2px solid ${theme.palette.common.white}`,
+                outlineOffset: 2,
+              },
+            }}
+          >
+            <Box
+              component="img"
+              src="/college-logo-white.png"
+              alt="上海交通大学集成电路学院 Logo"
+              sx={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+                filter: `drop-shadow(0 2px 3px ${alpha(theme.palette.common.black, 0.18)})`,
+              }}
+            />
+          </Box>
+
           <Typography
             variant="h5"
             component="div"
             sx={{
-              ml: 4,
-              mr: 4,
+              ml: { xs: 1, sm: 1.5 },
+              mr: { xs: 1.5, sm: 3, md: 4 },
               cursor: "pointer",
               fontWeight: "bold",
               color: "white",
