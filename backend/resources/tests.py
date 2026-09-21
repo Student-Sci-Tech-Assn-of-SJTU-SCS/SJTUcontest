@@ -7,6 +7,8 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from contests.models import Contest
+
 from .models import Resource
 
 
@@ -26,6 +28,12 @@ class ResourceAPITestCase(TestCase):
         self.other_user = User.objects.create_user(
             username="other_user",
             password="password",
+        )
+        self.contest = Contest.objects.create(
+            name="测试集成电路竞赛",
+            place="上海",
+            level="local",
+            quality="others",
         )
         self.client = APIClient()
 
@@ -50,11 +58,16 @@ class ResourceAPITestCase(TestCase):
                 "category": Resource.Category.CONTEST_MATERIAL,
                 "title": "竞赛指南",
                 "description": "报名与备赛说明",
+                "contest": str(self.contest.id),
                 "attachment": upload,
             },
             format="multipart",
         )
         self.assertEqual(create_response.status_code, 201)
+        self.assertEqual(
+            create_response.json()["data"]["contest"]["id"],
+            str(self.contest.id),
+        )
         resource_id = create_response.json()["data"]["id"]
 
         list_response = self.client.get(
@@ -68,7 +81,9 @@ class ResourceAPITestCase(TestCase):
             reverse("resource-download", args=[resource_id])
         )
         self.assertEqual(download_response.status_code, 200)
-        self.assertEqual(b"".join(download_response.streaming_content), b"sample pdf data")
+        self.assertEqual(
+            b"".join(download_response.streaming_content), b"sample pdf data"
+        )
 
         resource = Resource.objects.get(id=resource_id)
         self.assertEqual(resource.download_count, 1)
@@ -81,6 +96,7 @@ class ResourceAPITestCase(TestCase):
                 "category": Resource.Category.PAST_EXPERIENCE,
                 "title": "往届备赛复盘",
                 "description": "先完成基础实现，再逐步优化。",
+                "other_contest_name": "学院创新挑战赛",
             },
             format="multipart",
         )
@@ -108,6 +124,7 @@ class ResourceAPITestCase(TestCase):
                 "category": Resource.Category.PAST_EXPERIENCE,
                 "title": "笔记",
                 "description": "",
+                "other_contest_name": "其他测试竞赛",
                 "attachment": upload,
             },
             format="multipart",
@@ -119,3 +136,91 @@ class ResourceAPITestCase(TestCase):
         response = self.client.delete(reverse("resource-delete", args=[resource.id]))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(stored_path.exists())
+
+    def test_contest_is_required_and_other_contest_name_is_supported(self):
+        self.client.force_authenticate(self.user)
+        missing_response = self.client.post(
+            reverse("resource-create"),
+            {
+                "category": Resource.Category.PAST_EXPERIENCE,
+                "title": "缺少竞赛",
+                "description": "内容",
+            },
+            format="multipart",
+        )
+        self.assertEqual(missing_response.status_code, 400)
+        self.assertIn("contest", missing_response.json()["data"])
+
+        other_response = self.client.post(
+            reverse("resource-create"),
+            {
+                "category": Resource.Category.PAST_EXPERIENCE,
+                "title": "其他比赛经验",
+                "description": "内容",
+                "other_contest_name": "未收录的芯片竞赛",
+            },
+            format="multipart",
+        )
+        self.assertEqual(other_response.status_code, 201)
+        self.assertTrue(other_response.json()["data"]["is_other_contest"])
+        self.assertEqual(
+            other_response.json()["data"]["contest_name"],
+            "未收录的芯片竞赛",
+        )
+
+    def test_grouping_sorting_and_contest_options(self):
+        Resource.objects.create(
+            category=Resource.Category.PAST_EXPERIENCE,
+            title="已有竞赛经验",
+            description="内容",
+            contest=self.contest,
+            uploader=self.user,
+            download_count=2,
+        )
+        Resource.objects.create(
+            category=Resource.Category.PAST_EXPERIENCE,
+            title="其他竞赛经验",
+            description="内容",
+            other_contest_name="自定义比赛",
+            uploader=self.user,
+            download_count=8,
+        )
+        self.client.force_authenticate(self.user)
+
+        groups_response = self.client.get(
+            reverse("resource-groups"),
+            {"category": Resource.Category.PAST_EXPERIENCE},
+        )
+        self.assertEqual(groups_response.status_code, 200)
+        groups = groups_response.json()["data"]["groups"]
+        self.assertEqual(len(groups), 2)
+        self.assertEqual(groups[-1]["key"], "other")
+
+        sorted_response = self.client.get(
+            reverse("resource-list"),
+            {
+                "category": Resource.Category.PAST_EXPERIENCE,
+                "sort_by": "download_count",
+            },
+        )
+        self.assertEqual(sorted_response.status_code, 200)
+        self.assertEqual(
+            sorted_response.json()["data"]["resources"][0]["title"],
+            "其他竞赛经验",
+        )
+
+        other_response = self.client.get(
+            reverse("resource-list"),
+            {
+                "category": Resource.Category.PAST_EXPERIENCE,
+                "other_only": "true",
+            },
+        )
+        self.assertEqual(other_response.json()["data"]["total_items"], 1)
+
+        options_response = self.client.get(reverse("resource-contest-options"))
+        self.assertEqual(options_response.status_code, 200)
+        self.assertEqual(
+            options_response.json()["data"]["contests"][0]["name"],
+            self.contest.name,
+        )

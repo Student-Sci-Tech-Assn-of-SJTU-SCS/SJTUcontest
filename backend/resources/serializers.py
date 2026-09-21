@@ -38,6 +38,29 @@ class ResourceListQuerySerializer(serializers.Serializer):
     )
     page_index = serializers.IntegerField(min_value=1, default=1)
     page_size = serializers.IntegerField(min_value=1, max_value=50, default=12)
+    sort_by = serializers.ChoiceField(
+        choices=["created_at", "download_count"],
+        default="created_at",
+    )
+    contest_id = serializers.UUIDField(required=False)
+    other_only = serializers.BooleanField(default=False)
+
+    def validate(self, attrs):
+        if attrs.get("contest_id") and attrs.get("other_only"):
+            raise serializers.ValidationError("不能同时筛选指定竞赛和其他比赛")
+        return attrs
+
+
+class ResourceGroupQuerySerializer(serializers.Serializer):
+    category = serializers.ChoiceField(
+        choices=Resource.Category.choices,
+        required=True,
+    )
+    query = serializers.CharField(
+        max_length=100,
+        required=False,
+        allow_blank=True,
+    )
 
 
 class ResourceResponseSerializer(serializers.ModelSerializer):
@@ -48,6 +71,9 @@ class ResourceResponseSerializer(serializers.ModelSerializer):
     uploader = serializers.SerializerMethodField()
     has_attachment = serializers.SerializerMethodField()
     can_delete = serializers.SerializerMethodField()
+    contest = serializers.SerializerMethodField()
+    contest_name = serializers.SerializerMethodField()
+    is_other_contest = serializers.SerializerMethodField()
 
     class Meta:
         model = Resource
@@ -57,6 +83,10 @@ class ResourceResponseSerializer(serializers.ModelSerializer):
             "category_label",
             "title",
             "description",
+            "contest",
+            "contest_name",
+            "other_contest_name",
+            "is_other_contest",
             "original_filename",
             "file_size",
             "has_attachment",
@@ -76,6 +106,22 @@ class ResourceResponseSerializer(serializers.ModelSerializer):
     def get_has_attachment(self, obj):
         return bool(obj.attachment)
 
+    def get_contest(self, obj):
+        if not obj.contest_id:
+            return None
+        return {
+            "id": str(obj.contest_id),
+            "name": obj.contest.name,
+        }
+
+    def get_contest_name(self, obj):
+        if obj.contest_id:
+            return obj.contest.name
+        return obj.other_contest_name or "其他比赛"
+
+    def get_is_other_contest(self, obj):
+        return not bool(obj.contest_id)
+
     def get_can_delete(self, obj):
         request = self.context.get("request")
         if not request or not request.user.is_authenticated:
@@ -86,7 +132,18 @@ class ResourceResponseSerializer(serializers.ModelSerializer):
 class ResourceCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
-        fields = ["category", "title", "description", "attachment"]
+        fields = [
+            "category",
+            "title",
+            "contest",
+            "other_contest_name",
+            "description",
+            "attachment",
+        ]
+        extra_kwargs = {
+            "contest": {"required": False, "allow_null": True},
+            "other_contest_name": {"required": False, "allow_blank": True},
+        }
 
     def validate_attachment(self, attachment):
         if not attachment:
@@ -108,6 +165,19 @@ class ResourceCreateSerializer(serializers.ModelSerializer):
         category = attrs.get("category")
         attachment = attrs.get("attachment")
         description = attrs.get("description", "").strip()
+        contest = attrs.get("contest")
+        other_contest_name = attrs.get("other_contest_name", "").strip()
+
+        if contest and other_contest_name:
+            raise serializers.ValidationError(
+                {"other_contest_name": "选择已有竞赛后无需填写其他竞赛名称"}
+            )
+        if not contest and not other_contest_name:
+            raise serializers.ValidationError(
+                {"contest": "请选择所属竞赛；若列表中没有，请选择其他并填写名称"}
+            )
+
+        attrs["other_contest_name"] = other_contest_name
 
         if category == Resource.Category.CONTEST_MATERIAL and not attachment:
             raise serializers.ValidationError(

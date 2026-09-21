@@ -1,20 +1,35 @@
 import mimetypes
 
 from django.core.paginator import Paginator
-from django.db.models import F, Q
+from django.db.models import Count, F, Q
 from django.http import FileResponse
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 
 from SJTUcontest.utils import ApiResponse
+from contests.models import Contest
 
 from .models import Resource
 from .serializers import (
     ResourceCreateSerializer,
+    ResourceGroupQuerySerializer,
     ResourceListQuerySerializer,
     ResourceResponseSerializer,
 )
+
+
+def _filter_resources(queryset, category=None, query=""):
+    if category:
+        queryset = queryset.filter(category=category)
+    if query:
+        queryset = queryset.filter(
+            Q(title__icontains=query)
+            | Q(description__icontains=query)
+            | Q(contest__name__icontains=query)
+            | Q(other_contest_name__icontains=query)
+        )
+    return queryset
 
 
 @api_view(["GET"])
@@ -28,15 +43,21 @@ def list_resources(request):
         )
 
     params = query_serializer.validated_data
-    queryset = Resource.objects.select_related("uploader")
+    queryset = Resource.objects.select_related("uploader", "contest")
+    queryset = _filter_resources(
+        queryset,
+        category=params.get("category"),
+        query=params.get("query", ""),
+    )
+    if params.get("contest_id"):
+        queryset = queryset.filter(contest_id=params["contest_id"])
+    elif params.get("other_only"):
+        queryset = queryset.filter(contest__isnull=True)
 
-    if params.get("category"):
-        queryset = queryset.filter(category=params["category"])
-    if params.get("query"):
-        keyword = params["query"]
-        queryset = queryset.filter(
-            Q(title__icontains=keyword) | Q(description__icontains=keyword)
-        )
+    if params["sort_by"] == "download_count":
+        queryset = queryset.order_by("-download_count", "-created_at")
+    else:
+        queryset = queryset.order_by("-created_at")
 
     paginator = Paginator(queryset, params["page_size"])
     page = paginator.get_page(params["page_index"])
@@ -58,9 +79,75 @@ def list_resources(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
+def list_resource_groups(request):
+    query_serializer = ResourceGroupQuerySerializer(data=request.query_params)
+    if not query_serializer.is_valid():
+        return ApiResponse.error(
+            message="查询参数无效",
+            data=query_serializer.errors,
+        )
+
+    params = query_serializer.validated_data
+    queryset = _filter_resources(
+        Resource.objects.all(),
+        category=params["category"],
+        query=params.get("query", ""),
+    )
+    contest_rows = (
+        queryset.filter(contest__isnull=False)
+        .values("contest_id", "contest__name")
+        .annotate(resource_count=Count("id"))
+        .order_by("contest__name")
+    )
+    groups = [
+        {
+            "key": f"contest:{row['contest_id']}",
+            "type": "contest",
+            "contest_id": str(row["contest_id"]),
+            "name": row["contest__name"],
+            "resource_count": row["resource_count"],
+        }
+        for row in contest_rows
+    ]
+    other_count = queryset.filter(contest__isnull=True).count()
+    if other_count:
+        groups.append(
+            {
+                "key": "other",
+                "type": "other",
+                "contest_id": None,
+                "name": "其他比赛",
+                "resource_count": other_count,
+            }
+        )
+
+    return ApiResponse.success(
+        data={"groups": groups},
+        message="资料分组获取成功",
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_resource_contest_options(request):
+    contests = Contest.objects.only("id", "name").order_by("name")
+    return ApiResponse.success(
+        data={
+            "contests": [
+                {"id": str(contest.id), "name": contest.name} for contest in contests
+            ]
+        },
+        message="竞赛选项获取成功",
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def get_resource(request, resource_id):
     try:
-        resource = Resource.objects.select_related("uploader").get(id=resource_id)
+        resource = Resource.objects.select_related("uploader", "contest").get(
+            id=resource_id
+        )
     except Resource.DoesNotExist:
         return ApiResponse.not_found(message="资料不存在")
 

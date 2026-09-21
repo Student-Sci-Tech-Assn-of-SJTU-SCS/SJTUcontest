@@ -32,6 +32,19 @@ class Resource(models.Model):
         on_delete=models.CASCADE,
         related_name="shared_resources",
     )
+    contest = models.ForeignKey(
+        "contests.Contest",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="shared_resources",
+        verbose_name="所属竞赛",
+    )
+    other_contest_name = models.CharField(
+        max_length=120,
+        blank=True,
+        verbose_name="其他竞赛名称",
+    )
     download_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -41,6 +54,7 @@ class Resource(models.Model):
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["category", "-created_at"]),
+            models.Index(fields=["category", "contest", "-created_at"]),
         ]
         verbose_name = "共享资料"
         verbose_name_plural = "共享资料"
