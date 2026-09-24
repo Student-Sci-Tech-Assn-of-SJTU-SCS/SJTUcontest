@@ -83,7 +83,11 @@ const MainLayout = () => {
   };
 
   const handleAwardReportClick = () => {
-    window.open("https://google.com", "_blank", "noopener,noreferrer");
+    window.open(
+      "https://ssc.sjtu.edu.cn/f/ac5127a3",
+      "_blank",
+      "noopener,noreferrer",
+    );
   };
 
   return (
